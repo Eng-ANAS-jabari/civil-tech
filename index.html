@@ -17,6 +17,23 @@
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        .sync-indicator { transition: all 0.3s ease; }
+        .sync-pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .online-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+            margin-left: 6px;
+            animation: pulse-online 2s infinite;
+        }
+        @keyframes pulse-online {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
     </style>
 </head>
 <body class="hero-pattern min-h-screen">
@@ -31,7 +48,10 @@
                 <span class="text-2xl font-bold tracking-tighter">CIVIL <span class="text-blue-500">TECH</span></span>
             </div>
             <div class="flex items-center gap-4">
-                <div id="cloud-status" class="text-[10px] bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full border border-blue-500/20 font-bold italic">جاري المزامنة...</div>
+                <div id="cloud-status" class="flex items-center gap-2 text-[10px] bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full border border-blue-500/20 font-bold">
+                    <span id="sync-icon" class="sync-indicator">🔄</span>
+                    <span id="sync-text">جاري المزامنة...</span>
+                </div>
                 <button id="logout-btn" onclick="handleLogout()" class="hidden bg-red-500/20 text-red-400 px-4 py-2 rounded-lg text-sm border border-red-500/30 hover:bg-red-500/40 transition font-bold">خروج</button>
             </div>
         </div>
@@ -42,7 +62,10 @@
         <!-- Section: Landing -->
         <section id="landing-section" class="animate-fade-in">
             <div class="text-center py-12">
-                <div class="mb-6 inline-block bg-blue-500/10 text-blue-400 px-4 py-1 rounded-full text-sm border border-blue-500/20 font-bold">المؤتمر الهندسي التقني 2025</div>
+                <div class="mb-6 inline-block bg-blue-500/10 text-blue-400 px-4 py-1 rounded-full text-sm border border-blue-500/20 font-bold">
+                    <span class="online-dot"></span>
+                    المؤتمر الهندسي التقني 2025
+                </div>
                 <h1 class="text-5xl md:text-7xl font-extrabold mb-6 italic tracking-tight uppercase">CIVIL <span class="text-blue-500">TECH</span></h1>
                 
                 <!-- Countdown Timer -->
@@ -159,50 +182,177 @@
     </main>
 
     <script type="module">
+        // Import Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, getDocs, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
 
-        // Firebase Config
+        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAq46_s0TiEBJTrhOz05St1zU2FU3PLIao",
             authDomain: "civiltech-e0a16.firebaseapp.com",
             projectId: "civiltech-e0a16",
             storageBucket: "civiltech-e0a16.firebasestorage.app",
             messagingSenderId: "859519915000",
-            appId: "1:859519915000:web:fd506ad7290e116e073c0d"
+            appId: "1:859519915000:web:fd506ad7290e116e073c0d",
+            measurementId: "G-3YPSMF1BDT"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const analytics = getAnalytics(app);
+
+        // Log initial page view
+        logEvent(analytics, 'page_view', {
+            page_title: 'CIVIL TECH 2025',
+            page_location: window.location.href
+        });
 
         let currentCloudData = { agenda: [], gallery: [], config: { logo: '', eventDate: '' } };
+        let isSyncing = false;
+        let syncTimeout;
+        let unsubscribe;
 
         // Helper: Toast Notification
-        window.showToast = (msg) => {
+        window.showToast = (msg, type = 'success') => {
             const t = document.getElementById("toast");
             t.innerText = msg;
+            t.style.backgroundColor = type === 'success' ? '#10b981' : '#ef4444';
             t.className = "show";
+            
+            // Log toast event
+            logEvent(analytics, 'toast_shown', {
+                message: msg,
+                type: type
+            });
+            
             setTimeout(() => { t.className = t.className.replace("show", ""); }, 3000);
         };
+
+        // Helper: Update Sync Status
+        function updateSyncStatus(status, isError = false) {
+            const syncIcon = document.getElementById('sync-icon');
+            const syncText = document.getElementById('sync-text');
+            
+            if (isError) {
+                syncIcon.innerHTML = '⚠️';
+                syncText.innerText = 'خطأ في المزامنة';
+                document.getElementById('cloud-status').className = "flex items-center gap-2 text-[10px] bg-red-500/10 text-red-400 px-3 py-1 rounded-full border border-red-500/20 font-bold";
+                
+                logEvent(analytics, 'sync_error', {
+                    error: status
+                });
+            } else {
+                switch(status) {
+                    case 'syncing':
+                        syncIcon.innerHTML = '🔄';
+                        syncIcon.classList.add('sync-pulse');
+                        syncText.innerText = 'جاري المزامنة...';
+                        document.getElementById('cloud-status').className = "flex items-center gap-2 text-[10px] bg-yellow-500/10 text-yellow-400 px-3 py-1 rounded-full border border-yellow-500/20 font-bold";
+                        break;
+                    case 'online':
+                        syncIcon.innerHTML = '✓';
+                        syncIcon.classList.remove('sync-pulse');
+                        syncText.innerText = 'متصل سحابياً';
+                        document.getElementById('cloud-status').className = "flex items-center gap-2 text-[10px] bg-green-500/20 text-green-400 px-3 py-1 rounded-full border border-green-500/20 font-bold";
+                        
+                        logEvent(analytics, 'sync_online');
+                        break;
+                    case 'offline':
+                        syncIcon.innerHTML = '✗';
+                        syncIcon.classList.remove('sync-pulse');
+                        syncText.innerText = 'غير متصل';
+                        document.getElementById('cloud-status').className = "flex items-center gap-2 text-[10px] bg-gray-500/20 text-gray-400 px-3 py-1 rounded-full border border-gray-500/20 font-bold";
+                        
+                        logEvent(analytics, 'sync_offline');
+                        break;
+                }
+            }
+        }
 
         // Navigation
         window.showSection = (id) => {
             document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             window.scrollTo(0,0);
+            
+            // Log section view
+            logEvent(analytics, 'section_view', {
+                section_id: id,
+                section_name: document.getElementById(id).querySelector('h1, h2, h3')?.innerText || id
+            });
+            
+            if (id === 'admin-dashboard') {
+                renderAdminInputs();
+            }
         };
 
-        // Sync Data from Firebase
-        onSnapshot(doc(db, "conference", "data"), (snap) => {
-            if (snap.exists()) {
-                currentCloudData = snap.data();
-                if(!currentCloudData.config) currentCloudData.config = { logo: '', eventDate: '' };
-                renderUI();
-                startCountdown();
-                document.getElementById('cloud-status').innerText = "متصل سحابياً ✓";
-                document.getElementById('cloud-status').className = "text-[10px] bg-green-500/20 text-green-400 px-3 py-1 rounded-full border border-green-500/20 font-bold";
+        // Sync Data from Firebase with retry logic
+        function setupFirebaseListener() {
+            updateSyncStatus('syncing');
+            
+            // Unsubscribe previous listener if exists
+            if (unsubscribe) {
+                unsubscribe();
             }
-        });
+            
+            unsubscribe = onSnapshot(doc(db, "conference", "data"), 
+                (snap) => {
+                    if (snap.exists()) {
+                        currentCloudData = snap.data();
+                        if(!currentCloudData.config) currentCloudData.config = { logo: '', eventDate: '' };
+                        renderUI();
+                        startCountdown();
+                        updateSyncStatus('online');
+                        
+                        // Auto-save last sync time
+                        localStorage.setItem('lastSync', new Date().toISOString());
+                        localStorage.setItem('cachedConferenceData', JSON.stringify(currentCloudData));
+                        
+                        logEvent(analytics, 'data_synced', {
+                            agenda_count: currentCloudData.agenda?.length || 0,
+                            gallery_count: currentCloudData.gallery?.length || 0
+                        });
+                    } else {
+                        // Create initial data if not exists
+                        setDoc(doc(db, "conference", "data"), {
+                            agenda: [],
+                            gallery: [],
+                            config: { logo: '', eventDate: '' },
+                            createdAt: new Date().toISOString()
+                        });
+                    }
+                },
+                (error) => {
+                    console.error("Firebase sync error:", error);
+                    updateSyncStatus('error', true);
+                    
+                    logEvent(analytics, 'sync_error', {
+                        error_code: error.code,
+                        error_message: error.message
+                    });
+                    
+                    // Try to load from cache
+                    const cachedData = localStorage.getItem('cachedConferenceData');
+                    if (cachedData) {
+                        currentCloudData = JSON.parse(cachedData);
+                        renderUI();
+                        showToast('جاري العرض من الذاكرة المؤقتة', 'warning');
+                    }
+                    
+                    // Retry connection after 5 seconds
+                    setTimeout(() => {
+                        setupFirebaseListener();
+                    }, 5000);
+                }
+            );
+            
+            return unsubscribe;
+        }
+
+        // Call the listener
+        setupFirebaseListener();
 
         function renderUI() {
             // Update Logo
@@ -212,8 +362,8 @@
 
             // Render Agenda
             const agendaList = document.getElementById('main-agenda-list');
-            agendaList.innerHTML = (currentCloudData.agenda || []).map(item => `
-                <div class="glass p-5 rounded-2xl flex items-center gap-6 border-r-4 border-blue-500 hover:bg-white/5 transition animate-fade-in">
+            agendaList.innerHTML = (currentCloudData.agenda || []).map((item, index) => `
+                <div class="glass p-5 rounded-2xl flex items-center gap-6 border-r-4 border-blue-500 hover:bg-white/5 transition animate-fade-in" style="animation-delay: ${index * 0.1}s">
                     <span class="text-lg font-bold text-blue-400 w-24 border-l border-white/10 ml-2">${item.time}</span>
                     <span class="font-medium text-gray-200">${item.title}</span>
                 </div>
@@ -221,90 +371,193 @@
 
             // Render Gallery
             const galleryList = document.getElementById('main-gallery-list');
-            galleryList.innerHTML = (currentCloudData.gallery || []).map(url => `
-                <div class="aspect-square rounded-xl overflow-hidden border border-white/10 shadow-lg group relative">
+            galleryList.innerHTML = (currentCloudData.gallery || []).map((url, index) => `
+                <div class="aspect-square rounded-xl overflow-hidden border border-white/10 shadow-lg group relative animate-fade-in" style="animation-delay: ${index * 0.1}s">
                     <img src="${url}" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" onerror="this.src='https://via.placeholder.com/200?text=Error'">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
             `).join('');
         }
 
         // Countdown Logic
         function startCountdown() {
-            if(!currentCloudData.config.eventDate) return;
+            if(!currentCloudData.config.eventDate) {
+                // Set default countdown to next month if not set
+                const defaultDate = new Date();
+                defaultDate.setMonth(defaultDate.getMonth() + 1);
+                currentCloudData.config.eventDate = defaultDate.toISOString().slice(0, 16);
+            }
+            
             const target = new Date(currentCloudData.config.eventDate).getTime();
             
-            const timer = setInterval(() => {
+            // Clear existing interval
+            if (window.countdownInterval) clearInterval(window.countdownInterval);
+            
+            window.countdownInterval = setInterval(() => {
                 const now = new Date().getTime();
                 const diff = target - now;
                 
                 if(diff < 0) {
-                    clearInterval(timer);
+                    clearInterval(window.countdownInterval);
                     document.getElementById('countdown-container').innerHTML = "<p class='text-blue-400 font-bold'>المؤتمر بدأ الآن!</p>";
+                    
+                    logEvent(analytics, 'conference_started');
                     return;
                 }
                 
-                document.getElementById('cd-days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
-                document.getElementById('cd-hours').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
-                document.getElementById('cd-minutes').innerText = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                
+                document.getElementById('cd-days').innerText = days.toString().padStart(2, '0');
+                document.getElementById('cd-hours').innerText = hours.toString().padStart(2, '0');
+                document.getElementById('cd-minutes').innerText = minutes.toString().padStart(2, '0');
             }, 1000);
         }
 
-        // Registration Logic
+        // Registration Logic with validation
         document.getElementById('register-form').onsubmit = async (e) => {
             e.preventDefault();
+            
             const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            const name = document.getElementById('reg-name').value;
+            const org = document.getElementById('reg-org').value;
+            const type = document.getElementById('reg-type').value;
             
-            // Check if email exists
-            const q = query(collection(db, "users"), where("email", "==", email));
-            const querySnapshot = await getDocs(q);
-            
-            if (!querySnapshot.empty) {
-                alert("هذا الإيميل مسجل مسبقاً! الرجاء التوجه لصفحة الدخول.");
-                showSection('login-section');
+            // Basic validation
+            if (pass.length < 6) {
+                alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
                 return;
             }
-
-            const userData = {
-                name: document.getElementById('reg-name').value,
-                org: document.getElementById('reg-org').value,
-                email: email,
-                type: document.getElementById('reg-type').value,
-                pass: document.getElementById('reg-pass').value,
-                regDate: new Date().toISOString()
-            };
-
+            
+            if (!email.includes('@')) {
+                alert("البريد الإلكتروني غير صحيح");
+                return;
+            }
+            
+            updateSyncStatus('syncing');
+            
             try {
-                await addDoc(collection(db, "users"), userData);
+                // Check if email exists
+                const q = query(collection(db, "users"), where("email", "==", email));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                    alert("هذا الإيميل مسجل مسبقاً! الرجاء التوجه لصفحة الدخول.");
+                    showSection('login-section');
+                    updateSyncStatus('online');
+                    
+                    logEvent(analytics, 'registration_duplicate_email', { email });
+                    return;
+                }
+
+                const userData = {
+                    name: name,
+                    org: org,
+                    email: email,
+                    type: type,
+                    pass: pass,
+                    regDate: new Date().toISOString(),
+                    lastActive: new Date().toISOString()
+                };
+
+                const docRef = await addDoc(collection(db, "users"), userData);
+                
+                logEvent(analytics, 'sign_up', {
+                    method: 'email',
+                    user_type: type,
+                    user_id: docRef.id
+                });
+                
                 showToast("تم التسجيل بنجاح! تفضل بالدخول.");
+                updateSyncStatus('online');
+                
+                // Clear form
+                document.getElementById('register-form').reset();
+                
                 setTimeout(() => showSection('login-section'), 1500);
             } catch(err) {
                 alert("خطأ في التسجيل: " + err.message);
+                updateSyncStatus('error', true);
+                
+                logEvent(analytics, 'registration_error', {
+                    error: err.message
+                });
             }
         };
 
         // Login Logic
         document.getElementById('login-form').onsubmit = async (e) => {
             e.preventDefault();
+            
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
             
-            if(email === "admin@civil.com" && pass === "123") {
-                document.getElementById('logout-btn').classList.remove('hidden');
-                showSection('admin-dashboard');
-                renderAdminInputs();
-                return;
-            }
-
-            const q = query(collection(db, "users"), where("email", "==", email), where("pass", "==", pass));
-            const snap = await getDocs(q);
+            updateSyncStatus('syncing');
             
-            if(!snap.empty) {
-                const user = snap.docs[0].data();
-                showToast(`أهلاً بك مهندس ${user.name}`);
-                document.getElementById('logout-btn').classList.remove('hidden');
-                showSection('landing-section'); // Redirect to home for now
-            } else {
-                alert("البيانات خاطئة أو الحساب غير موجود.");
+            try {
+                // Admin login
+                if(email === "admin@civil.com" && pass === "123") {
+                    document.getElementById('logout-btn').classList.remove('hidden');
+                    showSection('admin-dashboard');
+                    renderAdminInputs();
+                    updateSyncStatus('online');
+                    
+                    // Update admin last login
+                    localStorage.setItem('adminLastLogin', new Date().toISOString());
+                    
+                    logEvent(analytics, 'login', {
+                        method: 'admin',
+                        user_type: 'admin'
+                    });
+                    
+                    return;
+                }
+
+                // User login
+                const q = query(collection(db, "users"), where("email", "==", email), where("pass", "==", pass));
+                const snap = await getDocs(q);
+                
+                if(!snap.empty) {
+                    const user = snap.docs[0].data();
+                    const userId = snap.docs[0].id;
+                    
+                    // Update last active
+                    await updateDoc(doc(db, "users", userId), {
+                        lastActive: new Date().toISOString()
+                    });
+                    
+                    logEvent(analytics, 'login', {
+                        method: 'email',
+                        user_type: user.type,
+                        user_id: userId
+                    });
+                    
+                    showToast(`أهلاً بك مهندس ${user.name}`);
+                    document.getElementById('logout-btn').classList.remove('hidden');
+                    
+                    // Store user session
+                    sessionStorage.setItem('currentUser', JSON.stringify({ id: userId, ...user }));
+                    
+                    showSection('landing-section');
+                    updateSyncStatus('online');
+                    
+                    // Clear login form
+                    document.getElementById('login-form').reset();
+                } else {
+                    alert("البيانات خاطئة أو الحساب غير موجود.");
+                    updateSyncStatus('online');
+                    
+                    logEvent(analytics, 'login_failed', { email });
+                }
+            } catch(err) {
+                alert("خطأ في تسجيل الدخول: " + err.message);
+                updateSyncStatus('error', true);
+                
+                logEvent(analytics, 'login_error', {
+                    error: err.message
+                });
             }
         };
 
@@ -330,6 +583,8 @@
             div.className = 'flex gap-2 animate-fade-in';
             div.innerHTML = `<input type="time" class="agenda-time-input bg-white/5 border border-white/10 p-2 rounded-lg text-white w-24 text-xs"><input type="text" placeholder="العنوان" class="agenda-title-input bg-white/5 border border-white/10 p-2 rounded-lg text-white flex-1 text-sm">`;
             document.getElementById('admin-agenda-inputs').appendChild(div);
+            
+            logEvent(analytics, 'admin_add_agenda_row');
         };
 
         window.addNewGalleryRow = () => {
@@ -337,6 +592,8 @@
             input.className = 'gallery-url-input bg-white/5 border border-white/10 p-2 rounded-lg text-white w-full text-xs mb-2 animate-fade-in';
             input.placeholder = "رابط صورة جديد (https://...)";
             document.getElementById('admin-gallery-inputs').appendChild(input);
+            
+            logEvent(analytics, 'admin_add_gallery_row');
         };
 
         window.saveAllToCloud = async () => {
@@ -344,7 +601,7 @@
             const titles = document.querySelectorAll('.agenda-title-input');
             const urls = document.querySelectorAll('.gallery-url-input');
 
-            const newAgenda = Array.from(times).map((t, i) => ({ time: t.value, title: titles[i].value })).filter(a => a.time);
+            const newAgenda = Array.from(times).map((t, i) => ({ time: t.value, title: titles[i].value })).filter(a => a.time && a.title);
             const newGallery = Array.from(urls).map(u => u.value).filter(u => u.length > 5);
 
             const config = {
@@ -352,17 +609,86 @@
                 eventDate: document.getElementById('conf-date').value
             };
 
+            updateSyncStatus('syncing');
+
             try {
-                await setDoc(doc(db, "conference", "data"), { agenda: newAgenda, gallery: newGallery, config: config });
+                // Save to Firebase
+                await setDoc(doc(db, "conference", "data"), { 
+                    agenda: newAgenda, 
+                    gallery: newGallery, 
+                    config: config,
+                    lastUpdated: new Date().toISOString(),
+                    updatedBy: 'admin'
+                });
+                
+                // Cache locally
+                localStorage.setItem('cachedConferenceData', JSON.stringify({ 
+                    agenda: newAgenda, 
+                    gallery: newGallery, 
+                    config: config 
+                }));
+                
+                logEvent(analytics, 'admin_save_changes', {
+                    agenda_count: newAgenda.length,
+                    gallery_count: newGallery.length
+                });
+                
                 showToast("تم تحديث السحاب بنجاح!");
-                showSection('landing-section');
-            } catch (err) { alert("خطأ: " + err.message); }
+                updateSyncStatus('online');
+                
+                // Return to landing after short delay
+                setTimeout(() => showSection('landing-section'), 1500);
+            } catch (err) { 
+                alert("خطأ: " + err.message);
+                updateSyncStatus('error', true);
+                
+                logEvent(analytics, 'admin_save_error', {
+                    error: err.message
+                });
+            }
         };
 
         window.handleLogout = () => {
             document.getElementById('logout-btn').classList.add('hidden');
+            sessionStorage.removeItem('currentUser');
             showSection('landing-section');
+            showToast("تم تسجيل الخروج بنجاح");
+            
+            logEvent(analytics, 'logout');
         };
+
+        // Check for stored session on load
+        const storedUser = sessionStorage.getItem('currentUser');
+        if (storedUser) {
+            document.getElementById('logout-btn').classList.remove('hidden');
+            
+            logEvent(analytics, 'session_restored');
+        }
+
+        // Auto-refresh connection check
+        setInterval(() => {
+            if (navigator.onLine) {
+                // Try to ping Firebase
+                const pingTest = async () => {
+                    try {
+                        await getDoc(doc(db, "conference", "data"));
+                        updateSyncStatus('online');
+                    } catch {
+                        updateSyncStatus('error', true);
+                    }
+                };
+                pingTest();
+            } else {
+                updateSyncStatus('offline');
+            }
+        }, 30000); // Check every 30 seconds
+
+        // Log when user leaves page
+        window.addEventListener('beforeunload', () => {
+            logEvent(analytics, 'page_exit', {
+                page_title: document.title
+            });
+        });
 
     </script>
 </body>
