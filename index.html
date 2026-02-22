@@ -3,31 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام CIVIL TECH 2025 - النسخة الكاملة</title>
+    <title>نظام CIVIL TECH 2025 - النسخة السحابية</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Cairo', sans-serif; scroll-behavior: smooth; }
-        .hero-pattern {
-            background-color: #0f172a;
-            background-image: url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
-            background-attachment: fixed;
-        }
+        body { font-family: 'Cairo', sans-serif; scroll-behavior: smooth; background-color: #0f172a; }
+        .hero-pattern { background-image: url("https://www.transparenttextures.com/patterns/carbon-fibre.png"); background-attachment: fixed; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .active-agenda-item {
-            border-right: 4px solid #3b82f6;
-            background: rgba(59, 130, 246, 0.15);
-            transform: scale(1.02);
-        }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        @keyframes pulse-soft {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        .live-indicator { animation: pulse-soft 2s infinite; }
         .animate-fade-in { animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .live-indicator { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body class="hero-pattern text-white min-h-screen">
@@ -36,52 +22,42 @@
     <nav class="p-4 border-b border-white/10 sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <span class="text-2xl font-bold tracking-tighter cursor-pointer" onclick="showSection('landing-section')">CIVIL <span class="text-blue-500">TECH</span></span>
-            <div id="nav-actions" class="flex items-center gap-4">
-                <div id="cloud-status" class="hidden text-[10px] bg-green-500/10 text-green-400 px-3 py-1 rounded-full border border-green-500/20">متصل ✓</div>
-                <button id="logout-btn" onclick="handleLogout()" class="hidden bg-red-500/20 text-red-400 px-4 py-2 rounded-lg text-sm border border-red-500/30 hover:bg-red-500/40 transition">خروج</button>
+            <div class="flex items-center gap-4">
+                <div id="cloud-status" class="text-[10px] bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full border border-blue-500/20">جاري الاتصال...</div>
+                <button id="logout-btn" onclick="handleLogout()" class="hidden bg-red-500/20 text-red-400 px-4 py-2 rounded-lg text-sm border border-red-500/30 hover:bg-red-500/40 transition font-bold">خروج</button>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-8">
         
-        <!-- Section: Landing (Updated with Agenda and Gallery) -->
+        <!-- Section: Landing (Agenda & Gallery Visible to All) -->
         <section id="landing-section" class="animate-fade-in">
-            <!-- Hero Header -->
             <div class="text-center py-16">
-                <div class="mb-6 inline-block bg-blue-500/10 text-blue-400 px-4 py-1 rounded-full text-sm border border-blue-500/20">المؤتمر الهندسي التقني 2025</div>
+                <div class="mb-6 inline-block bg-blue-500/10 text-blue-400 px-4 py-1 rounded-full text-sm border border-blue-500/20 font-bold">المؤتمر الهندسي التقني 2025</div>
                 <h1 class="text-5xl md:text-7xl font-extrabold mb-6 italic tracking-tight uppercase">CIVIL <span class="text-blue-500">TECH</span></h1>
-                <p class="text-gray-400 text-xl mb-12 max-w-2xl mx-auto font-light leading-relaxed">بوابتكم نحو مستقبل الهندسة المدنية السحابي.</p>
+                <p class="text-gray-400 text-xl mb-12 max-w-2xl mx-auto font-light leading-relaxed font-bold">بوابتكم السحابية لمستقبل الهندسة المدنية.</p>
                 
                 <div class="flex flex-col md:flex-row gap-4 justify-center mb-20">
-                    <button onclick="showSection('login-section')" class="bg-blue-600 hover:bg-blue-700 px-10 py-4 rounded-xl font-bold text-lg transition shadow-lg shadow-blue-500/20">دخول المشتركين</button>
-                    <button onclick="showSection('register-section')" class="bg-white/10 hover:bg-white/20 border border-white/20 px-10 py-4 rounded-xl font-bold text-lg transition">تسجيل جديد</button>
+                    <button onclick="showSection('login-section')" class="bg-blue-600 hover:bg-blue-700 px-10 py-4 rounded-xl font-bold text-lg transition shadow-lg shadow-blue-500/20">دخول المنصة</button>
+                    <button onclick="showSection('register-section')" class="bg-white/10 hover:bg-white/20 border border-white/20 px-10 py-4 rounded-xl font-bold text-lg transition font-bold">تسجيل جديد</button>
                 </div>
             </div>
 
-            <!-- Dashboard Preview (Agenda & Gallery) -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-10">
-                <!-- Main Agenda -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <!-- Live Agenda -->
                 <div class="lg:col-span-2 space-y-6">
-                    <h3 class="text-2xl font-bold flex items-center gap-3">
-                        <span class="w-2 h-8 bg-blue-500 rounded-full"></span>
-                        أجندة المؤتمر
-                    </h3>
+                    <h3 class="text-2xl font-bold flex items-center gap-3 italic">📝 الأجندة المباشرة</h3>
                     <div id="main-agenda-list" class="space-y-4">
-                        <!-- Loaded by JS -->
+                        <div class="p-10 text-center glass rounded-2xl text-gray-500 italic">جاري تحميل الأجندة...</div>
                     </div>
                 </div>
 
-                <!-- Main Gallery -->
+                <!-- Live Gallery -->
                 <div class="space-y-6">
-                    <h3 class="text-2xl font-bold flex items-center gap-3">
-                        <span class="w-2 h-8 bg-blue-500 rounded-full"></span>
-                        معرض الصور
-                    </h3>
+                    <h3 class="text-2xl font-bold flex items-center gap-3 italic text-blue-400">📷 معرض الصور</h3>
                     <div id="main-gallery-list" class="grid grid-cols-2 gap-3 p-4 glass rounded-3xl min-h-[300px]">
-                        <!-- Loaded by JS -->
-                        <div class="col-span-2 text-center text-gray-600 py-20 italic text-xs">لا يوجد صور حالياً</div>
+                        <!-- Loaded from Firebase -->
                     </div>
                 </div>
             </div>
@@ -89,8 +65,8 @@
 
         <!-- Section: Login -->
         <section id="login-section" class="hidden max-w-md mx-auto bg-white text-gray-900 rounded-3xl p-8 shadow-2xl mt-10 animate-fade-in">
-            <h3 class="text-2xl font-bold mb-4 text-center">بوابة الدخول</h3>
-            <form onsubmit="handleLogin(event)" class="space-y-4">
+            <h3 class="text-2xl font-bold mb-4 text-center">دخول المسؤول/المشارك</h3>
+            <form id="login-form" class="space-y-4">
                 <input type="email" id="login-email" required placeholder="البريد الإلكتروني" class="w-full p-3 bg-gray-100 rounded-xl outline-none text-left border focus:border-blue-500 transition">
                 <input type="password" id="login-pass" required placeholder="كلمة المرور" class="w-full p-3 bg-gray-100 rounded-xl outline-none text-left border focus:border-blue-500 transition">
                 <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition">تأكيد الدخول</button>
@@ -98,129 +74,107 @@
             <p class="text-center mt-6 text-[10px] text-gray-400 italic">الإدارة: admin@civil.com | 123</p>
         </section>
 
-        <!-- Section: Registration -->
-        <section id="register-section" class="hidden max-w-lg mx-auto bg-white text-gray-900 rounded-3xl p-8 shadow-2xl mt-10 animate-fade-in">
-            <h3 class="text-2xl font-bold mb-6 text-center text-blue-900 uppercase italic">CIVIL <span class="text-blue-500">REGISTRATION</span></h3>
-            <form onsubmit="handleRegistration(event)" class="space-y-4">
-                <input type="text" id="reg-name" required placeholder="الاسم الكامل" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 transition">
-                <input type="text" id="reg-org" required placeholder="المؤسسة / جهة العمل" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 transition">
-                <input type="email" id="reg-email" required placeholder="البريد الإلكتروني" class="w-full p-3 bg-gray-100 rounded-xl text-left outline-none border focus:border-blue-500 transition">
-                <select id="reg-type" required class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 transition">
-                    <option value="زائر">زائر</option>
-                    <option value="متحدث">متحدث</option>
-                    <option value="مشارك في المسابقات">مشارك في المسابقات</option>
-                </select>
-                <input type="password" id="reg-pass" required placeholder="كلمة المرور" class="w-full p-3 bg-gray-100 rounded-xl text-left outline-none border focus:border-blue-500 transition">
-                <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-500/10">تأكيد الحساب</button>
-            </form>
-            <button onclick="showSection('landing-section')" class="w-full mt-4 text-gray-400 text-sm hover:underline">رجوع</button>
-        </section>
-
-        <!-- Section: Participant Interface (Profile) -->
-        <section id="user-profile" class="hidden space-y-8 animate-fade-in">
-            <div class="glass p-8 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4 border-t-4 border-t-blue-500">
-                <div>
-                    <h2 class="text-3xl font-bold">مرحباً، <span id="user-display-name">...</span> 👋</h2>
-                    <span id="user-display-type" class="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-xs font-bold border border-blue-500/30 mt-2 inline-block italic italic uppercase">تحميل...</span>
-                </div>
-                <div class="text-left bg-white/5 p-4 rounded-2xl border border-white/10">
-                    <p id="current-live-time" class="text-xl font-mono font-bold text-blue-400">00:00:00</p>
-                </div>
-            </div>
-            <div class="p-10 text-center glass rounded-3xl">
-                <p class="text-gray-400">هنا سيتم عرض محتوى مخصص لك بناءً على نوع مشاركتك.</p>
-            </div>
-        </section>
-
-        <!-- Section: Admin Management Panel -->
+        <!-- Section: Admin Panel -->
         <section id="admin-dashboard" class="hidden animate-fade-in space-y-6">
             <div class="glass p-8 rounded-3xl border-r-8 border-blue-500">
-                <h3 class="text-xl font-bold mb-6 text-blue-400">لوحة تحكم CIVIL TECH</h3>
+                <h3 class="text-xl font-bold mb-6 text-blue-400">لوحة التحكم السحابية</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <h4 class="font-bold mb-4">📝 تعديل الأجندة</h4>
                         <div id="admin-agenda-inputs" class="space-y-3 mb-4"></div>
-                        <button onclick="addNewAgendaRow()" class="text-blue-400 text-xs hover:underline">+ فقرة جديدة</button>
+                        <button onclick="addNewAgendaRow()" class="text-blue-400 text-xs hover:underline font-bold">+ فقرة جديدة</button>
                     </div>
                     <div>
-                        <h4 class="font-bold mb-4">🖼️ إدارة الصور (Base64)</h4>
-                        <input type="file" id="admin-image-input" multiple onchange="uploadToGallery(event)" class="hidden">
-                        <button onclick="document.getElementById('admin-image-input').click()" class="w-full bg-blue-500/10 text-blue-400 border border-blue-500/20 p-4 rounded-xl mb-4 italic text-sm">رفع صور جديدة</button>
-                        <div id="admin-gallery-preview" class="grid grid-cols-3 gap-2"></div>
+                        <h4 class="font-bold mb-4">🖼️ إدارة الصور (روابط مباشرة)</h4>
+                        <div id="admin-gallery-inputs" class="space-y-3 mb-4"></div>
+                        <button onclick="addNewGalleryRow()" class="text-green-400 text-xs hover:underline font-bold font-bold">+ إضافة رابط صورة</button>
                     </div>
                 </div>
-                <button onclick="saveAllData()" class="w-full bg-blue-600 mt-8 py-4 rounded-2xl font-bold text-lg shadow-xl shadow-blue-500/20">تحديث البيانات للجميع فوراً</button>
+                <button onclick="saveAllToCloud()" class="w-full bg-blue-600 mt-8 py-4 rounded-2xl font-bold text-lg shadow-xl shadow-blue-500/20 transition hover:bg-blue-700">نشر التحديثات للسحاب فوراً</button>
             </div>
         </section>
 
     </main>
 
-    <script>
-        // --- State Management ---
-        let agenda = JSON.parse(localStorage.getItem('civil_agenda')) || [
-            { time: "09:00", title: "الافتتاح والترحيب بالمهندسين" },
-            { time: "10:30", title: "مستقبل تقنيات البناء الحديثة" },
-            { time: "12:00", title: "استراحة وشبكات تواصل" },
-            { time: "14:00", title: "تكريم المبدعين والختام" }
-        ];
-        let galleryImages = JSON.parse(localStorage.getItem('civil_gallery')) || [];
-        let users = JSON.parse(localStorage.getItem('civil_users')) || [];
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-        // --- Core Functions ---
-        function showSection(id) {
+        // إعدادات الـ Firebase الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyAq46_s0TiEBJTrhOz05St1zU2FU3PLIao",
+            authDomain: "civiltech-e0a16.firebaseapp.com",
+            projectId: "civiltech-e0a16",
+            storageBucket: "civiltech-e0a16.firebasestorage.app",
+            messagingSenderId: "859519915000",
+            appId: "1:859519915000:web:fd506ad7290e116e073c0d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // State
+        let currentCloudData = { agenda: [], gallery: [] };
+
+        // UI navigation
+        window.showSection = (id) => {
             document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
-            window.scrollTo(0,0);
-            renderAll();
-        }
+        };
 
-        function renderAll() {
-            renderAgenda();
-            renderGallery();
-            if(!document.getElementById('admin-dashboard').classList.contains('hidden')) renderAdmin();
-        }
-
-        function renderAgenda() {
-            const list = document.getElementById('main-agenda-list');
-            list.innerHTML = agenda.map(item => `
-                <div class="glass p-5 rounded-2xl flex items-center gap-6 border-r-4 border-blue-500 hover:bg-white/5 transition">
-                    <span class="text-lg font-bold text-blue-400 w-20 border-l border-white/10 ml-2">${item.time}</span>
-                    <span class="font-medium">${item.title}</span>
-                </div>
-            `).join('');
-        }
-
-        function renderGallery() {
-            const container = document.getElementById('main-gallery-list');
-            if (galleryImages.length === 0) {
-                container.innerHTML = `<div class="col-span-2 text-center text-gray-600 py-20 italic text-xs">لا يوجد صور مرفوعة حالياً</div>`;
-                return;
+        // Real-time Sync from Firebase
+        onSnapshot(doc(db, "conference", "data"), (snap) => {
+            if (snap.exists()) {
+                currentCloudData = snap.data();
+                renderMainUI();
+                document.getElementById('cloud-status').innerText = "متصل بالسحاب ✓";
+                document.getElementById('cloud-status').className = "text-[10px] bg-green-500/20 text-green-400 px-3 py-1 rounded-full border border-green-500/20 font-bold";
             }
-            container.innerHTML = galleryImages.map(img => `
-                <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:scale-105 transition shadow-lg">
-                    <img src="${img}" class="w-full h-full object-cover">
-                </div>
-            `).join('');
+        });
+
+        function renderMainUI() {
+            // Render Agenda in Landing
+            const agendaList = document.getElementById('main-agenda-list');
+            if(currentCloudData.agenda && currentCloudData.agenda.length > 0) {
+                agendaList.innerHTML = currentCloudData.agenda.map(item => `
+                    <div class="glass p-5 rounded-2xl flex items-center gap-6 border-r-4 border-blue-500 hover:bg-white/5 transition">
+                        <span class="text-lg font-bold text-blue-400 w-20 border-l border-white/10 ml-2">${item.time}</span>
+                        <span class="font-medium text-gray-200">${item.title}</span>
+                    </div>
+                `).join('');
+            }
+
+            // Render Gallery in Landing
+            const galleryList = document.getElementById('main-gallery-list');
+            if(currentCloudData.gallery && currentCloudData.gallery.length > 0) {
+                galleryList.innerHTML = currentCloudData.gallery.map(url => `
+                    <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:scale-105 transition shadow-lg">
+                        <img src="${url}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400?text=Error'">
+                    </div>
+                `).join('');
+            }
+
+            // Update Admin Inputs if admin is open
+            if(!document.getElementById('admin-dashboard').classList.contains('hidden')) {
+                renderAdminInputs();
+            }
         }
 
-        function renderAdmin() {
-            document.getElementById('admin-agenda-inputs').innerHTML = agenda.map((item, i) => `
+        function renderAdminInputs() {
+            document.getElementById('admin-agenda-inputs').innerHTML = (currentCloudData.agenda || []).map(item => `
                 <div class="flex gap-2">
                     <input type="time" value="${item.time}" class="agenda-time-input bg-white/5 border border-white/10 p-2 rounded-lg text-white w-24 text-xs">
                     <input type="text" value="${item.title}" class="agenda-title-input bg-white/5 border border-white/10 p-2 rounded-lg text-white flex-1 text-sm">
                 </div>
             `).join('');
 
-            document.getElementById('admin-gallery-preview').innerHTML = galleryImages.map((img, i) => `
-                <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10">
-                    <img src="${img}" class="w-full h-full object-cover">
-                    <button onclick="deleteImage(${i})" class="absolute inset-0 bg-red-600/70 opacity-0 group-hover:opacity-100 text-white text-[10px] font-bold">حذف</button>
-                </div>
+            document.getElementById('admin-gallery-inputs').innerHTML = (currentCloudData.gallery || []).map(url => `
+                <input type="text" value="${url}" class="gallery-url-input bg-white/5 border border-white/10 p-2 rounded-lg text-white w-full text-xs" placeholder="رابط الصورة المباشر">
             `).join('');
         }
 
-        // --- Auth ---
-        function handleLogin(e) {
+        // Login Logic
+        document.getElementById('login-form').onsubmit = (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
@@ -228,83 +182,52 @@
             if(email === "admin@civil.com" && pass === "123") {
                 document.getElementById('logout-btn').classList.remove('hidden');
                 showSection('admin-dashboard');
-                return;
-            }
-
-            const user = users.find(u => u.email === email && u.pass === pass);
-            if(user) {
-                document.getElementById('user-display-name').innerText = user.name;
-                document.getElementById('user-display-type').innerText = user.type;
-                document.getElementById('logout-btn').classList.remove('hidden');
-                showSection('user-profile');
+                renderAdminInputs();
             } else {
-                alert("بيانات الدخول خاطئة!");
+                alert("بيانات المسؤول غير صحيحة");
             }
-        }
+        };
 
-        function handleRegistration(e) {
-            e.preventDefault();
-            const newUser = {
-                name: document.getElementById('reg-name').value,
-                org: document.getElementById('reg-org').value,
-                email: document.getElementById('reg-email').value,
-                type: document.getElementById('reg-type').value,
-                pass: document.getElementById('reg-pass').value
-            };
-            users.push(newUser);
-            localStorage.setItem('civil_users', JSON.stringify(users));
-            alert("تم التسجيل بنجاح! يمكنك الآن الدخول.");
-            showSection('login-section');
-        }
-
-        function handleLogout() {
-            document.getElementById('logout-btn').classList.add('hidden');
-            showSection('landing-section');
-        }
-
-        // --- Admin Actions ---
+        // Admin Actions
         window.addNewAgendaRow = () => {
-            const container = document.getElementById('admin-agenda-inputs');
             const div = document.createElement('div');
             div.className = 'flex gap-2';
             div.innerHTML = `<input type="time" class="agenda-time-input bg-white/5 border border-white/10 p-2 rounded-lg text-white w-24 text-xs"><input type="text" placeholder="العنوان" class="agenda-title-input bg-white/5 border border-white/10 p-2 rounded-lg text-white flex-1 text-sm">`;
-            container.appendChild(div);
-        }
+            document.getElementById('admin-agenda-inputs').appendChild(div);
+        };
 
-        window.uploadToGallery = (e) => {
-            Array.from(e.target.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    galleryImages.push(ev.target.result);
-                    renderAdmin();
-                };
-                reader.readAsDataURL(file);
-            });
-        }
+        window.addNewGalleryRow = () => {
+            const input = document.createElement('input');
+            input.className = 'gallery-url-input bg-white/5 border border-white/10 p-2 rounded-lg text-white w-full text-xs mb-2';
+            input.placeholder = "رابط صورة جديد (https://...)";
+            document.getElementById('admin-gallery-inputs').appendChild(input);
+        };
 
-        window.deleteImage = (i) => {
-            galleryImages.splice(i, 1);
-            renderAdmin();
-        }
-
-        window.saveAllData = () => {
+        window.saveAllToCloud = async () => {
             const times = document.querySelectorAll('.agenda-time-input');
             const titles = document.querySelectorAll('.agenda-title-input');
-            agenda = Array.from(times).map((t, i) => ({ time: t.value, title: titles[i].value })).filter(a => a.time);
-            
-            localStorage.setItem('civil_agenda', JSON.stringify(agenda));
-            localStorage.setItem('civil_gallery', JSON.stringify(galleryImages));
-            alert("تم التحديث السحابي بنجاح!");
+            const urls = document.querySelectorAll('.gallery-url-input');
+
+            const newAgenda = Array.from(times).map((t, i) => ({ time: t.value, title: titles[i].value })).filter(a => a.time);
+            const newGallery = Array.from(urls).map(u => u.value).filter(u => u.length > 5);
+
+            try {
+                await setDoc(doc(db, "conference", "data"), { 
+                    agenda: newAgenda.sort((a,b) => a.time.localeCompare(b.time)), 
+                    gallery: newGallery 
+                });
+                alert("تم تحديث البيانات في السحاب لجميع المستخدمين!");
+                showSection('landing-section');
+            } catch (err) {
+                alert("خطأ في الحفظ: " + err.message);
+            }
+        };
+
+        window.handleLogout = () => {
+            document.getElementById('logout-btn').classList.add('hidden');
             showSection('landing-section');
-        }
+        };
 
-        // Clock
-        setInterval(() => {
-            document.getElementById('current-live-time').innerText = new Date().toLocaleTimeString('ar-EG', { hour12: false });
-        }, 1000);
-
-        // Initial Render
-        renderAll();
     </script>
 </body>
 </html>
