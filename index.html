@@ -21,7 +21,7 @@
 
     <nav class="p-4 border-b border-white/10 sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <span class="text-2xl font-bold tracking-tighter cursor-pointer" onclick="location.reload()">CIVIL <span class="text-blue-500">TECH</span></span>
+            <span class="text-2xl font-bold tracking-tighter cursor-pointer" onclick="showSection('landing-section')">CIVIL <span class="text-blue-500">TECH</span></span>
             <div id="nav-actions">
                 <button id="logout-btn" onclick="handleLogout()" class="hidden bg-red-500/20 text-red-400 px-4 py-2 rounded-lg text-sm border border-red-500/30 hover:bg-red-500/40 transition">تسجيل الخروج</button>
             </div>
@@ -29,9 +29,10 @@
     </nav>
 
     <main class="max-w-7xl mx-auto px-4 py-8">
+        
         <section id="landing-section" class="text-center py-20 animate-fade-in">
             <h1 class="text-5xl md:text-7xl font-extrabold mb-6 italic">CIVIL <span class="text-blue-500">TECH</span></h1>
-            <p class="text-gray-400 text-xl mb-12">بوابتكم نحو مستقبل الهندسة المدنية (نسخة Firebase المباشرة).</p>
+            <p class="text-gray-400 text-xl mb-12">بوابتكم نحو مستقبل الهندسة المدنية - النسخة السحابية المباشرة.</p>
             <div class="flex flex-col md:flex-row gap-4 justify-center">
                 <button onclick="showSection('login-section')" class="bg-blue-600 hover:bg-blue-700 px-10 py-4 rounded-xl font-bold transition">تسجيل الدخول</button>
                 <button onclick="showSection('register-section')" class="bg-white/10 hover:bg-white/20 border border-white/20 px-10 py-4 rounded-xl font-bold transition">إنشاء حساب جديد</button>
@@ -50,13 +51,16 @@
         <section id="register-section" class="hidden max-w-lg mx-auto bg-white text-gray-900 rounded-3xl p-8 shadow-2xl animate-fade-in">
             <h3 class="text-2xl font-bold mb-6 text-center">فتح حساب جديد</h3>
             <form id="registration-form" onsubmit="handleRegistration(event)" class="space-y-4">
-                <input type="text" id="reg-name" required placeholder="الاسم الكامل" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
-                <input type="text" id="reg-org" required placeholder="المؤسسة" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
-                <select id="reg-type" required class="w-full p-3 bg-gray-100 rounded-xl outline-none border">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="reg-name" required placeholder="الاسم الكامل" class="w-full p-3 bg-gray-100 rounded-xl border focus:border-blue-500">
+                    <input type="text" id="reg-org" required placeholder="المؤسسة" class="w-full p-3 bg-gray-100 rounded-xl border focus:border-blue-500">
+                </div>
+                <input type="email" id="reg-email" required placeholder="البريد الإلكتروني" class="w-full p-3 bg-gray-100 rounded-xl text-left border focus:border-blue-500">
+                <select id="reg-type" required class="w-full p-3 bg-gray-100 rounded-xl">
                     <option value="زائر">زائر</option>
                     <option value="متحدث">متحدث</option>
+                    <option value="مشارك">مشارك</option>
                 </select>
-                <input type="email" id="reg-email" required placeholder="البريد الإلكتروني" class="w-full p-3 bg-gray-100 rounded-xl text-left border focus:border-blue-500">
                 <input type="password" id="reg-pass" required placeholder="كلمة المرور" class="w-full p-3 bg-gray-100 rounded-xl text-left border focus:border-blue-500">
                 <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold transition">تأكيد التسجيل</button>
             </form>
@@ -64,13 +68,20 @@
 
         <section id="user-profile" class="hidden space-y-8 animate-fade-in">
             <div class="glass p-8 rounded-3xl border-t-4 border-t-blue-500 flex justify-between items-center">
-                <h2 class="text-2xl font-bold">مرحباً، <span id="user-display-name">...</span> 👋</h2>
-                <span id="user-display-type" class="bg-blue-500 text-white px-3 py-1 rounded-full text-xs">...</span>
+                <div>
+                    <h2 class="text-2xl font-bold">مرحباً، <span id="user-display-name">...</span> 👋</h2>
+                    <span id="user-display-type" class="bg-blue-500 text-white px-3 py-1 rounded-full text-xs">...</span>
+                </div>
+                <p id="current-live-time" class="font-mono font-bold text-blue-400">00:00:00</p>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2">
-                    <h3 class="text-xl font-bold mb-4">📝 الأجندة المباشرة</h3>
+                    <h3 class="text-xl font-bold mb-4 italic">الأجندة المباشرة (تحدث تلقائياً)</h3>
                     <div id="participant-agenda-list" class="space-y-4"></div>
+                </div>
+                <div class="space-y-4">
+                    <h3 class="text-xl font-bold">المعرض السحابي</h3>
+                    <div id="participant-gallery" class="grid grid-cols-2 gap-2"></div>
                 </div>
             </div>
         </section>
@@ -79,16 +90,21 @@
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div class="lg:col-span-1 space-y-2">
                     <div class="glass p-6 rounded-2xl border-r-4 border-blue-500 mb-4">
-                        <h2 class="font-bold">لوحة التحكم</h2>
+                        <h2 class="font-bold uppercase">Admin Panel</h2>
                     </div>
-                    <button onclick="switchAdminTab('tab-agenda-manage')" class="w-full text-right p-4 rounded-xl bg-white/10">إدارة الأجندة</button>
-                    <button onclick="switchAdminTab('tab-users')" class="w-full text-right p-4 rounded-xl">المشاركين (<span id="admin-user-count">0</span>)</button>
+                    <button onclick="switchAdminTab('tab-agenda-manage')" class="w-full text-right p-4 rounded-xl bg-white/10">📝 إدارة الأجندة</button>
+                    <button onclick="switchAdminTab('tab-media-manage')" class="w-full text-right p-4 rounded-xl">🖼️ رفع الصور</button>
+                    <button onclick="switchAdminTab('tab-users')" class="w-full text-right p-4 rounded-xl">👥 المشاركين (<span id="admin-user-count">0</span>)</button>
                 </div>
                 <div class="lg:col-span-3">
                     <div id="tab-agenda-manage" class="tab-content active glass p-8 rounded-3xl">
                         <div id="admin-agenda-inputs" class="space-y-3 mb-6"></div>
                         <button onclick="addNewAgendaRow()" class="text-blue-400 mb-6">+ إضافة فقرة</button><br>
-                        <button onclick="saveAgenda()" class="bg-blue-600 px-8 py-3 rounded-xl font-bold">تحديث الأجندة للجميع</button>
+                        <button onclick="saveAgenda()" class="bg-blue-600 px-8 py-3 rounded-xl font-bold">حفظ وتحديث عند الجميع</button>
+                    </div>
+                    <div id="tab-media-manage" class="tab-content glass p-8 rounded-3xl">
+                        <input type="file" id="admin-image-input" multiple onchange="uploadToGallery(event)" class="bg-white/5 p-4 rounded-xl w-full border border-dashed border-white/20">
+                        <div id="admin-gallery-preview" class="grid grid-cols-4 gap-3 mt-6"></div>
                     </div>
                     <div id="tab-users" class="tab-content glass p-8 rounded-3xl">
                         <div id="admin-users-list" class="space-y-3"></div>
@@ -102,49 +118,47 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // إعدادات مشروعك
+        // إعدادات مشروعك كما وردت في الصور
         const firebaseConfig = {
             apiKey: "AIzaSyCZ6e0sp_Z9J01kWe1c-g3r1gL6-wUPUIA",
             authDomain: "civil-tech-5b623.firebaseapp.com",
             projectId: "civil-tech-5b623",
             storageBucket: "civil-tech-5b623.firebasestorage.app",
             messagingSenderId: "148609930472",
-            appId: "1:148609930472:web:3424e5b863f8c5df63655d"
+            appId: "1:148609930472:web:3424e5b863f8c5df63655d",
+            measurementId: "G-P28CHQ859Y"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let agenda = [];
-        let users = [];
+        let currentAgenda = [];
+        let currentGallery = [];
+        let allUsers = [];
 
-        // --- Auth & Navigation ---
+        // --- Live Updates ---
+        onSnapshot(doc(db, "conference", "data"), (snap) => {
+            if (snap.exists()) {
+                const data = snap.data();
+                currentAgenda = data.agenda || [];
+                currentGallery = data.gallery || [];
+                renderAgenda();
+                renderGallery();
+            }
+        });
+
+        onSnapshot(collection(db, "users"), (snap) => {
+            allUsers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('admin-user-count').innerText = allUsers.length;
+            renderAdminUsers();
+        });
+
+        // --- Core Functions ---
         window.showSection = (id) => {
             document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         };
 
-        window.handleLogout = () => {
-            document.getElementById('logout-btn').classList.add('hidden');
-            showSection('landing-section');
-        };
-
-        // --- Registration ---
-        window.handleRegistration = async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('reg-email').value.trim().toLowerCase();
-            const data = {
-                name: document.getElementById('reg-name').value,
-                org: document.getElementById('reg-org').value,
-                type: document.getElementById('reg-type').value,
-                pass: document.getElementById('reg-pass').value
-            };
-            await setDoc(doc(db, "users", email), data);
-            alert("تم التسجيل بنجاح!");
-            showSection('login-section');
-        };
-
-        // --- Login ---
         window.handleLogin = async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim().toLowerCase();
@@ -158,84 +172,123 @@
 
             const userDoc = await getDoc(doc(db, "users", email));
             if (userDoc.exists() && userDoc.data().pass === pass) {
-                const user = userDoc.data();
-                document.getElementById('user-display-name').innerText = user.name;
-                document.getElementById('user-display-type').innerText = user.type;
+                const u = userDoc.data();
+                document.getElementById('user-display-name').innerText = u.name;
+                document.getElementById('user-display-type').innerText = u.type;
                 document.getElementById('logout-btn').classList.remove('hidden');
                 showSection('user-profile');
             } else {
-                alert("بيانات غير صحيحة");
+                alert("خطأ في البيانات");
             }
         };
 
-        // --- Live Data Updates ---
-        onSnapshot(doc(db, "conference", "data"), (snap) => {
-            if (snap.exists()) {
-                agenda = snap.data().agenda || [];
-                renderAgendas();
-            }
-        });
-
-        onSnapshot(collection(db, "users"), (snap) => {
-            users = snap.docs.map(d => ({id: d.id, ...d.data()}));
-            document.getElementById('admin-user-count').innerText = users.length;
-            renderAdminUsers();
-        });
-
-        // --- Rendering ---
-        function renderAgendas() {
-            const list = document.getElementById('participant-agenda-list');
-            const adminList = document.getElementById('admin-agenda-inputs');
-            
-            list.innerHTML = agenda.map(item => `
-                <div class="glass p-5 rounded-2xl flex gap-4">
-                    <span class="font-bold text-blue-400">${item.time}</span>
-                    <p>${item.title}</p>
-                </div>
-            `).join('');
-
-            adminList.innerHTML = agenda.map((item, i) => `
-                <div class="flex gap-2">
-                    <input type="time" value="${item.time}" class="agenda-time-input bg-white/10 p-2 rounded w-32">
-                    <input type="text" value="${item.title}" class="agenda-title-input bg-white/10 p-2 rounded flex-1">
-                </div>
-            `).join('');
-        }
-
-        function renderAdminUsers() {
-            document.getElementById('admin-users-list').innerHTML = users.map(u => `
-                <div class="p-4 bg-white/5 rounded-xl flex justify-between">
-                    <div><b>${u.name}</b> (${u.type}) - ${u.id}</div>
-                    <button onclick="deleteUser('${u.id}')" class="text-red-400">حذف</button>
-                </div>
-            `).join('');
-        }
-
-        // --- Admin Actions ---
-        window.addNewAgendaRow = () => {
-            const div = document.createElement('div');
-            div.className = 'flex gap-2';
-            div.innerHTML = `<input type="time" class="agenda-time-input bg-white/10 p-2 rounded w-32"><input type="text" placeholder="العنوان" class="agenda-title-input bg-white/10 p-2 rounded flex-1">`;
-            document.getElementById('admin-agenda-inputs').appendChild(div);
+        window.handleRegistration = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            const userData = {
+                name: document.getElementById('reg-name').value,
+                org: document.getElementById('reg-org').value,
+                type: document.getElementById('reg-type').value,
+                pass: document.getElementById('reg-pass').value
+            };
+            await setDoc(doc(db, "users", email), userData);
+            alert("تم التسجيل! يمكنك الدخول الآن");
+            showSection('login-section');
         };
 
+        // --- Admin & Sync ---
         window.saveAgenda = async () => {
             const times = document.querySelectorAll('.agenda-time-input');
             const titles = document.querySelectorAll('.agenda-title-input');
-            const newAgenda = Array.from(times).map((t, i) => ({time: t.value, title: titles[i].value}))
-                             .filter(a => a.time && a.title);
+            const newAgenda = Array.from(times).map((t, i) => ({ time: t.value, title: titles[i].value }))
+                               .filter(a => a.time && a.title);
             await setDoc(doc(db, "conference", "data"), { agenda: newAgenda }, { merge: true });
-            alert("تم التحديث بنجاح!");
+            alert("تم التحديث السحابي!");
+        };
+
+        window.uploadToGallery = async (e) => {
+            const files = Array.from(e.target.files);
+            for (const file of files) {
+                const reader = new FileReader();
+                reader.onload = async (ev) => {
+                    currentGallery.push(ev.target.result);
+                    await updateDoc(doc(db, "conference", "data"), { gallery: currentGallery });
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // --- Rendering ---
+        function renderAgenda() {
+            const pList = document.getElementById('participant-agenda-list');
+            const aInputs = document.getElementById('admin-agenda-inputs');
+            
+            pList.innerHTML = currentAgenda.map(a => `
+                <div class="glass p-5 rounded-2xl flex gap-4">
+                    <span class="font-bold text-blue-400">${a.time}</span>
+                    <p>${a.title}</p>
+                </div>
+            `).join('');
+
+            aInputs.innerHTML = currentAgenda.map(a => `
+                <div class="flex gap-2">
+                    <input type="time" value="${a.time}" class="agenda-time-input bg-white/10 p-2 rounded-lg w-32">
+                    <input type="text" value="${a.title}" class="agenda-title-input bg-white/10 p-2 rounded-lg flex-1">
+                </div>
+            `).join('');
+        }
+
+        function renderGallery() {
+            const containers = ['participant-gallery', 'admin-gallery-preview'];
+            containers.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = currentGallery.map((img, i) => `
+                    <div class="aspect-square rounded-xl overflow-hidden border border-white/10 relative group">
+                        <img src="${img}" class="w-full h-full object-cover">
+                        ${id.includes('admin') ? `<button onclick="deleteImage(${i})" class="absolute inset-0 bg-red-600/50 opacity-0 group-hover:opacity-100 flex items-center justify-center">حذف</button>` : ''}
+                    </div>
+                `).join('');
+            });
+        }
+
+        function renderAdminUsers() {
+            document.getElementById('admin-users-list').innerHTML = allUsers.map(u => `
+                <div class="p-4 bg-white/5 rounded-xl flex justify-between">
+                    <span>${u.name} (${u.type})</span>
+                    <button onclick="deleteUser('${u.id}')" class="text-red-400 text-xs italic">حذف</button>
+                </div>
+            `).join('');
+        }
+
+        window.addNewAgendaRow = () => {
+            const div = document.createElement('div');
+            div.className = 'flex gap-2';
+            div.innerHTML = `<input type="time" class="agenda-time-input bg-white/10 p-2 rounded-lg w-32"><input type="text" placeholder="عنوان الفقرة" class="agenda-title-input bg-white/10 p-2 rounded-lg flex-1">`;
+            document.getElementById('admin-agenda-inputs').appendChild(div);
+        };
+
+        window.deleteImage = async (i) => {
+            currentGallery.splice(i, 1);
+            await updateDoc(doc(db, "conference", "data"), { gallery: currentGallery });
         };
 
         window.deleteUser = async (id) => {
-            if(confirm("حذف المستخدم؟")) await deleteDoc(doc(db, "users", id));
+            if (confirm("حذف المستخدم؟")) await deleteDoc(doc(db, "users", id));
         };
 
-        window.switchAdminTab = (tabId) => {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+        window.handleLogout = () => {
+            document.getElementById('logout-btn').classList.add('hidden');
+            showSection('landing-section');
         };
+
+        window.switchAdminTab = (id) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        };
+
+        setInterval(() => {
+            document.getElementById('current-live-time').innerText = new Date().toLocaleTimeString('ar-EG', { hour12: false });
+        }, 1000);
     </script>
 </body>
 </html>
