@@ -3,217 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام CIVIL TECH 2025 - النسخة الكاملة</title>
+    <title>نظام CIVIL TECH 2025 - النسخة السحابية</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Cairo', sans-serif; scroll-behavior: smooth; }
-        .hero-pattern {
-            background-color: #0f172a;
-            background-image: url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
-            background-attachment: fixed;
-        }
+        .hero-pattern { background-color: #0f172a; background-image: url("https://www.transparenttextures.com/patterns/carbon-fibre.png"); background-attachment: fixed; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .active-agenda-item {
-            border-right: 4px solid #3b82f6;
-            background: rgba(59, 130, 246, 0.15);
-            transform: scale(1.02);
-        }
+        .active-agenda-item { border-right: 4px solid #3b82f6; background: rgba(59, 130, 246, 0.15); transform: scale(1.02); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        @keyframes pulse-soft {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        .live-indicator { animation: pulse-soft 2s infinite; }
         .animate-fade-in { animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="hero-pattern text-white min-h-screen">
 
-    <!-- Navigation -->
     <nav class="p-4 border-b border-white/10 sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <span class="text-2xl font-bold tracking-tighter cursor-pointer" onclick="showSection('landing-section')">CIVIL <span class="text-blue-500">TECH</span></span>
+            <span class="text-2xl font-bold tracking-tighter cursor-pointer" onclick="location.reload()">CIVIL <span class="text-blue-500">TECH</span></span>
             <div id="nav-actions">
                 <button id="logout-btn" onclick="handleLogout()" class="hidden bg-red-500/20 text-red-400 px-4 py-2 rounded-lg text-sm border border-red-500/30 hover:bg-red-500/40 transition">تسجيل الخروج</button>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-8">
-        
-        <!-- Section: Landing -->
         <section id="landing-section" class="text-center py-20 animate-fade-in">
-            <div class="mb-6 inline-block bg-blue-500/10 text-blue-400 px-4 py-1 rounded-full text-sm border border-blue-500/20">المؤتمر الهندسي التقني 2025</div>
-            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 italic tracking-tight">CIVIL <span class="text-blue-500">TECH</span></h1>
-            <p class="text-gray-400 text-xl mb-12 max-w-2xl mx-auto font-light leading-relaxed">بوابتكم نحو مستقبل الهندسة المدنية. سجلوا الآن وانضموا إلى أكبر تجمع للمهندسين والخبراء.</p>
-            
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 italic">CIVIL <span class="text-blue-500">TECH</span></h1>
+            <p class="text-gray-400 text-xl mb-12">بوابتكم نحو مستقبل الهندسة المدنية (نسخة Firebase المباشرة).</p>
             <div class="flex flex-col md:flex-row gap-4 justify-center">
-                <button onclick="showSection('login-section')" class="bg-blue-600 hover:bg-blue-700 px-10 py-4 rounded-xl font-bold text-lg transition shadow-lg shadow-blue-500/20">تسجيل الدخول</button>
-                <button onclick="showSection('register-section')" class="bg-white/10 hover:bg-white/20 border border-white/20 px-10 py-4 rounded-xl font-bold text-lg transition">إنشاء حساب جديد</button>
+                <button onclick="showSection('login-section')" class="bg-blue-600 hover:bg-blue-700 px-10 py-4 rounded-xl font-bold transition">تسجيل الدخول</button>
+                <button onclick="showSection('register-section')" class="bg-white/10 hover:bg-white/20 border border-white/20 px-10 py-4 rounded-xl font-bold transition">إنشاء حساب جديد</button>
             </div>
         </section>
 
-        <!-- Section: Login -->
-        <section id="login-section" class="hidden max-w-md mx-auto bg-white text-gray-900 rounded-3xl p-8 shadow-2xl mt-10 animate-fade-in">
-            <h3 class="text-2xl font-bold mb-2 text-center">بوابة الدخول</h3>
-            <p id="login-success-msg" class="hidden text-green-600 text-sm text-center mb-4 font-bold">تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول.</p>
+        <section id="login-section" class="hidden max-w-md mx-auto bg-white text-gray-900 rounded-3xl p-8 shadow-2xl animate-fade-in">
+            <h3 class="text-2xl font-bold mb-4 text-center">بوابة الدخول</h3>
             <form onsubmit="handleLogin(event)" class="space-y-4">
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-gray-400 mr-2">البريد الإلكتروني</label>
-                    <input type="email" id="login-email" required placeholder="example@mail.com" class="w-full p-3 bg-gray-100 rounded-xl outline-none text-left border border-transparent focus:border-blue-500 transition">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-gray-400 mr-2">كلمة المرور</label>
-                    <input type="password" id="login-pass" required placeholder="••••••••" class="w-full p-3 bg-gray-100 rounded-xl outline-none text-left border border-transparent focus:border-blue-500 transition">
-                </div>
+                <input type="email" id="login-email" required placeholder="البريد الإلكتروني" class="w-full p-3 bg-gray-100 rounded-xl outline-none text-left border focus:border-blue-500">
+                <input type="password" id="login-pass" required placeholder="كلمة المرور" class="w-full p-3 bg-gray-100 rounded-xl outline-none text-left border focus:border-blue-500">
                 <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition">دخول</button>
             </form>
-            <p class="text-center mt-6 text-[10px] text-gray-400 italic">حساب الإدارة التجريبي: admin@civil.com | 123</p>
         </section>
 
-        <!-- Section: Registration -->
-        <section id="register-section" class="hidden max-w-lg mx-auto bg-white text-gray-900 rounded-3xl p-8 shadow-2xl mt-10 animate-fade-in">
-            <h3 class="text-2xl font-bold mb-6 text-center text-blue-900">فتح حساب جديد</h3>
-            <div id="reg-error" class="hidden bg-red-100 text-red-700 p-3 rounded-lg text-sm mb-4 text-center"></div>
-            <div id="reg-success" class="hidden bg-green-100 text-green-700 p-4 rounded-lg text-sm mb-4 text-center font-bold">تم التسجيل بنجاح! جاري تحويلك لبوابة الدخول...</div>
-            
+        <section id="register-section" class="hidden max-w-lg mx-auto bg-white text-gray-900 rounded-3xl p-8 shadow-2xl animate-fade-in">
+            <h3 class="text-2xl font-bold mb-6 text-center">فتح حساب جديد</h3>
             <form id="registration-form" onsubmit="handleRegistration(event)" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="reg-name" required placeholder="الاسم الكامل" class="w-full p-3 bg-gray-100 rounded-xl outline-none border border-transparent focus:border-blue-500 transition">
-                    <input type="text" id="reg-org" required placeholder="المؤسسة / جهة العمل" class="w-full p-3 bg-gray-100 rounded-xl outline-none border border-transparent focus:border-blue-500 transition">
-                </div>
-                
-                <input type="email" id="reg-email" required placeholder="البريد الإلكتروني" class="w-full p-3 bg-gray-100 rounded-xl text-left outline-none border border-transparent focus:border-blue-500 transition">
-                
-                <div class="space-y-2">
-                    <label class="text-sm font-bold text-gray-600 block mr-1">نوع المشاركة:</label>
-                    <select id="reg-type" required class="w-full p-3 bg-gray-100 rounded-xl outline-none appearance-none border border-transparent focus:border-blue-500 transition">
-                        <option value="زائر">زائر</option>
-                        <option value="متحدث">متحدث</option>
-                        <option value="مشارك في المسابقات">مشارك في المسابقات</option>
-                    </select>
-                </div>
-
-                <input type="password" id="reg-pass" required placeholder="كلمة المرور" class="w-full p-3 bg-gray-100 rounded-xl text-left outline-none border border-transparent focus:border-blue-500 transition">
-                
-                <button id="reg-submit-btn" type="submit" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-500/10">تأكيد التسجيل</button>
+                <input type="text" id="reg-name" required placeholder="الاسم الكامل" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
+                <input type="text" id="reg-org" required placeholder="المؤسسة" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
+                <select id="reg-type" required class="w-full p-3 bg-gray-100 rounded-xl outline-none border">
+                    <option value="زائر">زائر</option>
+                    <option value="متحدث">متحدث</option>
+                </select>
+                <input type="email" id="reg-email" required placeholder="البريد الإلكتروني" class="w-full p-3 bg-gray-100 rounded-xl text-left border focus:border-blue-500">
+                <input type="password" id="reg-pass" required placeholder="كلمة المرور" class="w-full p-3 bg-gray-100 rounded-xl text-left border focus:border-blue-500">
+                <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold transition">تأكيد التسجيل</button>
             </form>
-            <button onclick="showSection('landing-section')" class="w-full mt-4 text-gray-400 text-sm hover:text-gray-600 transition">رجوع للرئيسية</button>
         </section>
 
-        <!-- Section: Participant Interface -->
         <section id="user-profile" class="hidden space-y-8 animate-fade-in">
-            <div class="glass p-8 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4 border-t-4 border-t-blue-500">
-                <div>
-                    <h2 class="text-3xl font-bold">مرحباً، <span id="user-display-name">المشارك</span> 👋</h2>
-                    <div class="flex flex-wrap gap-2 mt-2">
-                        <span id="user-display-type" class="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-xs font-bold border border-blue-500/30">نوع المشاركة</span>
-                        <span id="user-display-org" class="bg-white/5 text-gray-400 px-3 py-1 rounded-full text-xs border border-white/10 italic">المؤسسة</span>
-                    </div>
-                </div>
-                <div class="text-center md:text-left bg-white/5 p-4 rounded-2xl border border-white/10">
-                    <p class="text-xs text-gray-400 uppercase">التوقيت المحلي الآن</p>
-                    <p id="current-live-time" class="text-xl font-mono font-bold text-blue-400">00:00:00</p>
-                </div>
+            <div class="glass p-8 rounded-3xl border-t-4 border-t-blue-500 flex justify-between items-center">
+                <h2 class="text-2xl font-bold">مرحباً، <span id="user-display-name">...</span> 👋</h2>
+                <span id="user-display-type" class="bg-blue-500 text-white px-3 py-1 rounded-full text-xs">...</span>
             </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 space-y-4">
-                    <div class="flex items-center justify-between mb-2">
-                        <h3 class="text-xl font-bold">📝 الأجندة التفاعلية</h3>
-                        <span class="text-xs bg-red-500/20 text-red-400 px-3 py-1 rounded-full live-indicator font-bold italic">يتم التحديث لحظياً</span>
-                    </div>
+                <div class="lg:col-span-2">
+                    <h3 class="text-xl font-bold mb-4">📝 الأجندة المباشرة</h3>
                     <div id="participant-agenda-list" class="space-y-4"></div>
                 </div>
-
-                <div class="space-y-4">
-                    <h3 class="text-xl font-bold">🖼️ ركن الصور المباشرة</h3>
-                    <div id="participant-gallery" class="grid grid-cols-2 gap-3">
-                        <div class="col-span-2 aspect-video bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-gray-600 text-xs italic text-center p-2">لا يوجد صور مرفوعة حالياً</div>
-                    </div>
-                </div>
             </div>
         </section>
 
-        <!-- Section: Admin Management Panel -->
-        <section id="admin-dashboard" class="hidden w-full animate-fade-in">
+        <section id="admin-dashboard" class="hidden animate-fade-in">
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div class="lg:col-span-1 space-y-2">
-                    <div class="glass p-6 rounded-2xl mb-4 border-r-4 border-blue-500">
-                        <p class="text-xs text-blue-400 font-bold mb-1">لوحة الإدارة المركزية</p>
-                        <h2 class="font-bold">CIVIL TECH CONTROL</h2>
+                    <div class="glass p-6 rounded-2xl border-r-4 border-blue-500 mb-4">
+                        <h2 class="font-bold">لوحة التحكم</h2>
                     </div>
-                    <button onclick="switchAdminTab('tab-agenda-manage')" class="admin-tab-btn w-full text-right p-4 rounded-xl hover:bg-white/5 transition flex items-center gap-3 bg-white/10">📝 إدارة الأجندة</button>
-                    <button onclick="switchAdminTab('tab-media-manage')" class="admin-tab-btn w-full text-right p-4 rounded-xl hover:bg-white/5 transition flex items-center gap-3">🖼️ ركن الصور</button>
-                    <button onclick="switchAdminTab('tab-users')" class="admin-tab-btn w-full text-right p-4 rounded-xl hover:bg-white/5 transition flex items-center gap-3">👥 المشاركين <span id="admin-user-count" class="bg-blue-500 text-white px-2 rounded-full text-[10px] ml-auto">0</span></button>
+                    <button onclick="switchAdminTab('tab-agenda-manage')" class="w-full text-right p-4 rounded-xl bg-white/10">إدارة الأجندة</button>
+                    <button onclick="switchAdminTab('tab-users')" class="w-full text-right p-4 rounded-xl">المشاركين (<span id="admin-user-count">0</span>)</button>
                 </div>
-
                 <div class="lg:col-span-3">
-                    <div id="tab-agenda-manage" class="tab-content active glass p-8 rounded-3xl text-right">
-                        <h3 class="text-xl font-bold mb-6 text-blue-400">تعديل الأجندة</h3>
+                    <div id="tab-agenda-manage" class="tab-content active glass p-8 rounded-3xl">
                         <div id="admin-agenda-inputs" class="space-y-3 mb-6"></div>
-                        <button onclick="addNewAgendaRow()" class="text-blue-400 text-sm mb-6 hover:underline">+ إضافة فقرة جديدة</button>
-                        <br>
-                        <button onclick="saveAgenda()" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl font-bold transition shadow-lg shadow-blue-500/20">نشر وتحديث الأجندة للجميع</button>
+                        <button onclick="addNewAgendaRow()" class="text-blue-400 mb-6">+ إضافة فقرة</button><br>
+                        <button onclick="saveAgenda()" class="bg-blue-600 px-8 py-3 rounded-xl font-bold">تحديث الأجندة للجميع</button>
                     </div>
-
-                    <div id="tab-media-manage" class="tab-content glass p-8 rounded-3xl text-right">
-                        <h3 class="text-xl font-bold mb-6 text-blue-400">إدارة الصور والمعرض</h3>
-                        <input type="file" id="admin-image-input" multiple onchange="uploadToGallery(event)" class="hidden">
-                        <button onclick="document.getElementById('admin-image-input').click()" class="bg-blue-500/20 text-blue-400 px-6 py-4 rounded-xl border border-blue-500/30 mb-6 w-full italic hover:bg-blue-500/30 transition">إرفاق صور من الفعالية</button>
-                        <div id="admin-gallery-preview" class="grid grid-cols-3 md:grid-cols-5 gap-3"></div>
-                    </div>
-
                     <div id="tab-users" class="tab-content glass p-8 rounded-3xl">
-                        <h3 class="text-xl font-bold mb-6 text-blue-400">قائمة المسجلين والتحكم</h3>
                         <div id="admin-users-list" class="space-y-3"></div>
                     </div>
                 </div>
             </div>
         </section>
-
     </main>
 
-    <script>
-        // --- State Management ---
-        let agenda = JSON.parse(localStorage.getItem('civil_agenda')) || [
-            { time: "09:00", title: "استقبال المشاركين والتسجيل" },
-            { time: "10:00", title: "الجلسة الافتتاحية: مستقبل الهندسة المدنية" },
-            { time: "11:30", title: "استراحة قهوة وشبكات تواصل" },
-            { time: "12:00", title: "ورشة عمل: تقنيات البناء المستدام" },
-            { time: "14:00", title: "الغداء والختام" }
-        ];
-        let galleryImages = JSON.parse(localStorage.getItem('civil_gallery')) || [];
-        let users = JSON.parse(localStorage.getItem('civil_users')) || [
-            { name: "أحمد محمد", email: "ahmad@mail.com", org: "جامعة القاهرة", type: "متحدث", pass: "123" }
-        ];
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        function showSection(sectionId) {
+        // إعدادات مشروعك
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZ6e0sp_Z9J01kWe1c-g3r1gL6-wUPUIA",
+            authDomain: "civil-tech-5b623.firebaseapp.com",
+            projectId: "civil-tech-5b623",
+            storageBucket: "civil-tech-5b623.firebasestorage.app",
+            messagingSenderId: "148609930472",
+            appId: "1:148609930472:web:3424e5b863f8c5df63655d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let agenda = [];
+        let users = [];
+
+        // --- Auth & Navigation ---
+        window.showSection = (id) => {
             document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(sectionId).classList.remove('hidden');
-            
-            if (sectionId !== 'login-section') document.getElementById('login-success-msg').classList.add('hidden');
-            if (sectionId === 'user-profile') renderParticipantDashboard();
-            if (sectionId === 'admin-dashboard') renderAdminDashboard();
-            
-            document.getElementById('reg-error').classList.add('hidden');
-            document.getElementById('reg-success').classList.add('hidden');
-            document.getElementById('registration-form').classList.remove('hidden');
-        }
+            document.getElementById(id).classList.remove('hidden');
+        };
 
-        function switchAdminTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('bg-white/10'));
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('bg-white/10');
-        }
+        window.handleLogout = () => {
+            document.getElementById('logout-btn').classList.add('hidden');
+            showSection('landing-section');
+        };
 
-        // --- Auth Logic ---
-        function handleLogin(e) {
+        // --- Registration ---
+        window.handleRegistration = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            const data = {
+                name: document.getElementById('reg-name').value,
+                org: document.getElementById('reg-org').value,
+                type: document.getElementById('reg-type').value,
+                pass: document.getElementById('reg-pass').value
+            };
+            await setDoc(doc(db, "users", email), data);
+            alert("تم التسجيل بنجاح!");
+            showSection('login-section');
+        };
+
+        // --- Login ---
+        window.handleLogin = async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim().toLowerCase();
             const pass = document.getElementById('login-pass').value;
@@ -224,171 +156,86 @@
                 return;
             }
 
-            const user = users.find(u => u.email === email && u.pass === pass);
-            if (user) {
+            const userDoc = await getDoc(doc(db, "users", email));
+            if (userDoc.exists() && userDoc.data().pass === pass) {
+                const user = userDoc.data();
                 document.getElementById('user-display-name').innerText = user.name;
                 document.getElementById('user-display-type').innerText = user.type;
-                document.getElementById('user-display-org').innerText = user.org;
                 document.getElementById('logout-btn').classList.remove('hidden');
                 showSection('user-profile');
             } else {
-                alert("بيانات الدخول غير صحيحة.");
+                alert("بيانات غير صحيحة");
             }
-        }
+        };
 
-        function handleRegistration(e) {
-            e.preventDefault();
-            const name = document.getElementById('reg-name').value.trim();
-            const org = document.getElementById('reg-org').value.trim();
-            const type = document.getElementById('reg-type').value;
-            const email = document.getElementById('reg-email').value.trim().toLowerCase();
-            const pass = document.getElementById('reg-pass').value;
-            const errorEl = document.getElementById('reg-error');
-            const successEl = document.getElementById('reg-success');
-            const formEl = document.getElementById('registration-form');
-
-            if (users.some(u => u.email === email)) {
-                errorEl.innerText = "البريد مسجل مسبقاً!";
-                errorEl.classList.remove('hidden');
-                return;
+        // --- Live Data Updates ---
+        onSnapshot(doc(db, "conference", "data"), (snap) => {
+            if (snap.exists()) {
+                agenda = snap.data().agenda || [];
+                renderAgendas();
             }
+        });
 
-            users.push({ name, email, org, type, pass });
-            localStorage.setItem('civil_users', JSON.stringify(users));
-            
-            formEl.classList.add('hidden');
-            successEl.classList.remove('hidden');
-
-            setTimeout(() => {
-                showSection('login-section');
-                document.getElementById('login-success-msg').classList.remove('hidden');
-                document.getElementById('login-email').value = email;
-                formEl.reset();
-            }, 2000);
-        }
-
-        function handleLogout() {
-            document.getElementById('logout-btn').classList.add('hidden');
-            showSection('landing-section');
-        }
+        onSnapshot(collection(db, "users"), (snap) => {
+            users = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            document.getElementById('admin-user-count').innerText = users.length;
+            renderAdminUsers();
+        });
 
         // --- Rendering ---
-        function renderParticipantDashboard() {
-            renderParticipantAgenda();
-            renderParticipantGallery();
-        }
-
-        function renderParticipantAgenda() {
+        function renderAgendas() {
             const list = document.getElementById('participant-agenda-list');
-            const now = new Date();
-            const currentTimeVal = now.getHours() * 60 + now.getMinutes();
-            let activeIndex = -1;
+            const adminList = document.getElementById('admin-agenda-inputs');
             
-            agenda.forEach((item, i) => {
-                const [h, m] = item.time.split(':').map(Number);
-                if (currentTimeVal >= (h * 60 + m)) activeIndex = i;
-            });
-
-            list.innerHTML = agenda.map((item, index) => {
-                const isActive = index === activeIndex;
-                const isPast = index < activeIndex;
-                return `
-                    <div class="glass p-5 rounded-2xl flex items-center gap-4 ${isActive ? 'active-agenda-item' : ''} ${isPast ? 'opacity-30' : ''}">
-                        <div class="min-w-[70px] border-l border-white/10 ml-2">
-                            <span class="block text-lg font-bold">${item.time}</span>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold">${item.title}</h4>
-                            ${isActive ? '<span class="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded-full font-bold">تجري الآن</span>' : ''}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderParticipantGallery() {
-            const container = document.getElementById('participant-gallery');
-            if (galleryImages.length === 0) return;
-            container.innerHTML = galleryImages.map(img => `
-                <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500 transition shadow-xl">
-                    <img src="${img}" class="w-full h-full object-cover">
+            list.innerHTML = agenda.map(item => `
+                <div class="glass p-5 rounded-2xl flex gap-4">
+                    <span class="font-bold text-blue-400">${item.time}</span>
+                    <p>${item.title}</p>
                 </div>
             `).join('');
-        }
 
-        function renderAdminDashboard() {
-            document.getElementById('admin-user-count').innerText = users.length;
-            document.getElementById('admin-agenda-inputs').innerHTML = agenda.map(item => `
+            adminList.innerHTML = agenda.map((item, i) => `
                 <div class="flex gap-2">
-                    <input type="time" value="${item.time}" class="agenda-time-input bg-white/5 border border-white/10 p-2 rounded-lg text-white outline-none w-32">
-                    <input type="text" value="${item.title}" class="agenda-title-input bg-white/5 border border-white/10 p-2 rounded-lg text-white outline-none flex-1">
+                    <input type="time" value="${item.time}" class="agenda-time-input bg-white/10 p-2 rounded w-32">
+                    <input type="text" value="${item.title}" class="agenda-title-input bg-white/10 p-2 rounded flex-1">
                 </div>
             `).join('');
+        }
 
+        function renderAdminUsers() {
             document.getElementById('admin-users-list').innerHTML = users.map(u => `
-                <div class="p-4 bg-white/5 rounded-xl border border-white/10 flex justify-between items-center group">
-                    <div class="text-right">
-                        <p class="font-bold text-sm">${u.name} <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 rounded-full mr-2">${u.type}</span></p>
-                        <p class="text-[11px] text-gray-500">${u.org} | ${u.email}</p>
-                    </div>
-                    <button onclick="deleteUser('${u.email}')" class="text-red-500 opacity-0 group-hover:opacity-100 transition text-xs border border-red-500/20 px-2 py-1 rounded">حذف</button>
+                <div class="p-4 bg-white/5 rounded-xl flex justify-between">
+                    <div><b>${u.name}</b> (${u.type}) - ${u.id}</div>
+                    <button onclick="deleteUser('${u.id}')" class="text-red-400">حذف</button>
                 </div>
             `).join('');
-            renderAdminGalleryPreview();
         }
 
-        function deleteUser(email) {
-            users = users.filter(u => u.email !== email);
-            localStorage.setItem('civil_users', JSON.stringify(users));
-            renderAdminDashboard();
-        }
-
-        function addNewAgendaRow() {
-            const container = document.getElementById('admin-agenda-inputs');
+        // --- Admin Actions ---
+        window.addNewAgendaRow = () => {
             const div = document.createElement('div');
             div.className = 'flex gap-2';
-            div.innerHTML = `<input type="time" class="agenda-time-input bg-white/5 border border-white/10 p-2 rounded-lg text-white w-32"><input type="text" placeholder="عنوان الفقرة" class="agenda-title-input bg-white/5 border border-white/10 p-2 rounded-lg text-white flex-1">`;
-            container.appendChild(div);
-        }
+            div.innerHTML = `<input type="time" class="agenda-time-input bg-white/10 p-2 rounded w-32"><input type="text" placeholder="العنوان" class="agenda-title-input bg-white/10 p-2 rounded flex-1">`;
+            document.getElementById('admin-agenda-inputs').appendChild(div);
+        };
 
-        function saveAgenda() {
+        window.saveAgenda = async () => {
             const times = document.querySelectorAll('.agenda-time-input');
             const titles = document.querySelectorAll('.agenda-title-input');
-            agenda = Array.from(times).map((t, i) => ({ time: t.value, title: titles[i].value })).filter(a => a.time && a.title).sort((a,b) => a.time.localeCompare(b.time));
-            localStorage.setItem('civil_agenda', JSON.stringify(agenda));
+            const newAgenda = Array.from(times).map((t, i) => ({time: t.value, title: titles[i].value}))
+                             .filter(a => a.time && a.title);
+            await setDoc(doc(db, "conference", "data"), { agenda: newAgenda }, { merge: true });
             alert("تم التحديث بنجاح!");
-        }
+        };
 
-        function uploadToGallery(e) {
-            Array.from(e.target.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    galleryImages.push(ev.target.result);
-                    localStorage.setItem('civil_gallery', JSON.stringify(galleryImages));
-                    renderAdminGalleryPreview();
-                };
-                reader.readAsDataURL(file);
-            });
-        }
+        window.deleteUser = async (id) => {
+            if(confirm("حذف المستخدم؟")) await deleteDoc(doc(db, "users", id));
+        };
 
-        function renderAdminGalleryPreview() {
-            document.getElementById('admin-gallery-preview').innerHTML = galleryImages.map((img, i) => `
-                <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10">
-                    <img src="${img}" class="w-full h-full object-cover">
-                    <button onclick="deleteImage(${i})" class="absolute inset-0 bg-red-600/70 flex items-center justify-center opacity-0 group-hover:opacity-100 text-white text-xs">حذف</button>
-                </div>
-            `).join('');
-        }
-
-        function deleteImage(idx) {
-            galleryImages.splice(idx, 1);
-            localStorage.setItem('civil_gallery', JSON.stringify(galleryImages));
-            renderAdminGalleryPreview();
-        }
-
-        setInterval(() => {
-            document.getElementById('current-live-time').innerText = new Date().toLocaleTimeString('ar-EG', { hour12: false });
-        }, 1000);
+        window.switchAdminTab = (tabId) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        };
     </script>
 </body>
 </html>
