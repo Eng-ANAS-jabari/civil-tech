@@ -3,363 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام CIVIL TECH 2025 - النسخة النهائية</title>
+    <title>نظام CIVIL TECH 2025 - النسخة الاحترافية</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         :root { 
             --primary: #3b82f6; 
             --secondary: #1e293b; 
             --accent: #f59e0b;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
+            --transition-default: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         body { 
             font-family: 'Cairo', sans-serif; 
-            background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+            background-color: #020617; 
             color: #f8fafc;
             min-height: 100vh;
         }
         
-        /* تحسين التمرير */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #475569;
-            border-radius: 10px;
-            border: 2px solid #1e293b;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
-
-        /* النقوش الخلفية */
         .hero-pattern { 
-            background-image: radial-gradient(circle at 2px 2px, rgba(59, 130, 246, 0.1) 1px, transparent 0);
+            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
             background-size: 40px 40px;
         }
         
-        /* تأثير الزجاج */
         .glass { 
-            background: rgba(30, 41, 59, 0.8);
+            background: rgba(30, 41, 59, 0.7); 
             backdrop-filter: blur(12px); 
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
         }
         
         .glass-card { 
             background: rgba(255, 255, 255, 0.03); 
             border: 1px solid rgba(255, 255, 255, 0.05); 
-            transition: all 0.3s ease;
+            transition: var(--transition-default);
         }
         
         .glass-card:hover { 
             background: rgba(255, 255, 255, 0.07); 
             transform: translateY(-5px); 
             border-color: var(--primary); 
-            box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.3);
         }
         
-        /* الحركات */
         .animate-fade-in { 
             animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
         }
         
         @keyframes fadeIn { 
-            from { 
-                opacity: 0; 
-                transform: translateY(20px); 
-            } 
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            } 
-        }
-
-        .animate-pulse-slow {
-            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* شريط التقدم */
-        .progress-bar {
-            transition: width 0.3s ease;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #3b82f6);
-            background-size: 200% 100%;
-            animation: gradient 2s linear infinite;
-        }
-
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
         }
         
-        /* مؤشر النشاط */
         .live-indicator { 
             width: 8px; 
             height: 8px; 
-            background: #10b981; 
+            background: #ef4444; 
             border-radius: 50%; 
-            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); 
-            animation: pulse-green 2s infinite; 
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); 
+            animation: pulse-red 2s infinite; 
         }
         
-        @keyframes pulse-green { 
-            0% { 
-                transform: scale(0.95); 
-                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); 
-            } 
-            70% { 
-                transform: scale(1); 
-                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); 
-            } 
-            100% { 
-                transform: scale(0.95); 
-                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); 
-            } 
+        @keyframes pulse-red { 
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 
         }
 
-        /* رسائل التنبيه */
-        .toast-msg {
-            background: #10b981;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 1rem;
-            font-weight: bold;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            transform: translateY(100%);
-            opacity: 0;
-            transition: all 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { 
+            background: #334155; 
+            border-radius: 10px;
+            border: 2px solid #0f172a;
         }
-
-        .toast-msg.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .toast-msg.error {
-            background: #ef4444;
-        }
-
-        /* رسائل الخطأ */
-        .error-message {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fecaca;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            font-size: 0.875rem;
-            margin: 0.5rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            backdrop-filter: blur(4px);
-        }
-
-        /* تنسيق الصور */
-        .gallery-image {
-            transition: all 0.3s ease;
-            aspect-ratio: 1/1;
-            object-fit: cover;
-            border-radius: 0.75rem;
-        }
-
-        .gallery-image:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
-        }
-
-        /* تنسيق المدخلات */
-        input, textarea, select {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        input:hover, textarea:hover, select:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        /* تنسيق الأزرار */
-        button {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* تنسيق الشعار */
-        .logo-container {
-            transition: all 0.3s ease;
-        }
-
-        .logo-container:hover {
-            transform: rotate(6deg) scale(1.05);
-        }
-
-        /* تنسيق العد التنازلي */
-        .countdown-item {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            backdrop-filter: blur(8px);
-            min-width: 80px;
-            padding: 1rem;
-            border-radius: 1rem;
-            text-align: center;
-        }
-
-        .countdown-number {
-            font-size: 2rem;
-            font-weight: 900;
-            color: #3b82f6;
-            line-height: 1;
-        }
-
-        .countdown-label {
-            font-size: 0.75rem;
-            color: #94a3b8;
-            margin-top: 0.25rem;
-        }
-
-        /* تنسيق بطاقات الأجندة */
-        .agenda-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 1rem;
-            border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .agenda-item:hover {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: var(--primary);
-        }
-
-        .agenda-time {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-            font-family: monospace;
-            font-weight: bold;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-        }
-
-        /* تنسيق لوحة التحكم */
-        .admin-card {
-            background: rgba(30, 41, 59, 0.5);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .admin-card:hover {
-            border-color: rgba(59, 130, 246, 0.3);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
-        }
-
-        /* تنسيق شريط التحميل */
-        .upload-area {
-            border: 2px dashed rgba(59, 130, 246, 0.3);
-            background: rgba(59, 130, 246, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: rgba(59, 130, 246, 0.1);
-        }
-
-        /* تنسيقات إضافية */
-        .text-gradient {
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .border-gradient {
-            border: double 1px transparent;
-            background-image: linear-gradient(#1e293b, #1e293b), 
-                            linear-gradient(135deg, #3b82f6, #8b5cf6);
-            background-origin: border-box;
-            background-clip: padding-box, border-box;
-        }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        .will-change-transform { will-change: transform; }
+        .will-change-opacity { will-change: opacity; }
     </style>
 </head>
-<body class="hero-pattern">
+<body class="hero-pattern min-h-screen flex flex-col">
 
-    <!-- حاوية التنبيهات -->
-    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-full max-w-sm px-4"></div>
-    
-    <!-- حاوية الأخطاء -->
-    <div id="error-container" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4"></div>
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- شريط التنقل -->
     <nav class="sticky top-0 z-40 glass border-b border-white/5">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div onclick="showSection('landing-section')" class="flex items-center gap-3 cursor-pointer group">
-                <div class="logo-container h-12 w-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center overflow-hidden shadow-lg">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="showSection('landing-section')">
+                <div class="relative h-12 w-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center overflow-hidden shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <span id="logo-placeholder" class="font-black text-xl text-white">CT</span>
                     <img id="site-logo-img" class="hidden w-full h-full object-cover" src="" alt="Logo">
                 </div>
                 <div class="hidden sm:block">
-                    <span class="text-xl font-black">CIVIL <span class="text-blue-500">TECH</span></span>
-                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest block">Conference 2025</span>
+                    <span class="text-xl font-black tracking-tight leading-none">CIVIL <span class="text-blue-500">TECH</span></span>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Conference 2025</span>
                 </div>
             </div>
             
             <div class="flex items-center gap-2">
                 <div id="status-badge" class="hidden items-center gap-2 bg-green-500/10 text-green-400 px-3 py-1.5 rounded-full text-xs font-bold border border-green-500/20">
-                    <span class="live-indicator"></span>
-                    <span class="hidden sm:inline">متصل</span>
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <span class="hidden sm:inline">نشط</span>
                 </div>
                 
-                <button id="logout-btn" onclick="handleLogout()" class="hidden p-2.5 rounded-xl bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-all">
+                <button id="logout-btn" onclick="handleLogout()" class="hidden p-2.5 rounded-xl bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-colors" aria-label="تسجيل الخروج">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                     </svg>
@@ -368,29 +114,36 @@
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-4 py-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 md:py-8">
         
-        <!-- الصفحة الرئيسية -->
-        <section id="landing-section" class="animate-fade-in space-y-12">
-            <!-- الهيدر -->
+        <section id="landing-section" class="animate-fade-in space-y-12 md:space-y-16">
             <div class="text-center py-8 md:py-16 relative">
-                <div class="absolute inset-0 -z-10 bg-gradient-to-b from-blue-600/20 via-transparent to-transparent blur-3xl"></div>
+                <div class="absolute inset-0 -z-10 bg-gradient-to-b from-blue-600/10 via-transparent to-transparent"></div>
                 
                 <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-4 tracking-tight leading-tight">
-                    مستقبل <span class="text-gradient block sm:inline">الهندسة</span>
+                    مستقبل <span class="text-blue-500 block sm:inline">الهندسة</span>
                     <br>يبدأ من هنا
                 </h1>
                 
-                <p class="text-gray-400 max-w-2xl mx-auto mb-8 text-base md:text-lg px-4">
-                    انضم إلى أكبر تجمع تقني للمهندسين في عام 2025. ورش عمل، مسابقات، ومحاضرات يقدمها نخبة من الخبراء العالميين.
-                </p>
-                
-                <!-- العد التنازلي -->
-                <div id="countdown-container" class="flex flex-wrap justify-center gap-3 mb-8 px-4">
-                    <!-- يتم التعبئة عبر JavaScript -->
+                <!-- حقل النص الوصفي القابل للتعديل من المسؤول -->
+                <div id="landing-description-container">
+                    <p id="landing-description-text" class="text-gray-400 max-w-2xl mx-auto mb-8 md:mb-12 text-base md:text-lg px-4"></p>
                 </div>
+                
+                <!-- إحصائيات سريعة -->
+                <div class="flex flex-wrap justify-center gap-6 mb-8">
+                    <div class="glass-card px-6 py-3 rounded-xl">
+                        <span id="stats-users" class="text-2xl font-black text-blue-500">0</span>
+                        <span class="text-gray-400 text-sm mr-2">مسجل</span>
+                    </div>
+                    <div class="glass-card px-6 py-3 rounded-xl">
+                        <span id="stats-agenda" class="text-2xl font-black text-blue-500">0</span>
+                        <span class="text-gray-400 text-sm mr-2">فعالية</span>
+                    </div>
+                </div>
+                
+                <div id="countdown-container" class="flex flex-wrap justify-center gap-3 md:gap-4 mb-8 md:mb-12 px-4"></div>
 
-                <!-- أزرار الإجراء -->
                 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center px-4">
                     <button onclick="showSection('login-section')" class="w-full sm:w-auto min-w-[200px] bg-blue-600 hover:bg-blue-500 px-8 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900">
                         دخول المشتركين
@@ -401,58 +154,47 @@
                 </div>
             </div>
 
-            <!-- المحتوى -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-12 border-t border-white/5">
-                <!-- الأجندة -->
-                <div class="lg:col-span-7 space-y-4">
-                    <h3 class="text-2xl font-black flex items-center gap-2">
-                        <span class="text-blue-500">📋</span> أجندة المؤتمر
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 pt-12 md:pt-16 border-t border-white/5">
+                <div class="lg:col-span-7 space-y-6">
+                    <h3 class="text-2xl md:text-3xl font-black flex items-center gap-2">
+                        <span class="text-blue-500">#</span> أجندة المؤتمر
                     </h3>
-                    <div id="landing-agenda-list" class="space-y-3">
-                        <!-- يتم التعبئة عبر JavaScript -->
-                    </div>
+                    <div id="landing-agenda-list" class="space-y-3"></div>
                 </div>
                 
-                <!-- المعرض -->
-                <div class="lg:col-span-5 space-y-4">
-                    <h3 class="text-2xl font-black flex items-center gap-2">
-                        <span class="text-blue-500">🖼️</span> المعرض التقني
+                <div class="lg:col-span-5 space-y-6">
+                    <h3 class="text-2xl md:text-3xl font-black flex items-center gap-2">
+                        <span class="text-blue-500">#</span> المعرض التقني
                     </h3>
-                    <div id="landing-gallery-list" class="grid grid-cols-2 gap-3">
-                        <!-- يتم التعبئة عبر JavaScript -->
-                    </div>
+                    <div id="landing-gallery-list" class="grid grid-cols-2 gap-3 md:gap-4"></div>
                 </div>
             </div>
         </section>
 
-        <!-- نماذج الدخول والتسجيل -->
-        <section id="auth-forms" class="hidden animate-fade-in max-w-md mx-auto pt-8">
-            <!-- تسجيل الدخول -->
-            <div id="login-section" class="glass p-8 rounded-3xl space-y-6">
+        <section id="auth-forms" class="hidden animate-fade-in max-w-md mx-auto pt-4 md:pt-8">
+            <div id="login-section" class="glass p-6 md:p-8 rounded-3xl space-y-6">
                 <div class="text-center">
-                    <h3 class="text-3xl font-black mb-2 text-gradient">تسجيل الدخول</h3>
+                    <h3 class="text-2xl md:text-3xl font-black mb-2">تسجيل الدخول</h3>
                     <p class="text-gray-400 text-sm">أهلاً بعودتك للمتابعة</p>
                 </div>
                 
                 <form id="login-form" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-bold text-gray-400 mb-2">البريد الإلكتروني</label>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">البريد الإلكتروني</label>
                         <input type="email" id="login-email" required 
-                               class="w-full p-4 rounded-xl text-left"
-                               placeholder="admin@example.com"
-                               dir="ltr">
+                               class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-left"
+                               placeholder="admin@example.com">
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-bold text-gray-400 mb-2">كلمة المرور</label>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">كلمة المرور</label>
                         <input type="password" id="login-pass" required 
-                               class="w-full p-4 rounded-xl text-left"
-                               placeholder="********"
-                               dir="ltr">
+                               class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-left"
+                               placeholder="********">
                     </div>
                     
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl">
-                        دخول
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                        تأكيد الدخول
                     </button>
                 </form>
                 
@@ -463,34 +205,37 @@
                 </div>
             </div>
 
-            <!-- إنشاء حساب جديد -->
-            <div id="register-section" class="hidden glass p-8 rounded-3xl space-y-6">
+            <div id="register-section" class="hidden glass p-6 md:p-8 rounded-3xl space-y-6">
                 <div class="text-center">
-                    <h3 class="text-3xl font-black mb-2 text-gradient">حساب جديد</h3>
+                    <h3 class="text-2xl md:text-3xl font-black mb-2">حساب جديد</h3>
                 </div>
                 
                 <form id="register-form" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-bold text-gray-400 mb-2">الاسم الكامل</label>
-                        <input type="text" id="reg-name" required class="w-full p-4 rounded-xl">
+                        <label class="block text-sm font-bold text-gray-400 mb-1">الاسم الكامل</label>
+                        <input type="text" id="reg-name" required 
+                               class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-bold text-gray-400 mb-2">المؤسسة</label>
-                        <input type="text" id="reg-org" required class="w-full p-4 rounded-xl">
+                        <label class="block text-sm font-bold text-gray-400 mb-1">المؤسسة</label>
+                        <input type="text" id="reg-org" required 
+                               class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-bold text-gray-400 mb-2">البريد الإلكتروني</label>
-                        <input type="email" id="reg-email" required class="w-full p-4 rounded-xl text-left" dir="ltr">
+                        <label class="block text-sm font-bold text-gray-400 mb-1">البريد الإلكتروني</label>
+                        <input type="email" id="reg-email" required 
+                               class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-left">
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-bold text-gray-400 mb-2">كلمة المرور</label>
-                        <input type="password" id="reg-pass" required class="w-full p-4 rounded-xl text-left" dir="ltr">
+                        <label class="block text-sm font-bold text-gray-400 mb-1">كلمة المرور</label>
+                        <input type="password" id="reg-pass" required 
+                               class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-left">
                     </div>
                     
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl">
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900">
                         إنشاء الحساب
                     </button>
                 </form>
@@ -503,14 +248,11 @@
             </div>
         </section>
 
-        <!-- لوحة المستخدم -->
-        <section id="user-dashboard" class="hidden animate-fade-in space-y-6">
+        <section id="user-dashboard" class="hidden animate-fade-in space-y-6 md:space-y-8">
             <div class="glass p-6 rounded-2xl">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div class="flex items-center gap-4">
-                        <div id="user-avatar" class="h-16 w-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg">
-                            👤
-                        </div>
+                        <div id="user-avatar" class="h-16 w-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg"></div>
                         <div>
                             <h2 id="user-welcome-name" class="text-2xl font-black"></h2>
                             <span id="user-role-badge" class="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest inline-block mt-1"></span>
@@ -524,190 +266,156 @@
                 </div>
             </div>
             
-            <div class="space-y-4">
-                <h3 class="text-xl font-black flex items-center gap-2">
-                    <span class="text-blue-500">📋</span> الأجندة الخاصة بك
-                </h3>
+            <div class="space-y-6">
+                <h3 class="text-xl font-black">📋 الأجندة الخاصة بك</h3>
                 <div id="user-agenda-list" class="space-y-3"></div>
             </div>
             
-            <div class="space-y-4">
-                <h3 class="text-xl font-black flex items-center gap-2">
-                    <span class="text-blue-500">🖼️</span> معرض الصور
-                </h3>
+            <div class="space-y-6">
+                <h3 class="text-xl font-black">🖼️ معرض الصور</h3>
                 <div id="user-gallery-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
             </div>
         </section>
 
-        <!-- لوحة التحكم (Admin) -->
-        <section id="admin-dashboard" class="hidden animate-fade-in space-y-6">
-            <!-- رأس لوحة التحكم -->
+        <section id="admin-dashboard" class="hidden animate-fade-in space-y-6 md:space-y-8">
             <div class="glass p-6 rounded-2xl">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <h2 class="text-xl font-black flex items-center gap-2">
-                        <span class="text-blue-500">⚙️</span> لوحة التحكم
-                    </h2>
-                    <div class="flex items-center gap-3">
-                        <div id="stat-total" class="bg-white/5 px-4 py-2 rounded-xl border border-white/10 font-black text-sm">
-                            0 مسجلين
+                    <h2 class="text-xl md:text-2xl font-black text-blue-400">لوحة التحكم</h2>
+                    <div class="flex gap-3">
+                        <div class="bg-white/5 px-6 py-2 rounded-xl border border-white/10 font-black text-sm">
+                            <span id="stat-total" class="text-blue-400">0</span> مسجلين
                         </div>
-                        <div class="bg-green-500/10 text-green-400 px-3 py-1.5 rounded-full text-xs font-bold border border-green-500/20 flex items-center gap-2">
-                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                            <span>نشط</span>
-                        </div>
+                        <button onclick="exportToExcel()" class="bg-green-600/20 hover:bg-green-600 text-green-400 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-colors">
+                            📥 تصدير Excel
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- الشبكة الرئيسية -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- إدارة الأجندة -->
-                <div class="admin-card">
-                    <div class="flex justify-between items-center mb-4">
-                        <h4 class="text-lg font-black flex items-center gap-2">
-                            <span class="text-blue-500">📝</span> إدارة الأجندة
-                        </h4>
+            <!-- قسم تعديل النص الوصفي -->
+            <div class="glass p-6 rounded-2xl space-y-4">
+                <h4 class="text-lg font-black">📝 تعديل النص الوصفي للصفحة الرئيسية</h4>
+                <textarea id="landing-description-input" rows="3" 
+                          class="w-full bg-slate-900 border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 transition text-sm"
+                          placeholder="اكتب النص الذي تريد ظهوره في الصفحة الرئيسية..."></textarea>
+                <button onclick="saveDescription()" 
+                        class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-xl text-sm font-bold transition-colors">
+                    حفظ النص
+                </button>
+            </div>
+
+            <!-- قائمة المسجلين مع خاصية الحذف -->
+            <div class="glass p-6 rounded-2xl space-y-4">
+                <h4 class="text-lg font-black">📋 قائمة المسجلين</h4>
+                <div id="users-list" class="space-y-2 max-h-[300px] overflow-y-auto">
+                    <!-- تظهر هنا أسماء المسجلين -->
+                </div>
+            </div>
+
+            <!-- إدخال صور متعددة من رابط -->
+            <div class="glass p-6 rounded-2xl space-y-4">
+                <h4 class="text-lg font-black">🔗 إضافة صور متعددة من رابط</h4>
+                <div class="flex gap-2">
+                    <input type="url" id="bulk-gallery-url" placeholder="أدخل روابط الصور مفصولة بفواصل" 
+                           class="flex-1 bg-slate-900 border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 transition text-sm">
+                    <button onclick="addBulkImagesFromUrl()" 
+                            class="bg-blue-600 hover:bg-blue-500 px-4 rounded-xl text-sm font-bold transition-colors whitespace-nowrap">
+                        إضافة الكل
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500">أدخل روابط الصور مفصولة بفواصل (مثال: https://example.com/image1.jpg, https://example.com/image2.jpg)</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                <div class="glass p-6 rounded-2xl space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-lg font-black">📝 إدارة الأجندة</h4>
                         <button onclick="addNewAgendaRow()" 
-                                class="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1">
-                            <span>+</span> إضافة فقرة
+                                class="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-colors">
+                            + إضافة فقرة
                         </button>
                     </div>
                     
-                    <div id="admin-agenda-inputs" class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scroll">
-                        <!-- يتم التعبئة عبر JavaScript -->
-                    </div>
+                    <div id="admin-agenda-inputs" class="space-y-3 max-h-[400px] overflow-y-auto pr-2"></div>
                 </div>
 
-                <!-- الإعدادات والوسائط -->
                 <div class="space-y-6">
-                    <!-- إعدادات الشعار -->
-                    <div class="admin-card">
-                        <h4 class="text-lg font-black flex items-center gap-2 mb-4">
-                            <span class="text-blue-500">🖼️</span> شعار المؤتمر
-                        </h4>
+                    <div class="glass p-6 rounded-2xl space-y-4">
+                        <h4 class="text-lg font-black">🖼️ شعار المؤتمر</h4>
                         
                         <div class="flex flex-col items-center gap-4">
-                            <!-- معاينة الشعار -->
-                            <div class="w-32 h-32 bg-slate-900 rounded-2xl border-2 border-white/10 flex items-center justify-center overflow-hidden">
-                                <span id="admin-logo-placeholder" class="text-gray-600 text-sm">بلا شعار</span>
-                                <img id="admin-logo-img" class="hidden w-full h-full object-cover" src="" alt="Logo Preview">
+                            <div class="flex gap-2 w-full">
+                                <input type="url" id="logo-url-input" placeholder="رابط الشعار (اختياري)" 
+                                       class="flex-1 bg-slate-900 border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 transition text-sm">
+                                <button onclick="setLogoFromUrl()" 
+                                        class="bg-blue-600 hover:bg-blue-500 px-4 rounded-xl text-sm font-bold transition-colors">
+                                    تطبيق
+                                </button>
                             </div>
                             
-                            <!-- رفع الشعار -->
-                            <div class="w-full space-y-2">
-                                <label class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold text-sm text-center cursor-pointer transition-all block upload-area">
-                                    <span class="flex items-center justify-center gap-2">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                                        </svg>
-                                        اختر صورة للشعار
-                                    </span>
-                                    <input type="file" id="logo-upload-input" class="hidden" accept="image/*">
-                                </label>
-                                
-                                <!-- رسالة خطأ الشعار -->
-                                <div id="logo-error" class="hidden error-message">
-                                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    <span></span>
-                                </div>
-                                
-                                <!-- مؤشر تقدم رفع الشعار -->
-                                <div id="logo-progress-container" class="hidden space-y-2">
-                                    <div class="flex justify-between text-xs text-gray-400">
-                                        <span>جاري الرفع...</span>
-                                        <span id="logo-progress-percent">0%</span>
-                                    </div>
-                                    <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                                        <div id="logo-progress-bar" class="progress-bar h-full" style="width: 0%"></div>
-                                    </div>
+                            <div class="text-gray-500 text-sm">أو</div>
+                            
+                            <label class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold text-sm text-center cursor-pointer transition-colors focus:ring-2 focus:ring-blue-500">
+                                رفع شعار من الجهاز
+                                <input type="file" id="logo-upload-input" class="hidden" accept="image/*">
+                            </label>
+                            
+                            <div id="logo-preview" class="w-24 h-24 bg-slate-900 rounded-2xl border border-white/10 flex items-center justify-center overflow-hidden">
+                                <span id="logo-preview-placeholder" class="text-gray-600 text-sm">معاينة</span>
+                                <img id="logo-preview-img" class="hidden w-full h-full object-cover" src="" alt="Logo Preview">
+                            </div>
+                            
+                            <div id="logo-progress-container" class="hidden w-full">
+                                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                                    <div id="logo-progress-bar" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- تاريخ المؤتمر -->
-                        <div class="mt-4 pt-4 border-t border-white/5">
-                            <label class="block text-xs font-bold text-gray-500 mb-2">📅 موعد المؤتمر</label>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase">موعد المؤتمر</label>
                             <input type="datetime-local" id="conf-date" 
-                                   class="w-full bg-slate-900 p-3 rounded-xl text-sm">
+                                   class="w-full bg-slate-900 border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 transition text-sm">
                         </div>
                     </div>
 
-                    <!-- إدارة معرض الصور -->
-                    <div class="admin-card">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-lg font-black flex items-center gap-2">
-                                <span class="text-blue-500">📷</span> معرض الصور
-                            </h4>
-                            <span id="gallery-count" class="bg-white/5 px-2 py-1 rounded-lg text-xs">0 صور</span>
-                        </div>
+                    <div class="glass p-6 rounded-2xl space-y-4">
+                        <h4 class="text-lg font-black">📷 معرض الصور</h4>
                         
-                        <!-- منطقة رفع الصور -->
-                        <div class="space-y-3">
-                            <input type="file" id="image-upload-input" class="hidden" accept="image/*" multiple>
-                            
-                            <button onclick="triggerImageUpload()" 
-                                    class="w-full py-6 upload-area rounded-xl flex flex-col items-center gap-2 group transition-all">
-                                <svg class="w-8 h-8 text-gray-400 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                <span class="font-bold">اضغط لاختيار صور متعددة</span>
-                                <span class="text-[10px] text-gray-500">PNG, JPG, GIF (حد أقصى 5MB لكل صورة)</span>
+                        <div class="flex gap-2">
+                            <input type="url" id="gallery-url-input" placeholder="رابط صورة واحدة" 
+                                   class="flex-1 bg-slate-900 border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 transition text-sm">
+                            <button onclick="addImageFromUrl()" 
+                                    class="bg-blue-600 hover:bg-blue-500 px-4 rounded-xl text-sm font-bold transition-colors">
+                                إضافة
                             </button>
-                            
-                            <!-- رسالة خطأ رفع الصور -->
-                            <div id="gallery-error" class="hidden error-message">
-                                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <span></span>
-                            </div>
-                            
-                            <!-- مؤشر تقدم رفع الصور المتعددة -->
-                            <div id="gallery-upload-progress" class="hidden space-y-2">
-                                <div class="flex justify-between text-xs text-gray-400">
-                                    <span id="gallery-upload-status">جاري التجهيز...</span>
-                                    <span id="gallery-upload-counter">0/0</span>
-                                </div>
-                                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                                    <div id="gallery-progress-bar" class="progress-bar h-full" style="width: 0%"></div>
-                                </div>
-                            </div>
                         </div>
                         
-                        <!-- معاينة الصور -->
-                        <div class="mt-4">
-                            <div id="admin-gallery-preview" class="grid grid-cols-3 gap-2">
-                                <!-- يتم التعبئة عبر JavaScript -->
-                            </div>
-                            
-                            <!-- رسالة عند عدم وجود صور -->
-                            <div id="no-gallery-message" class="text-center py-8 text-gray-500 text-sm border border-white/5 rounded-xl">
-                                📸 لا توجد صور مرفوعة بعد
-                            </div>
-                        </div>
+                        <div class="text-gray-500 text-sm text-center">أو</div>
+                        
+                        <input type="file" id="image-upload-input" class="hidden" accept="image/*" multiple>
+                        <button onclick="document.getElementById('image-upload-input').click()" 
+                                class="w-full py-3 bg-white/5 border-2 border-dashed border-white/20 rounded-xl hover:bg-white/10 transition-colors text-sm">
+                            رفع صور من الجهاز
+                        </button>
+                        
+                        <div id="admin-gallery-preview" class="grid grid-cols-4 gap-2"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- زر الحفظ -->
             <button onclick="saveAllToCloud()" 
-                    class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 py-5 rounded-xl font-black text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
-                </svg>
-                حفظ ومزامنة التغييرات
+                    class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 py-4 md:py-5 rounded-xl font-black text-lg md:text-xl shadow-lg hover:shadow-xl transition-all focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                💾 حفظ ومزامنة التغييرات
             </button>
         </section>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, getDocs, query, where, addDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, getDocs, query, where, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-        // ==================== الإعدادات ====================
         const firebaseConfig = {
             apiKey: "AIzaSyAq46_s0TiEBJTrhOz05St1zU2FU3PLIao",
             authDomain: "civiltech-e0a16.firebaseapp.com",
@@ -717,494 +425,405 @@
             appId: "1:859519915000:web:fd506ad7290e116e073c0d"
         };
 
-        // تهيئة Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // ==================== إدارة الحالة ====================
-        const state = {
+        // بيانات المسؤولين (5 مسؤولين)
+        const ADMIN_CREDENTIALS = [
+            { email: "admin1@civil.com", password: "admin123" },
+            { email: "admin2@civil.com", password: "admin123" },
+            { email: "admin3@civil.com", password: "admin123" },
+            { email: "admin4@civil.com", password: "admin123" },
+            { email: "admin5@civil.com", password: "admin123" }
+        ];
+
+        let state = {
             currentUser: null,
             cloudData: { 
                 agenda: [], 
                 gallery: [], 
                 config: { 
                     logo: '', 
-                    eventDate: '' 
+                    eventDate: '',
+                    description: 'انضم إلى أكبر تجمع تقني للمهندسين في عام 2025. ورش عمل، مسابقات، ومحاضرات يقدمها نخبة من الخبراء العالميين.'
                 } 
             },
-            uploadsInProgress: 0
+            users: [],
+            isSyncing: false,
+            retryCount: 0,
+            maxRetries: 3
         };
 
-        // ==================== عناصر DOM ====================
         const elements = {
             toastContainer: document.getElementById('toast-container'),
-            errorContainer: document.getElementById('error-container'),
-            statusBadge: document.getElementById('status-badge'),
+            landingSection: document.getElementById('landing-section'),
+            authForms: document.getElementById('auth-forms'),
+            userDashboard: document.getElementById('user-dashboard'),
+            adminDashboard: document.getElementById('admin-dashboard'),
+            loginSection: document.getElementById('login-section'),
+            registerSection: document.getElementById('register-section'),
             logoutBtn: document.getElementById('logout-btn'),
-            
-            // الشعار
+            statusBadge: document.getElementById('status-badge'),
             logoPlaceholder: document.getElementById('logo-placeholder'),
             siteLogoImg: document.getElementById('site-logo-img'),
-            adminLogoPlaceholder: document.getElementById('admin-logo-placeholder'),
-            adminLogoImg: document.getElementById('admin-logo-img'),
+            logoPreviewPlaceholder: document.getElementById('logo-preview-placeholder'),
+            logoPreviewImg: document.getElementById('logo-preview-img'),
             logoProgressContainer: document.getElementById('logo-progress-container'),
             logoProgressBar: document.getElementById('logo-progress-bar'),
-            logoProgressPercent: document.getElementById('logo-progress-percent'),
-            logoError: document.getElementById('logo-error'),
-            
-            // المعرض
-            galleryCount: document.getElementById('gallery-count'),
-            galleryPreview: document.getElementById('admin-gallery-preview'),
-            noGalleryMessage: document.getElementById('no-gallery-message'),
-            galleryError: document.getElementById('gallery-error'),
-            galleryUploadProgress: document.getElementById('gallery-upload-progress'),
-            galleryUploadStatus: document.getElementById('gallery-upload-status'),
-            galleryUploadCounter: document.getElementById('gallery-upload-counter'),
-            galleryProgressBar: document.getElementById('gallery-progress-bar'),
-            
-            // التواريخ
             confDate: document.getElementById('conf-date'),
-            
-            // الإحصائيات
-            statTotal: document.getElementById('stat-total')
+            statTotal: document.getElementById('stat-total'),
+            adminAgendaInputs: document.getElementById('admin-agenda-inputs'),
+            adminGalleryPreview: document.getElementById('admin-gallery-preview'),
+            statsUsers: document.getElementById('stats-users'),
+            statsAgenda: document.getElementById('stats-agenda'),
+            landingDescriptionText: document.getElementById('landing-description-text'),
+            landingDescriptionInput: document.getElementById('landing-description-input')
         };
 
-        // ==================== دوال المساعدة ====================
         const showToast = (message, type = 'success', duration = 3000) => {
             const toast = document.createElement('div');
-            toast.className = `toast-msg ${type === 'error' ? 'error' : ''} show`;
-            toast.innerHTML = `
-                <svg class="w-5 h-5 ${type === 'error' ? 'text-white' : 'text-white'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    ${type === 'error' 
-                        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
-                        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
-                    }
-                </svg>
-                <span>${message}</span>
-            `;
+            toast.className = `px-4 py-3 rounded-xl text-sm font-bold shadow-lg transform transition-all duration-300 ${
+                type === 'error' ? 'bg-red-500/90 text-white' : 'bg-green-500/90 text-white'
+            }`;
+            toast.textContent = message;
+            
             elements.toastContainer.appendChild(toast);
             
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, duration);
+            setTimeout(() => toast.classList.add('opacity-0'), duration - 300);
+            setTimeout(() => toast.remove(), duration);
         };
 
-        const showError = (elementId, message) => {
-            const errorEl = document.getElementById(elementId);
-            if (errorEl) {
-                const span = errorEl.querySelector('span') || errorEl;
-                if (span.tagName === 'SPAN') {
-                    span.textContent = message;
-                } else {
-                    errorEl.innerHTML = `
-                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <span>${message}</span>
-                    `;
-                }
-                errorEl.classList.remove('hidden');
-                
-                // إخفاء الخطأ بعد 5 ثوان
-                setTimeout(() => {
-                    errorEl.classList.add('hidden');
-                }, 5000);
-            }
-        };
+        window.showSection = (sectionId) => {
+            elements.landingSection.classList.add('hidden');
+            elements.authForms.classList.add('hidden');
+            elements.userDashboard.classList.add('hidden');
+            elements.adminDashboard.classList.add('hidden');
+            elements.loginSection.classList.add('hidden');
+            elements.registerSection.classList.add('hidden');
 
-        // اختبار اتصال Firebase Storage
-        const testStorageConnection = async () => {
-            try {
-                const testRef = ref(storage, 'test/connection.txt');
-                console.log('✅ Firebase Storage متصل بنجاح');
-                return true;
-            } catch (error) {
-                console.error('❌ فشل الاتصال بـ Firebase Storage:', error);
-                showToast('فشل الاتصال بخدمة التخزين', 'error');
-                return false;
-            }
-        };
-
-        // تشغيل اختبار الاتصال
-        testStorageConnection();
-
-        // ==================== إدارة الشعار ====================
-        const updateLogoDisplay = (url) => {
-            if (url && url.trim() !== '') {
-                // تحديث شعار الموقع
-                if (elements.siteLogoImg) {
-                    elements.siteLogoImg.src = url;
-                    elements.siteLogoImg.classList.remove('hidden');
-                    if (elements.logoPlaceholder) elements.logoPlaceholder.classList.add('hidden');
-                }
-                
-                // تحديث شعار لوحة التحكم
-                if (elements.adminLogoImg) {
-                    elements.adminLogoImg.src = url;
-                    elements.adminLogoImg.classList.remove('hidden');
-                    if (elements.adminLogoPlaceholder) elements.adminLogoPlaceholder.classList.add('hidden');
-                }
+            if (sectionId === 'login-section' || sectionId === 'register-section') {
+                elements.authForms.classList.remove('hidden');
+                document.getElementById(sectionId).classList.remove('hidden');
             } else {
-                if (elements.siteLogoImg) elements.siteLogoImg.classList.add('hidden');
-                if (elements.logoPlaceholder) elements.logoPlaceholder.classList.remove('hidden');
-                if (elements.adminLogoImg) elements.adminLogoImg.classList.add('hidden');
-                if (elements.adminLogoPlaceholder) elements.adminLogoPlaceholder.classList.remove('hidden');
+                document.getElementById(sectionId).classList.remove('hidden');
             }
         };
 
-        // رفع الشعار
-        document.getElementById('logo-upload-input')?.addEventListener('change', async (e) => {
+        const updateLogoDisplay = (url) => {
+            if (url) {
+                elements.siteLogoImg.src = url;
+                elements.siteLogoImg.classList.remove('hidden');
+                elements.logoPlaceholder.classList.add('hidden');
+                
+                elements.logoPreviewImg.src = url;
+                elements.logoPreviewImg.classList.remove('hidden');
+                elements.logoPreviewPlaceholder.classList.add('hidden');
+            } else {
+                elements.siteLogoImg.classList.add('hidden');
+                elements.logoPlaceholder.classList.remove('hidden');
+                elements.logoPreviewImg.classList.add('hidden');
+                elements.logoPreviewPlaceholder.classList.remove('hidden');
+            }
+        };
+
+        // حفظ النص الوصفي
+        window.saveDescription = () => {
+            const newDescription = elements.landingDescriptionInput.value;
+            state.cloudData.config.description = newDescription;
+            elements.landingDescriptionText.textContent = newDescription;
+            showToast('تم حفظ النص الوصفي');
+        };
+
+        // إضافة صور متعددة من رابط
+        window.addBulkImagesFromUrl = () => {
+            const urlsInput = document.getElementById('bulk-gallery-url').value;
+            if (!urlsInput) return;
+
+            const urls = urlsInput.split(',')
+                .map(url => url.trim())
+                .filter(url => url.startsWith('http'));
+
+            if (urls.length === 0) {
+                showToast('الرجاء إدخال روابط صحيحة', 'error');
+                return;
+            }
+
+            state.cloudData.gallery = [...(state.cloudData.gallery || []), ...urls];
+            renderAdminGalleryPreview();
+            document.getElementById('bulk-gallery-url').value = '';
+            showToast(`تم إضافة ${urls.length} صورة`);
+        };
+
+        window.setLogoFromUrl = () => {
+            const url = document.getElementById('logo-url-input').value;
+            if (url) {
+                updateLogoDisplay(url);
+                state.cloudData.config.logo = url;
+                showToast('تم تطبيق رابط الشعار');
+            }
+        };
+
+        window.addImageFromUrl = () => {
+            const url = document.getElementById('gallery-url-input').value;
+            if (url) {
+                state.cloudData.gallery = [...(state.cloudData.gallery || []), url];
+                renderAdminGalleryPreview();
+                document.getElementById('gallery-url-input').value = '';
+                showToast('تم إضافة الصورة');
+            }
+        };
+
+        document.getElementById('logo-upload-input').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // التحقق من نوع الملف
             if (!file.type.startsWith('image/')) {
-                showError('logo-error', 'الرجاء اختيار ملف صورة صالح');
+                showToast('الرجاء اختيار صورة صالحة', 'error');
                 return;
             }
 
-            // التحقق من حجم الملف
             if (file.size > 5 * 1024 * 1024) {
-                showError('logo-error', 'حجم الصورة يجب أن يكون أقل من 5 ميجابايت');
+                showToast('حجم الصورة يجب أن يكون أقل من 5 ميجابايت', 'error');
                 return;
             }
 
-            // إخفاء رسائل الخطأ السابقة
-            if (elements.logoError) elements.logoError.classList.add('hidden');
-            
-            // إظهار مؤشر التقدم
-            if (elements.logoProgressContainer) {
-                elements.logoProgressContainer.classList.remove('hidden');
-                elements.logoProgressBar.style.width = '0%';
-                if (elements.logoProgressPercent) elements.logoProgressPercent.textContent = '0%';
-            }
+            const storageRef = ref(storage, `brand/logo_${Date.now()}_${file.name}`);
+            const uploadTask = uploadBytesResumable(storageRef, file);
 
-            try {
-                // إنشاء اسم فريد للملف
-                const fileName = `logo_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-                const storageRef = ref(storage, `brand/${fileName}`);
-                
-                // بدء الرفع
-                const uploadTask = uploadBytesResumable(storageRef, file);
+            elements.logoProgressContainer.classList.remove('hidden');
+            elements.logoProgressBar.style.width = '0%';
 
-                // مراقبة تقدم الرفع
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        if (elements.logoProgressBar) elements.logoProgressBar.style.width = `${progress}%`;
-                        if (elements.logoProgressPercent) elements.logoProgressPercent.textContent = `${Math.round(progress)}%`;
-                    },
-                    (error) => {
-                        console.error('Upload error:', error);
-                        if (elements.logoProgressContainer) elements.logoProgressContainer.classList.add('hidden');
-                        
-                        let errorMessage = 'فشل رفع الشعار';
-                        if (error.code === 'storage/unauthorized') {
-                            errorMessage = 'ليس لديك صلاحية رفع الملفات';
-                        } else if (error.code === 'storage/canceled') {
-                            errorMessage = 'تم إلغاء الرفع';
-                        } else if (error.code === 'storage/unknown') {
-                            errorMessage = 'حدث خطأ غير معروف في التخزين';
-                        }
-                        
-                        showError('logo-error', errorMessage);
-                        showToast(errorMessage, 'error');
-                    },
-                    async () => {
-                        try {
-                            const url = await getDownloadURL(uploadTask.snapshot.ref);
-                            
-                            // تحديث الحالة
-                            state.cloudData.config.logo = url;
-                            
-                            // تحديث واجهة المستخدم
-                            updateLogoDisplay(url);
-                            
-                            // حفظ في Firestore
-                            await setDoc(doc(db, "conference", "data"), {
-                                ...state.cloudData,
-                                lastUpdated: new Date().toISOString()
-                            });
-                            
-                            showToast('✅ تم رفع الشعار بنجاح');
-                            
-                        } catch (error) {
-                            console.error('Error getting download URL:', error);
-                            showError('logo-error', 'فشل في الحصول على رابط الشعار');
-                        } finally {
-                            if (elements.logoProgressContainer) elements.logoProgressContainer.classList.add('hidden');
-                        }
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    elements.logoProgressBar.style.width = `${progress}%`;
+                },
+                (error) => {
+                    console.error('Upload error:', error);
+                    showToast('فشل رفع الشعار', 'error');
+                    elements.logoProgressContainer.classList.add('hidden');
+                },
+                async () => {
+                    try {
+                        const url = await getDownloadURL(uploadTask.snapshot.ref);
+                        state.cloudData.config.logo = url;
+                        updateLogoDisplay(url);
+                        await saveAllToCloud();
+                        showToast('تم رفع الشعار بنجاح');
+                    } catch (error) {
+                        console.error('Error getting download URL:', error);
+                        showToast('فشل في الحصول على رابط الشعار', 'error');
+                    } finally {
+                        elements.logoProgressContainer.classList.add('hidden');
                     }
-                );
-
-            } catch (error) {
-                console.error('Error starting upload:', error);
-                if (elements.logoProgressContainer) elements.logoProgressContainer.classList.add('hidden');
-                showError('logo-error', 'فشل بدء عملية الرفع');
-            }
+                }
+            );
         });
 
-        // ==================== إدارة معرض الصور ====================
-        window.triggerImageUpload = () => {
-            document.getElementById('image-upload-input')?.click();
-        };
-
-        document.getElementById('image-upload-input')?.addEventListener('change', async (e) => {
+        document.getElementById('image-upload-input').addEventListener('change', async (e) => {
             const files = Array.from(e.target.files);
             if (!files.length) return;
 
-            // التحقق من الملفات
-            const validFiles = [];
-            const invalidFiles = [];
+            showToast(`جاري رفع ${files.length} صورة...`, 'success');
 
             for (const file of files) {
-                if (!file.type.startsWith('image/')) {
-                    invalidFiles.push(`${file.name}: ليس صورة`);
-                } else if (file.size > 5 * 1024 * 1024) {
-                    invalidFiles.push(`${file.name}: حجمه أكبر من 5 ميجابايت`);
-                } else {
-                    validFiles.push(file);
-                }
-            }
-
-            if (invalidFiles.length > 0) {
-                showError('gallery-error', `الملفات التالية غير صالحة:\n${invalidFiles.join('\n')}`);
-            }
-
-            if (validFiles.length === 0) return;
-
-            // إخفاء رسالة "لا توجد صور"
-            if (elements.noGalleryMessage) elements.noGalleryMessage.classList.add('hidden');
-            if (elements.galleryError) elements.galleryError.classList.add('hidden');
-
-            // إظهار مؤشر التقدم
-            if (elements.galleryUploadProgress) {
-                elements.galleryUploadProgress.classList.remove('hidden');
-                elements.galleryUploadStatus.textContent = 'جاري التجهيز...';
-                elements.galleryUploadCounter.textContent = `0/${validFiles.length}`;
-                if (elements.galleryProgressBar) elements.galleryProgressBar.style.width = '0%';
-            }
-
-            let uploadedCount = 0;
-            const successfulUploads = [];
-
-            for (let i = 0; i < validFiles.length; i++) {
-                const file = validFiles[i];
-                
                 try {
-                    if (elements.galleryUploadStatus) {
-                        elements.galleryUploadStatus.textContent = `جاري رفع: ${file.name.substring(0, 20)}${file.name.length > 20 ? '...' : ''}`;
+                    if (!file.type.startsWith('image/')) {
+                        showToast(`الملف ${file.name} ليس صورة`, 'error');
+                        continue;
                     }
-                    
-                    // إنشاء اسم فريد للملف
-                    const fileName = `gallery_${Date.now()}_${i}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-                    const storageRef = ref(storage, `gallery/${fileName}`);
-                    
-                    // رفع الملف
+
+                    const storageRef = ref(storage, `gallery/${Date.now()}_${file.name}`);
                     const uploadTask = await uploadBytesResumable(storageRef, file);
-                    
-                    // الحصول على رابط التحميل
                     const url = await getDownloadURL(uploadTask.ref);
                     
-                    // إضافة إلى المصفوفة
-                    successfulUploads.push(url);
-                    
-                    // تحديث شريط التقدم
-                    uploadedCount++;
-                    const progress = (uploadedCount / validFiles.length) * 100;
-                    if (elements.galleryProgressBar) elements.galleryProgressBar.style.width = `${progress}%`;
-                    if (elements.galleryUploadCounter) {
-                        elements.galleryUploadCounter.textContent = `${uploadedCount}/${validFiles.length}`;
-                    }
-                    
+                    state.cloudData.gallery = [...(state.cloudData.gallery || []), url];
                 } catch (error) {
-                    console.error(`Error uploading ${file.name}:`, error);
+                    console.error('Error uploading image:', error);
                     showToast(`فشل رفع ${file.name}`, 'error');
                 }
             }
 
-            // إخفاء مؤشر التقدم
-            if (elements.galleryUploadProgress) {
-                elements.galleryUploadProgress.classList.add('hidden');
-            }
-
-            if (successfulUploads.length > 0) {
-                // تحديث المعرض
-                state.cloudData.gallery = [...(state.cloudData.gallery || []), ...successfulUploads];
-                
-                // تحديث واجهة المستخدم
-                updateGalleryPreview();
-                
-                // حفظ في Firestore
-                await setDoc(doc(db, "conference", "data"), {
-                    ...state.cloudData,
-                    lastUpdated: new Date().toISOString()
-                });
-                
-                showToast(`✅ تم رفع ${successfulUploads.length} صورة بنجاح`);
-            }
-
-            // تنظيف حقل الإدخال
-            e.target.value = '';
+            await saveAllToCloud();
+            showToast('تم رفع الصور بنجاح');
         });
 
-        // تحديث معاينة المعرض
-        const updateGalleryPreview = () => {
-            if (!elements.galleryPreview || !elements.noGalleryMessage || !elements.galleryCount) return;
-            
-            const gallery = state.cloudData.gallery || [];
-            
-            // تحديث العداد
-            elements.galleryCount.textContent = `${gallery.length} ${gallery.length === 1 ? 'صورة' : 'صور'}`;
-            
-            if (gallery.length === 0) {
-                elements.noGalleryMessage.classList.remove('hidden');
-                elements.galleryPreview.innerHTML = '';
+        const loadUsers = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, "users"));
+                state.users = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                updateUsersList();
+                
+                if (elements.statsUsers) {
+                    elements.statsUsers.textContent = state.users.length;
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        };
+
+        const updateUsersList = () => {
+            const usersList = document.getElementById('users-list');
+            if (!usersList) return;
+
+            if (state.users.length === 0) {
+                usersList.innerHTML = '<div class="text-gray-500 text-center py-4">لا يوجد مسجلين حتى الآن</div>';
                 return;
             }
-            
-            elements.noGalleryMessage.classList.add('hidden');
-            
-            elements.galleryPreview.innerHTML = gallery.map((url, index) => `
-                <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10 bg-slate-900">
-                    <img src="${url}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" alt="Gallery ${index + 1}" loading="lazy">
-                    <button onclick="deleteGalleryImage(${index})" 
-                            class="absolute top-1 right-1 bg-red-500/80 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-all"
-                            aria-label="حذف">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
+
+            usersList.innerHTML = state.users.map(user => `
+                <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex justify-between items-center">
+                    <div>
+                        <span class="font-bold text-white">${user.name || 'بدون اسم'}</span>
+                        <span class="text-gray-400 text-sm mr-2">${user.org || 'بدون مؤسسة'}</span>
+                        <span class="text-xs text-gray-500 block">${user.email || ''}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="text-xs text-gray-500">${new Date(user.registeredAt).toLocaleDateString('ar-EG')}</span>
+                        <button onclick="deleteUser('${user.id}')" 
+                                class="text-red-500 hover:text-red-400 font-bold px-2 transition-colors"
+                                title="حذف المستخدم">✕</button>
+                    </div>
                 </div>
             `).join('');
         };
 
-        // حذف صورة من المعرض
-        window.deleteGalleryImage = async (index) => {
-            if (state.cloudData.gallery && state.cloudData.gallery[index]) {
-                state.cloudData.gallery.splice(index, 1);
-                updateGalleryPreview();
-                
-                // حفظ التغييرات
-                await setDoc(doc(db, "conference", "data"), {
-                    ...state.cloudData,
-                    lastUpdated: new Date().toISOString()
-                });
-                
-                showToast('✅ تم حذف الصورة');
-            }
-        };
-
-        // ==================== إدارة الأجندة ====================
-        window.addNewAgendaRow = () => {
-            const container = document.getElementById('admin-agenda-inputs');
-            if (!container) return;
-            
-            const div = document.createElement('div');
-            div.className = "bg-white/5 p-3 rounded-xl border border-white/5 flex gap-2 items-center animate-fade-in";
-            div.innerHTML = `
-                <input type="time" class="agenda-time-input bg-slate-900 p-2 rounded-lg text-blue-400 font-bold w-24 text-sm border border-white/10">
-                <input type="text" class="agenda-title-input bg-slate-900 p-2 rounded-lg text-white flex-1 text-sm border border-white/10" placeholder="عنوان الفقرة">
-                <button onclick="this.closest('div').remove()" 
-                        class="text-red-500 hover:text-red-400 font-bold px-2 transition-colors"
-                        aria-label="حذف">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                </button>
-            `;
-            container.prepend(div);
-        };
-
-        // ==================== الحفظ في Firebase ====================
-        window.saveAllToCloud = async () => {
-            try {
-                showToast('جاري حفظ التغييرات...', 'success');
-                
-                // جمع بيانات الأجندة
-                const times = document.querySelectorAll('.agenda-time-input');
-                const titles = document.querySelectorAll('.agenda-title-input');
-                
-                const agenda = Array.from(times)
-                    .map((t, i) => ({
-                        time: t.value,
-                        title: titles[i]?.value || ''
-                    }))
-                    .filter(a => a.time && a.title.trim())
-                    .sort((a, b) => a.time.localeCompare(b.time));
-                
-                // تحديث التكوين
-                state.cloudData.agenda = agenda;
-                if (elements.confDate) {
-                    state.cloudData.config.eventDate = elements.confDate.value;
+        window.deleteUser = async (userId) => {
+            if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
+                try {
+                    await deleteDoc(doc(db, "users", userId));
+                    await loadUsers();
+                    showToast('تم حذف المستخدم بنجاح');
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                    showToast('فشل حذف المستخدم', 'error');
                 }
-                
-                // حفظ في Firestore
-                await setDoc(doc(db, "conference", "data"), {
-                    ...state.cloudData,
-                    lastUpdated: new Date().toISOString()
-                });
-                
-                showToast('✅ تم حفظ التغييرات بنجاح');
-                
-            } catch (error) {
-                console.error('Save error:', error);
-                showToast('❌ فشل في حفظ التغييرات', 'error');
             }
         };
 
-        // ==================== التحديثات المباشرة من Firestore ====================
-        onSnapshot(doc(db, "conference", "data"), 
+        window.exportToExcel = () => {
+            const data = state.users.map(user => ({
+                'الاسم': user.name || '',
+                'المؤسسة': user.org || '',
+                'البريد الإلكتروني': user.email || '',
+                'تاريخ التسجيل': new Date(user.registeredAt).toLocaleString('ar-EG')
+            }));
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, "المسجلين");
+            XLSX.writeFile(wb, `مسجلين_المؤتمر_${new Date().toISOString().split('T')[0]}.xlsx`);
+            
+            showToast('تم تصدير الملف بنجاح');
+        };
+
+        const unsubscribe = onSnapshot(
+            doc(db, "conference", "data"),
             (snap) => {
                 if (snap.exists()) {
                     state.cloudData = snap.data();
-                    
-                    // تحديث واجهات المستخدم
-                    updateLogoDisplay(state.cloudData.config?.logo);
-                    updateGalleryPreview();
-                    
-                    // تحديث حقل التاريخ
-                    if (elements.confDate && state.cloudData.config?.eventDate) {
-                        elements.confDate.value = state.cloudData.config.eventDate;
-                    }
-                    
-                    // تحديث الأجندة في الصفحة الرئيسية
-                    renderLandingAgenda();
-                    
-                    // تحديث المعرض في الصفحة الرئيسية
-                    renderLandingGallery();
-                    
-                    // تحديث الأجندة في لوحة التحكم
-                    renderAdminAgenda();
-                    
-                    // إظهار حالة الاتصال
-                    if (elements.statusBadge) elements.statusBadge.classList.remove('hidden');
+                    updateUI();
+                    elements.statusBadge.classList.remove('hidden');
+                    state.retryCount = 0;
                 }
             },
             (error) => {
                 console.error('Sync error:', error);
-                if (elements.statusBadge) elements.statusBadge.classList.add('hidden');
+                elements.statusBadge.classList.add('hidden');
                 showToast('مشكلة في الاتصال بالخادم', 'error');
             }
         );
 
-        // ==================== عرض الأجندة في لوحة التحكم ====================
-        const renderAdminAgenda = () => {
-            const container = document.getElementById('admin-agenda-inputs');
-            if (!container) return;
+        const updateUI = () => {
+            updateLogoDisplay(state.cloudData.config?.logo);
             
-            if (!state.cloudData.agenda || state.cloudData.agenda.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-8 text-gray-500 text-sm border border-white/5 rounded-xl">
-                        📝 لا توجد فقرات في الأجندة
-                    </div>
-                `;
-                return;
+            // تحديث النص الوصفي
+            if (elements.landingDescriptionText && state.cloudData.config?.description) {
+                elements.landingDescriptionText.textContent = state.cloudData.config.description;
+            }
+            if (elements.landingDescriptionInput && state.cloudData.config?.description) {
+                elements.landingDescriptionInput.value = state.cloudData.config.description;
             }
             
-            container.innerHTML = state.cloudData.agenda
+            renderLandingContent();
+            
+            if (elements.statsAgenda) {
+                elements.statsAgenda.textContent = state.cloudData.agenda?.length || 0;
+            }
+            
+            if (state.currentUser) {
+                renderUserUI();
+            }
+            
+            if (!elements.adminDashboard.classList.contains('hidden')) {
+                renderAdminAgendaInputs();
+                renderAdminGalleryPreview();
+                if (elements.confDate) {
+                    elements.confDate.value = state.cloudData.config?.eventDate || '';
+                }
+                if (elements.statTotal) {
+                    elements.statTotal.textContent = state.users.length;
+                }
+            }
+        };
+
+        const renderLandingContent = () => {
+            const agendaList = document.getElementById('landing-agenda-list');
+            if (agendaList) {
+                agendaList.innerHTML = (state.cloudData.agenda || [])
+                    .sort((a, b) => a.time?.localeCompare(b.time))
+                    .map(item => `
+                        <div class="glass-card p-4 rounded-xl flex items-center justify-between hover:border-blue-500/30 transition-colors">
+                            <div class="flex gap-3 items-center">
+                                <span class="text-blue-500 font-bold font-mono text-sm bg-blue-500/10 px-2 py-1 rounded">${item.time || '--:--'}</span>
+                                <span class="font-bold text-white">${item.title || 'بدون عنوان'}</span>
+                            </div>
+                        </div>
+                    `).join('');
+            }
+
+            const galleryList = document.getElementById('landing-gallery-list');
+            if (galleryList) {
+                galleryList.innerHTML = (state.cloudData.gallery || [])
+                    .slice(0, 4)
+                    .map(url => `
+                        <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors cursor-pointer group" onclick="window.open('${url}', '_blank')">
+                            <img src="${url}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" alt="Gallery">
+                        </div>
+                    `).join('');
+            }
+        };
+
+        const renderUserUI = () => {
+            const agendaList = document.getElementById('user-agenda-list');
+            if (agendaList) {
+                agendaList.innerHTML = (state.cloudData.agenda || [])
+                    .map(item => `
+                        <div class="glass-card p-4 rounded-xl flex items-center justify-between">
+                            <div class="flex gap-3 items-center">
+                                <span class="text-blue-500 font-bold font-mono">${item.time}</span>
+                                <span class="font-bold text-white">${item.title}</span>
+                            </div>
+                        </div>
+                    `).join('');
+            }
+
+            const galleryList = document.getElementById('user-gallery-list');
+            if (galleryList) {
+                galleryList.innerHTML = (state.cloudData.gallery || [])
+                    .map(url => `
+                        <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors cursor-pointer" onclick="window.open('${url}', '_blank')">
+                            <img src="${url}" loading="lazy" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300" alt="Gallery">
+                        </div>
+                    `).join('');
+            }
+        };
+
+        const renderAdminAgendaInputs = () => {
+            if (!elements.adminAgendaInputs) return;
+            
+            elements.adminAgendaInputs.innerHTML = (state.cloudData.agenda || [])
                 .sort((a, b) => a.time?.localeCompare(b.time))
                 .map((item, index) => `
                     <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex gap-2 items-center animate-fade-in" data-agenda-index="${index}">
@@ -1214,181 +833,111 @@
                                class="agenda-title-input bg-slate-900 p-2 rounded-lg text-white flex-1 text-sm border border-white/10 focus:border-blue-500 outline-none" 
                                placeholder="عنوان الفقرة">
                         <button onclick="this.closest('div').remove()" 
-                                class="text-red-500 hover:text-red-400 font-bold px-2 transition-colors"
-                                aria-label="حذف">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
+                                class="text-red-500 hover:text-red-400 font-bold px-2 transition-colors" 
+                                aria-label="حذف">✕</button>
                     </div>
                 `).join('');
         };
 
-        // ==================== عرض الأجندة في الصفحة الرئيسية ====================
-        const renderLandingAgenda = () => {
-            const agendaList = document.getElementById('landing-agenda-list');
-            if (!agendaList) return;
+        const renderAdminGalleryPreview = () => {
+            if (!elements.adminGalleryPreview) return;
             
-            if (!state.cloudData.agenda || state.cloudData.agenda.length === 0) {
-                agendaList.innerHTML = `
-                    <div class="text-center py-8 text-gray-500 text-sm border border-white/5 rounded-xl">
-                        📝 سيتم إضافة الأجندة قريباً
-                    </div>
-                `;
-                return;
-            }
-            
-            agendaList.innerHTML = state.cloudData.agenda
-                .sort((a, b) => a.time?.localeCompare(b.time))
-                .map(item => `
-                    <div class="agenda-item">
-                        <span class="agenda-time">${item.time || '--:--'}</span>
-                        <span class="font-bold text-white">${item.title || 'بدون عنوان'}</span>
+            elements.adminGalleryPreview.innerHTML = (state.cloudData.gallery || [])
+                .map((url, index) => `
+                    <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10">
+                        <img src="${url}" class="w-full h-full object-cover" alt="Gallery ${index + 1}">
+                        <button onclick="deleteGalleryImage(${index})" 
+                                class="absolute top-1 right-1 bg-red-500/80 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                                aria-label="حذف">✕</button>
                     </div>
                 `).join('');
         };
 
-        // ==================== عرض المعرض في الصفحة الرئيسية ====================
-        const renderLandingGallery = () => {
-            const galleryList = document.getElementById('landing-gallery-list');
-            if (!galleryList) return;
-            
-            if (!state.cloudData.gallery || state.cloudData.gallery.length === 0) {
-                galleryList.innerHTML = `
-                    <div class="col-span-2 text-center py-8 text-gray-500 text-sm border border-white/5 rounded-xl">
-                        📸 لا توجد صور مرفوعة بعد
-                    </div>
-                `;
-                return;
+        window.deleteGalleryImage = (index) => {
+            if (state.cloudData.gallery && state.cloudData.gallery[index]) {
+                state.cloudData.gallery.splice(index, 1);
+                renderAdminGalleryPreview();
             }
-            
-            galleryList.innerHTML = state.cloudData.gallery
-                .slice(0, 4)
-                .map(url => `
-                    <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-all cursor-pointer group" onclick="window.open('${url}', '_blank')">
-                        <img src="${url}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" alt="Gallery">
-                    </div>
-                `).join('');
         };
 
-        // ==================== العد التنازلي ====================
-        const updateCountdown = () => {
-            const container = document.getElementById('countdown-container');
-            if (!container) return;
-
-            const eventDate = state.cloudData.config?.eventDate;
-            if (!eventDate) {
-                container.innerHTML = '<div class="text-gray-500 bg-white/5 px-6 py-3 rounded-xl">📅 لم يتم تحديد موعد المؤتمر بعد</div>';
-                return;
-            }
-
-            const event = new Date(eventDate).getTime();
-            const now = new Date().getTime();
-            const distance = event - now;
-
-            if (distance < 0) {
-                container.innerHTML = '<div class="text-green-500 font-bold bg-green-500/10 px-6 py-3 rounded-xl border border-green-500/20">🎉 المؤتمر قد بدأ!</div>';
-                return;
-            }
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            container.innerHTML = `
-                <div class="countdown-item">
-                    <div class="countdown-number">${days}</div>
-                    <div class="countdown-label">يوم</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="countdown-number">${hours}</div>
-                    <div class="countdown-label">ساعة</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="countdown-number">${minutes}</div>
-                    <div class="countdown-label">دقيقة</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="countdown-number">${seconds}</div>
-                    <div class="countdown-label">ثانية</div>
-                </div>
+        window.addNewAgendaRow = () => {
+            const div = document.createElement('div');
+            div.className = "bg-white/5 p-3 rounded-xl border border-white/5 flex gap-2 items-center animate-fade-in";
+            div.innerHTML = `
+                <input type="time" class="agenda-time-input bg-slate-900 p-2 rounded-lg text-blue-400 font-bold w-24 text-sm border border-white/10">
+                <input type="text" class="agenda-title-input bg-slate-900 p-2 rounded-lg text-white flex-1 text-sm border border-white/10" placeholder="عنوان الفقرة">
+                <button onclick="this.closest('div').remove()" class="text-red-500 hover:text-red-400 font-bold px-2">✕</button>
             `;
+            elements.adminAgendaInputs.prepend(div);
         };
 
-        // تحديث العد التنازلي كل ثانية
-        setInterval(updateCountdown, 1000);
+        window.saveAllToCloud = async () => {
+            if (state.isSyncing) {
+                showToast('جاري المزامنة بالفعل...', 'error');
+                return;
+            }
 
-        // ==================== الساعة الحية ====================
-        const updateLiveClock = () => {
-            const clock = document.getElementById('live-clock');
-            if (clock) {
-                const now = new Date();
-                clock.textContent = now.toLocaleTimeString('ar-EG', { 
-                    hour: '2-digit', 
-                    minute: '2-digit', 
-                    second: '2-digit',
-                    hour12: false 
+            state.isSyncing = true;
+            showToast('جاري حفظ التغييرات...', 'success');
+
+            try {
+                const times = document.querySelectorAll('.agenda-time-input');
+                const titles = document.querySelectorAll('.agenda-title-input');
+                
+                const newAgenda = Array.from(times)
+                    .map((t, i) => ({
+                        time: t.value,
+                        title: titles[i]?.value || ''
+                    }))
+                    .filter(a => a.time && a.title.trim())
+                    .sort((a, b) => a.time.localeCompare(b.time));
+
+                const config = {
+                    logo: state.cloudData.config?.logo || '',
+                    eventDate: elements.confDate?.value || '',
+                    description: state.cloudData.config?.description || ''
+                };
+
+                await setDoc(doc(db, "conference", "data"), {
+                    agenda: newAgenda,
+                    gallery: state.cloudData.gallery || [],
+                    config: config,
+                    lastUpdated: new Date().toISOString()
                 });
-            }
-        };
-        setInterval(updateLiveClock, 1000);
 
-        // ==================== إدارة الأقسام ====================
-        window.showSection = (sectionId) => {
-            // إخفاء جميع الأقسام
-            const sections = ['landing-section', 'auth-forms', 'user-dashboard', 'admin-dashboard'];
-            sections.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('hidden');
-            });
-            
-            // إظهار القسم المطلوب
-            if (sectionId === 'login-section' || sectionId === 'register-section') {
-                const authForms = document.getElementById('auth-forms');
-                const loginSection = document.getElementById('login-section');
-                const registerSection = document.getElementById('register-section');
-                
-                if (authForms) authForms.classList.remove('hidden');
-                if (loginSection) loginSection.classList.add('hidden');
-                if (registerSection) registerSection.classList.add('hidden');
-                
-                const targetSection = document.getElementById(sectionId);
-                if (targetSection) targetSection.classList.remove('hidden');
-            } else {
-                const targetSection = document.getElementById(sectionId);
-                if (targetSection) targetSection.classList.remove('hidden');
+                showToast('تم حفظ جميع التغييرات بنجاح');
+            } catch (error) {
+                console.error('Save error:', error);
+                showToast('فشل في حفظ التغييرات', 'error');
+            } finally {
+                state.isSyncing = false;
             }
         };
 
-        // ==================== تسجيل الدخول ====================
-        document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-pass').value;
 
-            // تسجيل دخول المدير
-            if (email === "admin@civil.com" && password === "123") {
+            // التحقق من بيانات المسؤولين (5 مسؤولين)
+            const isAdmin = ADMIN_CREDENTIALS.some(admin => admin.email === email && admin.password === password);
+            
+            if (isAdmin) {
                 state.currentUser = { 
-                    name: "المدير", 
+                    name: "مدير", 
                     type: "admin",
                     email: email 
                 };
                 
-                // تحديث واجهة المستخدم
-                const welcomeName = document.getElementById('user-welcome-name');
-                const roleBadge = document.getElementById('user-role-badge');
-                const userAvatar = document.getElementById('user-avatar');
+                document.getElementById('user-welcome-name').textContent = "مرحباً أيها المدير";
+                document.getElementById('user-role-badge').textContent = "مدير النظام";
+                document.getElementById('user-avatar').textContent = "م";
                 
-                if (welcomeName) welcomeName.textContent = "مرحباً أيها المدير";
-                if (roleBadge) roleBadge.textContent = "مدير النظام";
-                if (userAvatar) userAvatar.textContent = "👑";
-                
-                if (elements.logoutBtn) elements.logoutBtn.classList.remove('hidden');
-                
+                elements.logoutBtn.classList.remove('hidden');
+                await loadUsers();
                 showSection('admin-dashboard');
-                showToast('مرحباً بك أيها المدير', 'success');
+                showToast(`مرحباً بك أيها المدير`, 'success');
                 return;
             }
 
@@ -1410,23 +959,13 @@
                         id: snap.docs[0].id 
                     };
                     
-                    // تحديث واجهة المستخدم
-                    const welcomeName = document.getElementById('user-welcome-name');
-                    const roleBadge = document.getElementById('user-role-badge');
-                    const userAvatar = document.getElementById('user-avatar');
+                    document.getElementById('user-welcome-name').textContent = `مرحباً ${userData.name || 'مستخدم'}`;
+                    document.getElementById('user-role-badge').textContent = userData.org || 'مشترك';
+                    document.getElementById('user-avatar').textContent = (userData.name || 'U').charAt(0);
                     
-                    if (welcomeName) welcomeName.textContent = `مرحباً ${userData.name || 'مستخدم'}`;
-                    if (roleBadge) roleBadge.textContent = userData.org || 'مشترك';
-                    if (userAvatar) userAvatar.textContent = (userData.name || 'U').charAt(0);
-                    
-                    if (elements.logoutBtn) elements.logoutBtn.classList.remove('hidden');
-                    
+                    elements.logoutBtn.classList.remove('hidden');
                     showSection('user-dashboard');
-                    
-                    // عرض الأجندة والمعرض للمستخدم
-                    renderUserAgenda();
-                    renderUserGallery();
-                    
+                    renderUserUI();
                     showToast('تم تسجيل الدخول بنجاح', 'success');
                 } else {
                     showToast('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'error');
@@ -1437,54 +976,7 @@
             }
         });
 
-        // عرض الأجندة للمستخدم
-        const renderUserAgenda = () => {
-            const agendaList = document.getElementById('user-agenda-list');
-            if (!agendaList) return;
-            
-            if (!state.cloudData.agenda || state.cloudData.agenda.length === 0) {
-                agendaList.innerHTML = `
-                    <div class="text-center py-8 text-gray-500 text-sm border border-white/5 rounded-xl">
-                        📝 لا توجد فقرات في الأجندة حالياً
-                    </div>
-                `;
-                return;
-            }
-            
-            agendaList.innerHTML = state.cloudData.agenda
-                .sort((a, b) => a.time?.localeCompare(b.time))
-                .map(item => `
-                    <div class="agenda-item">
-                        <span class="agenda-time">${item.time || '--:--'}</span>
-                        <span class="font-bold text-white">${item.title || 'بدون عنوان'}</span>
-                    </div>
-                `).join('');
-        };
-
-        // عرض المعرض للمستخدم
-        const renderUserGallery = () => {
-            const galleryList = document.getElementById('user-gallery-list');
-            if (!galleryList) return;
-            
-            if (!state.cloudData.gallery || state.cloudData.gallery.length === 0) {
-                galleryList.innerHTML = `
-                    <div class="col-span-4 text-center py-8 text-gray-500 text-sm border border-white/5 rounded-xl">
-                        📸 لا توجد صور مرفوعة بعد
-                    </div>
-                `;
-                return;
-            }
-            
-            galleryList.innerHTML = state.cloudData.gallery
-                .map(url => `
-                    <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-all cursor-pointer group" onclick="window.open('${url}', '_blank')">
-                        <img src="${url}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" alt="Gallery">
-                    </div>
-                `).join('');
-        };
-
-        // ==================== إنشاء حساب جديد ====================
-        document.getElementById('register-form')?.addEventListener('submit', async (e) => {
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const userData = {
@@ -1496,7 +988,6 @@
             };
 
             try {
-                // التحقق من عدم وجود البريد الإلكتروني مسبقاً
                 const q = query(collection(db, "users"), where("email", "==", userData.email));
                 const snap = await getDocs(q);
                 
@@ -1505,56 +996,92 @@
                     return;
                 }
 
-                // إضافة المستخدم الجديد
                 await addDoc(collection(db, "users"), userData);
                 
                 showToast('تم إنشاء الحساب بنجاح', 'success');
                 showSection('login-section');
                 
-                // مسح النموذج
                 document.getElementById('register-form').reset();
-                
             } catch (error) {
                 console.error('Registration error:', error);
                 showToast('حدث خطأ في إنشاء الحساب', 'error');
             }
         });
 
-        // ==================== تسجيل الخروج ====================
         window.handleLogout = () => {
             state.currentUser = null;
-            if (elements.logoutBtn) elements.logoutBtn.classList.add('hidden');
+            elements.logoutBtn.classList.add('hidden');
             showSection('landing-section');
             showToast('تم تسجيل الخروج بنجاح', 'success');
         };
 
-        // ==================== تحميل الإحصائيات ====================
-        const loadStats = async () => {
-            try {
-                const usersSnap = await getDocs(collection(db, "users"));
-                if (elements.statTotal) {
-                    elements.statTotal.textContent = `${usersSnap.size} مسجلين`;
-                }
-            } catch (error) {
-                console.error('Error loading stats:', error);
+        const updateLiveClock = () => {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ar-EG', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false 
+            });
+            
+            const clockElement = document.getElementById('live-clock');
+            if (clockElement) {
+                clockElement.textContent = timeString;
             }
         };
+        setInterval(updateLiveClock, 1000);
 
-        // تحميل الإحصائيات عند فتح لوحة التحكم
-        const originalShowSection = window.showSection;
-        window.showSection = (sectionId) => {
-            originalShowSection(sectionId);
-            if (sectionId === 'admin-dashboard') {
-                loadStats();
+        const updateCountdown = () => {
+            const container = document.getElementById('countdown-container');
+            if (!container) return;
+
+            const eventDate = state.cloudData.config?.eventDate;
+            if (!eventDate) {
+                container.innerHTML = '<div class="text-gray-500">لم يتم تحديد موعد المؤتمر بعد</div>';
+                return;
             }
-        };
 
-        // ==================== التهيئة ====================
+            const event = new Date(eventDate).getTime();
+            const now = new Date().getTime();
+            const distance = event - now;
+
+            if (distance < 0) {
+                container.innerHTML = '<div class="text-green-500 font-bold">المؤتمر قد بدأ!</div>';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            container.innerHTML = `
+                <div class="glass-card px-4 py-3 rounded-xl text-center min-w-[70px]">
+                    <div class="text-2xl font-black text-blue-500">${days}</div>
+                    <div class="text-xs text-gray-400">يوم</div>
+                </div>
+                <div class="glass-card px-4 py-3 rounded-xl text-center min-w-[70px]">
+                    <div class="text-2xl font-black text-blue-500">${hours}</div>
+                    <div class="text-xs text-gray-400">ساعة</div>
+                </div>
+                <div class="glass-card px-4 py-3 rounded-xl text-center min-w-[70px]">
+                    <div class="text-2xl font-black text-blue-500">${minutes}</div>
+                    <div class="text-xs text-gray-400">دقيقة</div>
+                </div>
+                <div class="glass-card px-4 py-3 rounded-xl text-center min-w-[70px]">
+                    <div class="text-2xl font-black text-blue-500">${seconds}</div>
+                    <div class="text-xs text-gray-400">ثانية</div>
+                </div>
+            `;
+        };
+        setInterval(updateCountdown, 1000);
+
         document.addEventListener('DOMContentLoaded', () => {
             showSection('landing-section');
-            renderLandingAgenda();
-            renderLandingGallery();
+            loadUsers();
         });
+
+        window.showToast = showToast;
     </script>
 </body>
 </html>
