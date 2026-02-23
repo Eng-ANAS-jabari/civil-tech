@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- تحميل Firebase بطريقة أكثر استقراراً -->
+    <!-- تحميل Firebase -->
     <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
     <style>
@@ -98,6 +98,126 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* معرض الصور */
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            aspect-ratio: 1;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover::after {
+            opacity: 1;
+        }
+
+        /* نافذة عرض الصور المكبرة */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: background 0.3s ease;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: background 0.3s ease;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .lightbox-nav.prev {
+            left: 20px;
+        }
+
+        .lightbox-nav.next {
+            right: 20px;
+        }
+
+        .lightbox-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body class="hero-pattern min-h-screen flex flex-col">
@@ -106,6 +226,15 @@
     <div id="loading-screen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center flex-col gap-4">
         <div class="loading-spinner"></div>
         <div class="text-blue-500 font-bold">جاري تحميل النظام...</div>
+    </div>
+
+    <!-- نافذة عرض الصور المكبرة -->
+    <div id="lightbox" class="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">×</button>
+        <button class="lightbox-nav prev" onclick="navigateLightbox(-1)">‹</button>
+        <img id="lightbox-img" src="" alt="">
+        <button class="lightbox-nav next" onclick="navigateLightbox(1)">›</button>
+        <div id="lightbox-counter" class="lightbox-counter"></div>
     </div>
 
     <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
@@ -400,12 +529,18 @@
                         
                         <p class="text-sm text-gray-400">الصور الموجودة في مجلد images:</p>
                         
-                        <button onclick="scanImagesFolder()" 
-                                class="w-full py-3 bg-white/5 border-2 border-dashed border-white/20 rounded-xl hover:bg-white/10 transition-colors text-sm">
-                            🔍 مسح مجلد images
-                        </button>
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <button onclick="scanImagesFolder()" 
+                                    class="py-2 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white rounded-xl text-xs font-black transition-colors">
+                                🔍 مسح مجلد images
+                            </button>
+                            <button onclick="syncGalleryToFirebase()" 
+                                    class="py-2 bg-green-600/20 hover:bg-green-600 text-green-400 hover:text-white rounded-xl text-xs font-black transition-colors">
+                                💾 حفظ المعرض
+                            </button>
+                        </div>
                         
-                        <div id="admin-gallery-preview" class="grid grid-cols-4 gap-2"></div>
+                        <div id="admin-gallery-preview" class="grid grid-cols-4 gap-2 max-h-[300px] overflow-y-auto p-2"></div>
                     </div>
                 </div>
             </div>
@@ -445,6 +580,51 @@
         } catch (error) {
             console.error('❌ Firebase initialization error:', error);
         }
+
+        // متغيرات نافذة عرض الصور
+        let currentImageIndex = 0;
+        let galleryImages = [];
+
+        // دوال نافذة عرض الصور
+        window.openLightbox = (index) => {
+            currentImageIndex = index;
+            updateLightboxImage();
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeLightbox = () => {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        };
+
+        window.navigateLightbox = (direction) => {
+            currentImageIndex += direction;
+            if (currentImageIndex < 0) currentImageIndex = galleryImages.length - 1;
+            if (currentImageIndex >= galleryImages.length) currentImageIndex = 0;
+            updateLightboxImage();
+        };
+
+        const updateLightboxImage = () => {
+            const img = document.getElementById('lightbox-img');
+            const counter = document.getElementById('lightbox-counter');
+            
+            if (galleryImages.length > 0 && currentImageIndex >= 0 && currentImageIndex < galleryImages.length) {
+                img.src = galleryImages[currentImageIndex];
+                counter.textContent = `${currentImageIndex + 1} / ${galleryImages.length}`;
+            }
+        };
+
+        // إغلاق النافذة بالضغط على ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            } else if (e.key === 'ArrowLeft') {
+                navigateLightbox(-1);
+            } else if (e.key === 'ArrowRight') {
+                navigateLightbox(1);
+            }
+        });
 
         // Admin accounts (5 admins) - سيتم حفظها في localStorage
         let adminAccounts = JSON.parse(localStorage.getItem('adminAccounts')) || [
@@ -556,36 +736,80 @@
             }
         };
 
-        // Load local images from images folder
-        const loadLocalImages = () => {
-            const gallery = [];
-            // Common image extensions
-            const extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        // مسح مجلد images والبحث عن الصور الموجودة فعلياً
+        const scanImagesFolder = async () => {
+            showToast('جاري مسح مجلد images...', 'success');
             
-            // Try to load up to 20 images
-            for (let i = 1; i <= 20; i++) {
-                for (let ext of extensions) {
-                    gallery.push(`images/image${i}.${ext}`);
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+            const foundImages = [];
+            
+            // قائمة بأسماء الصور المحتملة
+            const possibleNames = [
+                // أسماء رقمية
+                ...Array.from({ length: 50 }, (_, i) => `image${i + 1}`),
+                ...Array.from({ length: 20 }, (_, i) => `photo${i + 1}`),
+                ...Array.from({ length: 20 }, (_, i) => `img${i + 1}`),
+                ...Array.from({ length: 20 }, (_, i) => `pic${i + 1}`),
+                // أسماء وصفية
+                'logo', 'background', 'banner', 'header', 'footer',
+                'conference', 'event', 'workshop', 'seminar', 'meeting',
+                'speaker', 'audience', 'presentation', 'stage', 'hall',
+                'sponsor', 'partner', 'exhibition', 'booth', 'stand',
+                'team', 'group', 'attendees', 'participants', 'guests',
+                'main', 'hero', 'cover', 'thumbnail', 'featured'
+            ];
+
+            // تجربة كل اسم مع كل امتداد
+            for (const name of possibleNames) {
+                for (const ext of imageExtensions) {
+                    const imagePath = `images/${name}.${ext}`;
+                    try {
+                        const response = await fetch(imagePath, { method: 'HEAD' });
+                        if (response.ok) {
+                            foundImages.push(imagePath);
+                            console.log(`✅ Found image: ${imagePath}`);
+                        }
+                    } catch (e) {
+                        // تجاهل الأخطاء
+                    }
                 }
             }
+
+            // إزالة التكرارات
+            const uniqueImages = [...new Set(foundImages)];
             
-            // Also look for any files that might be named differently
-            const additionalImages = [
-                'images/photo1.jpg',
-                'images/photo2.jpg',
-                'images/gallery1.jpg',
-                'images/gallery2.jpg',
-                'images/event1.jpg',
-                'images/event2.jpg'
-            ];
+            if (uniqueImages.length > 0) {
+                state.cloudData.gallery = uniqueImages;
+                galleryImages = uniqueImages;
+                showToast(`تم العثور على ${uniqueImages.length} صورة`, 'success');
+            } else {
+                showToast('لم يتم العثور على صور في مجلد images', 'error');
+            }
             
-            return [...new Set([...gallery, ...additionalImages])];
+            renderAdminGalleryPreview();
+            renderLandingContent();
+            
+            return uniqueImages;
         };
 
-        window.scanImagesFolder = () => {
-            state.cloudData.gallery = loadLocalImages();
-            renderAdminGalleryPreview();
-            showToast('تم مسح مجلد images');
+        window.scanImagesFolder = scanImagesFolder;
+
+        // مزامنة المعرض مع Firebase
+        window.syncGalleryToFirebase = async () => {
+            if (!db) {
+                showToast('Firebase غير مهيأ', 'error');
+                return;
+            }
+
+            try {
+                await db.collection("conference").doc("data").update({
+                    gallery: state.cloudData.gallery || []
+                });
+                showToast('تم حفظ المعرض في Firebase', 'success');
+            } catch (error) {
+                console.error('Error syncing gallery:', error);
+                showToast('فشل في حفظ المعرض', 'error');
+            }
         };
 
         const updateLogoDisplay = (url) => {
@@ -764,11 +988,12 @@
 
             const galleryList = document.getElementById('landing-gallery-list');
             if (galleryList) {
-                galleryList.innerHTML = (state.cloudData.gallery || [])
-                    .slice(0, 4)
-                    .map(url => `
-                        <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors cursor-pointer group" onclick="window.open('${url}', '_blank')">
-                            <img src="${url}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" alt="Gallery" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
+                galleryImages = state.cloudData.gallery || [];
+                galleryList.innerHTML = galleryImages
+                    .slice(0, 6)
+                    .map((url, index) => `
+                        <div class="gallery-item" onclick="openLightbox(${index})">
+                            <img src="${url}" loading="lazy" alt="Gallery ${index + 1}" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
                         </div>
                     `).join('');
             }
@@ -790,10 +1015,11 @@
 
             const galleryList = document.getElementById('user-gallery-list');
             if (galleryList) {
-                galleryList.innerHTML = (state.cloudData.gallery || [])
-                    .map(url => `
-                        <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors cursor-pointer" onclick="window.open('${url}', '_blank')">
-                            <img src="${url}" loading="lazy" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300" alt="Gallery" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
+                galleryImages = state.cloudData.gallery || [];
+                galleryList.innerHTML = galleryImages
+                    .map((url, index) => `
+                        <div class="gallery-item" onclick="openLightbox(${index})">
+                            <img src="${url}" loading="lazy" alt="Gallery ${index + 1}" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
                         </div>
                     `).join('');
             }
@@ -821,13 +1047,17 @@
         const renderAdminGalleryPreview = () => {
             if (!elements.adminGalleryPreview) return;
             
-            elements.adminGalleryPreview.innerHTML = (state.cloudData.gallery || [])
+            galleryImages = state.cloudData.gallery || [];
+            elements.adminGalleryPreview.innerHTML = galleryImages
                 .map((url, index) => `
                     <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10">
                         <img src="${url}" class="w-full h-full object-cover" alt="Gallery ${index + 1}" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
                         <button onclick="removeGalleryImage(${index})" 
                                 class="absolute top-1 right-1 bg-red-500/80 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity"
                                 aria-label="حذف">✕</button>
+                        <div class="absolute bottom-1 left-1 text-xs bg-black/50 text-white px-1 rounded">
+                            ${index + 1}
+                        </div>
                     </div>
                 `).join('');
         };
@@ -835,7 +1065,9 @@
         window.removeGalleryImage = (index) => {
             if (state.cloudData.gallery && state.cloudData.gallery[index]) {
                 state.cloudData.gallery.splice(index, 1);
+                galleryImages = state.cloudData.gallery;
                 renderAdminGalleryPreview();
+                renderLandingContent();
             }
         };
 
@@ -927,6 +1159,9 @@
                 if (elements.adminName) {
                     elements.adminName.placeholder = admin.name;
                 }
+                
+                // Scan images folder automatically for admin
+                setTimeout(() => scanImagesFolder(), 1000);
                 return;
             }
 
@@ -1074,7 +1309,7 @@
                     <div class="text-xs text-gray-400">ثانية</div>
                 </div>
             `;
-        };ٍ
+        };
         setInterval(updateCountdown, 1000);
 
         // Initialize
@@ -1083,9 +1318,6 @@
             
             // Clear existing data
             state.cloudData = { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } };
-            
-            // Try to load local images
-            state.cloudData.gallery = loadLocalImages();
             
             updateUI();
             
@@ -1100,4 +1332,4 @@
         window.showToast = showToast;
     </script>
 </body>
-</html>ٍ
+</html>
