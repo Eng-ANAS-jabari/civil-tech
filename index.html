@@ -7,6 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- تحميل Firebase بطريقة أكثر استقراراً -->
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
     <style>
         :root { 
             --primary: #3b82f6; 
@@ -82,11 +85,28 @@
         }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
         
-        .will-change-transform { will-change: transform; }
-        .will-change-opacity { will-change: opacity; }
+        .loading-spinner {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top: 3px solid #3b82f6;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="hero-pattern min-h-screen flex flex-col">
+
+    <!-- شاشة التحميل -->
+    <div id="loading-screen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center flex-col gap-4">
+        <div class="loading-spinner"></div>
+        <div class="text-blue-500 font-bold">جاري تحميل النظام...</div>
+    </div>
 
     <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
@@ -306,6 +326,30 @@
                 </div>
             </div>
 
+            <!-- Admin Profile Settings -->
+            <div class="glass p-6 rounded-2xl space-y-4">
+                <h4 class="text-lg font-black">👤 إعدادات حساب المسؤول</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">الاسم</label>
+                        <input type="text" id="admin-name" class="w-full p-3 bg-white/5 rounded-xl border border-white/10">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">البريد الإلكتروني الجديد</label>
+                        <input type="email" id="admin-new-email" class="w-full p-3 bg-white/5 rounded-xl border border-white/10">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">كلمة المرور الجديدة</label>
+                        <input type="password" id="admin-new-password" class="w-full p-3 bg-white/5 rounded-xl border border-white/10">
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="updateAdminProfile()" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold transition-colors">
+                            تحديث البيانات
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Users Management -->
             <div class="glass p-6 rounded-2xl space-y-4">
                 <h4 class="text-lg font-black">👥 إدارة المسجلين</h4>
@@ -371,26 +415,18 @@
                     class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 py-4 md:py-5 rounded-xl font-black text-lg md:text-xl shadow-lg hover:shadow-xl transition-all focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900">
                 💾 حفظ ومزامنة التغييرات
             </button>
-
-            <!-- Change Password Modal -->
-            <div id="change-password-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-                <div class="glass p-6 rounded-2xl max-w-md w-full">
-                    <h3 class="text-xl font-black mb-4">تغيير كلمة المرور</h3>
-                    <input type="hidden" id="change-password-email">
-                    <input type="password" id="new-password" placeholder="كلمة المرور الجديدة" class="w-full p-3 bg-white/5 rounded-xl border border-white/10 mb-3">
-                    <div class="flex gap-2">
-                        <button onclick="changeAdminPassword()" class="flex-1 bg-blue-600 py-2 rounded-xl">حفظ</button>
-                        <button onclick="closePasswordModal()" class="flex-1 bg-white/10 py-2 rounded-xl">إلغاء</button>
-                    </div>
-                </div>
-            </div>
         </section>
     </main>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, getDocs, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    <script>
+        // إخفاء شاشة التحميل بعد تحميل الصفحة
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('loading-screen').style.display = 'none';
+            }, 1000);
+        });
 
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAq46_s0TiEBJTrhOz05St1zU2FU3PLIao",
             authDomain: "civiltech-e0a16.firebaseapp.com",
@@ -400,11 +436,18 @@
             appId: "1:859519915000:web:fd506ad7290e116e073c0d"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        // Initialize Firebase مع التحقق من الأخطاء
+        let app, db;
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            console.log('✅ Firebase initialized successfully');
+        } catch (error) {
+            console.error('❌ Firebase initialization error:', error);
+        }
 
-        // Admin accounts (5 admins)
-        const adminAccounts = [
+        // Admin accounts (5 admins) - سيتم حفظها في localStorage
+        let adminAccounts = JSON.parse(localStorage.getItem('adminAccounts')) || [
             { email: "admin1@civil.com", password: "admin123", name: "المدير الأول" },
             { email: "admin2@civil.com", password: "admin123", name: "المدير الثاني" },
             { email: "admin3@civil.com", password: "admin123", name: "المدير الثالث" },
@@ -440,7 +483,10 @@
             statsGallery: document.getElementById('stats-gallery'),
             adminAgendaInputs: document.getElementById('admin-agenda-inputs'),
             adminGalleryPreview: document.getElementById('admin-gallery-preview'),
-            usersList: document.getElementById('users-list')
+            usersList: document.getElementById('users-list'),
+            adminName: document.getElementById('admin-name'),
+            adminNewEmail: document.getElementById('admin-new-email'),
+            adminNewPassword: document.getElementById('admin-new-password')
         };
 
         const showToast = (message, type = 'success', duration = 3000) => {
@@ -472,6 +518,44 @@
             }
         };
 
+        // تحديث بيانات المسؤول
+        window.updateAdminProfile = () => {
+            if (!state.currentUser || state.currentUser.type !== 'admin') return;
+            
+            const newName = elements.adminName.value;
+            const newEmail = elements.adminNewEmail.value;
+            const newPassword = elements.adminNewPassword.value;
+            
+            // Find current admin
+            const adminIndex = adminAccounts.findIndex(a => a.email === state.currentUser.email);
+            
+            if (adminIndex !== -1) {
+                if (newName) adminAccounts[adminIndex].name = newName;
+                if (newEmail) adminAccounts[adminIndex].email = newEmail;
+                if (newPassword) adminAccounts[adminIndex].password = newPassword;
+                
+                // Save to localStorage
+                localStorage.setItem('adminAccounts', JSON.stringify(adminAccounts));
+                
+                // Update current user
+                state.currentUser = { 
+                    ...adminAccounts[adminIndex], 
+                    type: "admin" 
+                };
+                
+                // Update UI
+                document.getElementById('user-welcome-name').textContent = `مرحباً ${adminAccounts[adminIndex].name}`;
+                document.getElementById('user-avatar').textContent = adminAccounts[adminIndex].name.charAt(0);
+                
+                showToast('تم تحديث البيانات بنجاح');
+                
+                // Clear fields
+                elements.adminName.value = '';
+                elements.adminNewEmail.value = '';
+                elements.adminNewPassword.value = '';
+            }
+        };
+
         // Load local images from images folder
         const loadLocalImages = () => {
             const gallery = [];
@@ -481,13 +565,11 @@
             // Try to load up to 20 images
             for (let i = 1; i <= 20; i++) {
                 for (let ext of extensions) {
-                    // Check if image exists (we'll let the onerror handler deal with it)
                     gallery.push(`images/image${i}.${ext}`);
                 }
             }
             
             // Also look for any files that might be named differently
-            // You can add specific image names here if needed
             const additionalImages = [
                 'images/photo1.jpg',
                 'images/photo2.jpg',
@@ -497,7 +579,7 @@
                 'images/event2.jpg'
             ];
             
-            return [...new Set([...gallery, ...additionalImages])]; // Remove duplicates
+            return [...new Set([...gallery, ...additionalImages])];
         };
 
         window.scanImagesFolder = () => {
@@ -534,7 +616,12 @@
         // Load users from Firestore
         const loadUsers = async () => {
             try {
-                const querySnapshot = await getDocs(collection(db, "users"));
+                if (!db) {
+                    console.error('Firestore not initialized');
+                    return;
+                }
+                
+                const querySnapshot = await db.collection("users").get();
                 state.users = [];
                 querySnapshot.forEach((doc) => {
                     state.users.push({ id: doc.id, ...doc.data() });
@@ -551,6 +638,7 @@
                 renderUsersList();
             } catch (error) {
                 console.error('Error loading users:', error);
+                showToast('خطأ في تحميل المستخدمين', 'error');
             }
         };
 
@@ -572,10 +660,11 @@
         window.deleteUser = async (userId) => {
             if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
                 try {
-                    await deleteDoc(doc(db, "users", userId));
+                    await db.collection("users").doc(userId).delete();
                     showToast('تم حذف المستخدم');
                     loadUsers();
                 } catch (error) {
+                    console.error('Error deleting user:', error);
                     showToast('فشل حذف المستخدم', 'error');
                 }
             }
@@ -597,26 +686,35 @@
             showToast('تم تصدير الملف');
         };
 
-        // Real-time sync
-        const unsubscribe = onSnapshot(
-            doc(db, "conference", "data"),
-            (snap) => {
-                if (snap.exists()) {
-                    state.cloudData = snap.data();
-                } else {
-                    // Initialize with empty data
-                    state.cloudData = { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } };
-                }
-                updateUI();
-                loadUsers();
-                elements.statusBadge.classList.remove('hidden');
-            },
-            (error) => {
-                console.error('Sync error:', error);
-                elements.statusBadge.classList.add('hidden');
-                showToast('مشكلة في الاتصال بالخادم', 'error');
+        // Real-time sync مع معالجة الأخطاء
+        const setupRealtimeSync = () => {
+            if (!db) {
+                console.error('Cannot setup sync: Firestore not initialized');
+                return;
             }
-        );
+
+            try {
+                db.collection("conference").doc("data").onSnapshot(
+                    (snap) => {
+                        if (snap.exists) {
+                            state.cloudData = snap.data();
+                        } else {
+                            state.cloudData = { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } };
+                        }
+                        updateUI();
+                        loadUsers();
+                        elements.statusBadge.classList.remove('hidden');
+                    },
+                    (error) => {
+                        console.error('Sync error:', error);
+                        elements.statusBadge.classList.add('hidden');
+                        showToast('مشكلة في الاتصال بالخادم', 'error');
+                    }
+                );
+            } catch (error) {
+                console.error('Error setting up sync:', error);
+            }
+        };
 
         const updateUI = () => {
             updateLogoDisplay(state.cloudData.config?.logo);
@@ -640,6 +738,11 @@
                 renderAdminGalleryPreview();
                 if (elements.confDate) {
                     elements.confDate.value = state.cloudData.config?.eventDate || '';
+                }
+                
+                // Fill admin profile fields
+                if (state.currentUser && state.currentUser.type === 'admin') {
+                    elements.adminName.placeholder = state.currentUser.name || '';
                 }
             }
         };
@@ -753,6 +856,11 @@
                 return;
             }
 
+            if (!db) {
+                showToast('Firebase غير مهيأ', 'error');
+                return;
+            }
+
             state.isSyncing = true;
             showToast('جاري حفظ التغييرات...', 'success');
 
@@ -773,7 +881,7 @@
                     eventDate: elements.confDate?.value || ''
                 };
 
-                await setDoc(doc(db, "conference", "data"), {
+                await db.collection("conference").doc("data").set({
                     agenda: newAgenda,
                     gallery: state.cloudData.gallery || [],
                     config: config,
@@ -796,13 +904,14 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-pass').value;
 
-            // Check admin accounts
+            // Check admin accounts (from localStorage)
             const admin = adminAccounts.find(a => a.email === email && a.password === password);
             if (admin) {
                 state.currentUser = { 
                     name: admin.name, 
                     type: "admin",
-                    email: email 
+                    email: admin.email,
+                    originalEmail: admin.email
                 };
                 
                 document.getElementById('user-welcome-name').textContent = `مرحباً ${admin.name}`;
@@ -813,25 +922,32 @@
                 showSection('admin-dashboard');
                 showToast(`مرحباً بك ${admin.name}`, 'success');
                 loadUsers();
+                
+                // Set placeholder for admin name
+                if (elements.adminName) {
+                    elements.adminName.placeholder = admin.name;
+                }
                 return;
             }
 
             // User login
             try {
-                const q = query(
-                    collection(db, "users"), 
-                    where("email", "==", email), 
-                    where("pass", "==", password)
-                );
+                if (!db) {
+                    showToast('قاعدة البيانات غير متصلة', 'error');
+                    return;
+                }
+
+                const querySnapshot = await db.collection("users")
+                    .where("email", "==", email)
+                    .where("pass", "==", password)
+                    .get();
                 
-                const snap = await getDocs(q);
-                
-                if (!snap.empty) {
-                    const userData = snap.docs[0].data();
+                if (!querySnapshot.empty) {
+                    const userData = querySnapshot.docs[0].data();
                     state.currentUser = { 
                         ...userData, 
                         type: "user",
-                        id: snap.docs[0].id 
+                        id: querySnapshot.docs[0].id 
                     };
                     
                     document.getElementById('user-welcome-name').textContent = `مرحباً ${userData.name || 'مستخدم'}`;
@@ -864,15 +980,21 @@
             };
 
             try {
-                const q = query(collection(db, "users"), where("email", "==", userData.email));
-                const snap = await getDocs(q);
+                if (!db) {
+                    showToast('قاعدة البيانات غير متصلة', 'error');
+                    return;
+                }
+
+                const querySnapshot = await db.collection("users")
+                    .where("email", "==", userData.email)
+                    .get();
                 
-                if (!snap.empty) {
+                if (!querySnapshot.empty) {
                     showToast('البريد الإلكتروني مسجل مسبقاً', 'error');
                     return;
                 }
 
-                await setDoc(doc(collection(db, "users")), userData);
+                await db.collection("users").add(userData);
                 
                 showToast('تم إنشاء الحساب بنجاح', 'success');
                 showSection('login-section');
@@ -883,36 +1005,6 @@
                 showToast('حدث خطأ في إنشاء الحساب', 'error');
             }
         });
-
-        // Password change functionality
-        window.showChangePassword = (email) => {
-            document.getElementById('change-password-email').value = email;
-            document.getElementById('change-password-modal').classList.remove('hidden');
-            document.getElementById('change-password-modal').classList.add('flex');
-        };
-
-        window.closePasswordModal = () => {
-            document.getElementById('change-password-modal').classList.add('hidden');
-            document.getElementById('change-password-modal').classList.remove('flex');
-        };
-
-        window.changeAdminPassword = () => {
-            const email = document.getElementById('change-password-email').value;
-            const newPass = document.getElementById('new-password').value;
-            
-            if (!newPass) {
-                showToast('الرجاء إدخال كلمة المرور الجديدة', 'error');
-                return;
-            }
-
-            const admin = adminAccounts.find(a => a.email === email);
-            if (admin) {
-                admin.password = newPass;
-                showToast('تم تغيير كلمة المرور');
-                closePasswordModal();
-                document.getElementById('new-password').value = '';
-            }
-        };
 
         // Logout Handler
         window.handleLogout = () => {
@@ -982,7 +1074,7 @@
                     <div class="text-xs text-gray-400">ثانية</div>
                 </div>
             `;
-        };
+        };ٍ
         setInterval(updateCountdown, 1000);
 
         // Initialize
@@ -996,9 +1088,16 @@
             state.cloudData.gallery = loadLocalImages();
             
             updateUI();
+            
+            // Setup realtime sync if Firebase is initialized
+            if (db) {
+                setupRealtimeSync();
+            } else {
+                showToast('خطأ في الاتصال بقاعدة البيانات', 'error');
+            }
         });
 
         window.showToast = showToast;
     </script>
 </body>
-</html>
+</html>ٍ
