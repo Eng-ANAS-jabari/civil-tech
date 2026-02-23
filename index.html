@@ -377,9 +377,9 @@
                         <p class="text-sm text-gray-400">الصور الموجودة في مجلد images:</p>
                         
                         <div class="flex gap-2">
-                            <button onclick="scanImagesFolder()" 
+                            <button onclick="loadImagesFromGithub()" 
                                     class="flex-1 py-3 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white rounded-xl text-sm font-bold transition-colors">
-                                🔍 مسح مجلد images
+                                🔍 تحميل الصور من GitHub
                             </button>
                             <button onclick="addSampleImages()" 
                                     class="flex-1 py-3 bg-green-600/20 hover:bg-green-600 text-green-400 hover:text-white rounded-xl text-sm font-bold transition-colors">
@@ -387,14 +387,16 @@
                             </button>
                         </div>
                         
-                        <div class="mt-2">
-                            <label class="block text-sm font-bold text-gray-400 mb-2">أو اختر صوراً من جهازك</label>
-                            <input type="file" 
-                                   id="local-images" 
-                                   multiple 
-                                   accept="image/*"
-                                   class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
-                                   onchange="handleLocalImageSelection(this.files)">
+                        <div class="mt-4 p-4 bg-blue-600/10 rounded-xl border border-blue-500/20">
+                            <h5 class="font-bold text-blue-400 mb-2">📌 الصور المتوقعة في مجلد images:</h5>
+                            <ul class="text-xs text-gray-400 space-y-1 font-mono">
+                                <li>• images/logo.png - شعار الموقع</li>
+                                <li>• images/1.jpg, images/2.jpg, images/3.jpg - صور مرقمة</li>
+                                <li>• images/photo1.jpg, images/photo2.jpg - صور عامة</li>
+                                <li>• images/gallery1.jpg, images/gallery2.jpg - صور معرض</li>
+                                <li>• images/event1.jpg, images/event2.jpg - صور فعاليات</li>
+                                <li>• images/conference1.jpg - صور مؤتمرات</li>
+                            </ul>
                         </div>
                         
                         <div id="admin-gallery-preview" class="grid grid-cols-4 gap-2 mt-4"></div>
@@ -510,41 +512,61 @@
             });
         };
 
-        // Scan images folder for local images
-        window.scanImagesFolder = async () => {
-            showToast('جاري مسح مجلد images...', 'success');
+        // Load images from GitHub repository
+        window.loadImagesFromGithub = async () => {
+            showToast('جاري تحميل الصور من GitHub...', 'success');
             
-            const foundImages = [];
-            const extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-            const baseNames = [
-                '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
-                'photo1', 'photo2', 'photo3', 'photo4',
-                'gallery1', 'gallery2', 'gallery3', 'gallery4',
-                'image1', 'image2', 'image3', 'image4',
-                'event1', 'event2', 'event3',
-                'conference1', 'conference2', 'conference3',
-                'background', 'header', 'footer', 'main'
+            // قائمة بأسماء الصور المتوقعة في مجلد images
+            // عدل هذه القائمة حسب أسماء الصور الموجودة فعلاً في مجلد images
+            const imageNames = [
+                // صور مرقمة
+                '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg', '10.jpg',
+                '1.png', '2.png', '3.png', '4.png', '5.png',
+                
+                // صور عامة
+                'photo1.jpg', 'photo2.jpg', 'photo3.jpg', 'photo4.jpg',
+                'image1.jpg', 'image2.jpg', 'image3.jpg', 'image4.jpg',
+                
+                // صور معرض
+                'gallery1.jpg', 'gallery2.jpg', 'gallery3.jpg', 'gallery4.jpg',
+                
+                // صور فعاليات
+                'event1.jpg', 'event2.jpg', 'event3.jpg',
+                'conference1.jpg', 'conference2.jpg', 'conference3.jpg',
+                
+                // صور إضافية
+                'background.jpg', 'header.jpg', 'footer.jpg', 'main.jpg',
+                'team1.jpg', 'team2.jpg', 'team3.jpg',
+                'sponsor1.jpg', 'sponsor2.jpg', 'sponsor3.jpg'
             ];
             
-            // Try all possible combinations
-            for (const name of baseNames) {
-                for (const ext of extensions) {
-                    const url = `images/${name}.${ext}`;
-                    const exists = await checkImageExists(url);
-                    if (exists) {
-                        foundImages.push(url);
-                        console.log('Found image:', url);
-                    }
+            const foundImages = [];
+            
+            // تحميل الصورة التجريبية أولاً للتأكد من الاتصال
+            const testImage = 'images/logo.png';
+            const testExists = await checkImageExists(testImage);
+            
+            if (testExists) {
+                foundImages.push(testImage);
+            }
+            
+            // تحقق من وجود كل صورة
+            for (const fileName of imageNames) {
+                const imgPath = `images/${fileName}`;
+                const exists = await checkImageExists(imgPath);
+                if (exists) {
+                    foundImages.push(imgPath);
+                    console.log('وجدت صورة:', imgPath);
                 }
             }
             
-            // Remove duplicates
+            // إزالة التكرارات
             const uniqueImages = [...new Set(foundImages)];
             
             if (uniqueImages.length > 0) {
                 state.cloudData.gallery = uniqueImages;
                 renderGallery();
-                showToast(`تم العثور على ${uniqueImages.length} صورة في مجلد images`);
+                showToast(`تم تحميل ${uniqueImages.length} صورة من GitHub`);
             } else {
                 showToast('لم يتم العثور على صور في مجلد images', 'error');
             }
@@ -562,30 +584,6 @@
             ];
             renderGallery();
             showToast('تم إضافة صور تجريبية');
-        };
-
-        // Handle local image selection from file input
-        window.handleLocalImageSelection = (files) => {
-            if (!files || files.length === 0) return;
-            
-            const newImages = [];
-            
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                // Create local URL for the image
-                const url = URL.createObjectURL(file);
-                newImages.push(url);
-            }
-            
-            // Add new images to gallery
-            if (!state.cloudData.gallery) {
-                state.cloudData.gallery = [];
-            }
-            state.cloudData.gallery = [...state.cloudData.gallery, ...newImages];
-            
-            // Update display
-            renderGallery();
-            showToast(`تمت إضافة ${newImages.length} صورة`);
         };
 
         // Remove gallery image
@@ -1108,6 +1106,13 @@
             state.cloudData = { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } };
             
             updateUI();
+            
+            // محاولة تحميل الصور تلقائياً عند فتح الصفحة
+            setTimeout(() => {
+                if (state.cloudData.gallery.length === 0) {
+                    loadImagesFromGithub();
+                }
+            }, 1000);
         });
 
         window.showToast = showToast;
