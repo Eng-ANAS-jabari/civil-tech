@@ -6,219 +6,674 @@
     <title>نظام CIVIL TECH 2025 - النسخة الاحترافية</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --primary: #3b82f6; --secondary: #1e293b; --accent: #f59e0b; }
-        body { font-family: 'Cairo', sans-serif; scroll-behavior: smooth; background-color: #020617; color: #f8fafc; }
+        :root { 
+            --primary: #3b82f6; 
+            --secondary: #1e293b; 
+            --accent: #f59e0b;
+            --transition-default: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background-color: #020617; 
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        
         .hero-pattern { 
             background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
             background-size: 40px 40px;
         }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease; }
-        .glass-card:hover { background: rgba(255, 255, 255, 0.07); transform: translateY(-5px); border-color: var(--primary); }
         
-        .animate-fade-in { animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .glass { 
+            background: rgba(30, 41, 59, 0.7); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
         
-        .live-indicator { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); animation: pulse-red 2s infinite; }
-        @keyframes pulse-red { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            transition: var(--transition-default);
+        }
+        
+        .glass-card:hover { 
+            background: rgba(255, 255, 255, 0.07); 
+            transform: translateY(-5px); 
+            border-color: var(--primary); 
+        }
+        
+        .animate-fade-in { 
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        .live-indicator { 
+            width: 8px; 
+            height: 8px; 
+            background: #ef4444; 
+            border-radius: 50%; 
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); 
+            animation: pulse-red 2s infinite; 
+        }
+        
+        @keyframes pulse-red { 
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 
+        }
 
-        #toast-container { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; }
-        .toast-msg { background: #10b981; color: white; padding: 1rem 2rem; border-radius: 1rem; font-weight: bold; margin-bottom: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); display: flex; align-items: center; gap: 10px; opacity: 0; transform: translateY(100%); transition: all 0.3s; }
-        .toast-msg.show { opacity: 1; transform: translateY(0); }
-        
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { 
+            background: #334155; 
+            border-radius: 10px;
+            border: 2px solid #0f172a;
+        }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        .will-change-transform { will-change: transform; }
+        .will-change-opacity { will-change: opacity; }
+
+        /* Modal styles for image preview */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+        
+        .close-modal:hover {
+            background: rgba(239, 68, 68, 0.5);
+            transform: rotate(90deg);
+        }
+        
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 20px 15px;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-btn:hover {
+            background: rgba(59, 130, 246, 0.5);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .prev-btn {
+            left: 20px;
+        }
+        
+        .next-btn {
+            right: 20px;
+        }
+        
+        .image-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1001;
+        }
+        
+        /* Thumbnail hover effect */
+        .thumbnail {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .thumbnail::before {
+            content: "🔍";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 2;
+            backdrop-filter: blur(5px);
+            border: 2px solid white;
+            color: white;
+            opacity: 0;
+        }
+        
+        .thumbnail:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        
+        .thumbnail:hover img {
+            transform: scale(1.1);
+            filter: brightness(0.7);
+        }
+        
+        .thumbnail img {
+            transition: all 0.3s ease;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #3b82f6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Image info */
+        .image-info {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1001;
+            display: flex;
+            gap: 20px;
+            direction: ltr;
+        }
+        
+        .image-info span {
+            color: #3b82f6;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        /* Folder icon for GitHub */
+        .github-folder {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px dashed #3b82f6;
+            transition: all 0.3s ease;
+        }
+        
+        .github-folder:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #f59e0b;
+        }
     </style>
 </head>
-<body class="hero-pattern min-h-screen">
+<body class="hero-pattern min-h-screen flex flex-col">
 
-    <div id="toast-container"></div>
+    <!-- Modal for image preview -->
+    <div id="imageModal" class="modal" onclick="closeModalOnClickOutside(event)">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <button class="nav-btn prev-btn" onclick="changeImage(-1)">❮</button>
+        <button class="nav-btn next-btn" onclick="changeImage(1)">❯</button>
+        <img class="modal-content" id="modalImage" alt="معاينة الصورة">
+        <div class="image-counter" id="imageCounter"></div>
+        <div class="image-info" id="imageInfo"></div>
+    </div>
 
-    <!-- Navigation -->
-    <nav class="p-4 border-b border-white/5 sticky top-0 z-50 glass">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-4 cursor-pointer group" onclick="showSection('landing-section')">
-                <!-- Site Logo Image Container -->
-                <div id="site-logo-container" class="h-12 w-12 bg-blue-600 rounded-xl flex items-center justify-center overflow-hidden shadow-lg shadow-blue-500/20 group-hover:rotate-6 transition-transform">
-                    <span id="logo-placeholder" class="font-black text-xl">CT</span>
-                    <img id="site-logo-img" class="hidden w-full h-full object-contain" src="" alt="Logo">
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <nav class="sticky top-0 z-40 glass border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="showSection('landing-section')">
+                <div class="relative h-12 w-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center overflow-hidden shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <span id="logo-placeholder" class="font-black text-xl text-white">CT</span>
+                    <img id="site-logo-img" class="hidden w-full h-full object-cover" src="images/logo.png" alt="Logo" onerror="this.style.display='none';document.getElementById('logo-placeholder').style.display='flex'">
                 </div>
-                <div>
-                    <span class="text-xl font-black tracking-tight block leading-none">CIVIL <span class="text-blue-500 font-black">TECH</span></span>
+                <div class="hidden sm:block">
+                    <span class="text-xl font-black tracking-tight leading-none">CIVIL <span class="text-blue-500">TECH</span></span>
                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Conference 2025</span>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <div id="status-badge" class="hidden md:flex items-center gap-2 bg-green-500/10 text-green-400 px-3 py-1 rounded-full text-[10px] font-bold border border-green-500/20">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> سحابي نشط
+            
+            <div class="flex items-center gap-2">
+                <div id="status-badge" class="hidden items-center gap-2 bg-green-500/10 text-green-400 px-3 py-1.5 rounded-full text-xs font-bold border border-green-500/20">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <span class="hidden sm:inline">نشط</span>
                 </div>
-                <button id="logout-btn" onclick="handleLogout()" class="hidden bg-white/5 hover:bg-red-500/10 text-gray-400 hover:text-red-400 p-2 rounded-xl transition border border-white/5">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                
+                <button id="logout-btn" onclick="handleLogout()" class="hidden p-2.5 rounded-xl bg-white/5 hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-colors" aria-label="تسجيل الخروج">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
                 </button>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-4 py-8">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 md:py-8">
         
-        <!-- Section: Landing (Public) -->
-        <section id="landing-section" class="animate-fade-in">
-            <div class="text-center py-20 relative">
-                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-600/10 blur-[100px] rounded-full -z-10"></div>
-                <h1 class="text-6xl md:text-8xl font-black mb-4 tracking-tighter leading-tight italic">
-                    مستقبل <span class="text-blue-500">الهندسة</span><br>يبدأ من هنا
+        <!-- Landing Section -->
+        <section id="landing-section" class="animate-fade-in space-y-12 md:space-y-16">
+            <div class="text-center py-8 md:py-16 relative">
+                <div class="absolute inset-0 -z-10 bg-gradient-to-b from-blue-600/10 via-transparent to-transparent"></div>
+                
+                <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-4 tracking-tight leading-tight">
+                    مستقبل <span class="text-blue-500 block sm:inline">الهندسة</span>
+                    <br>يبدأ من هنا
                 </h1>
-                <p class="text-gray-400 max-w-2xl mx-auto mb-10 text-lg leading-relaxed">
+                
+                <p class="text-gray-400 max-w-2xl mx-auto mb-8 md:mb-12 text-base md:text-lg px-4">
                     انضم إلى أكبر تجمع تقني للمهندسين في عام 2025. ورش عمل، مسابقات، ومحاضرات يقدمها نخبة من الخبراء العالميين.
                 </p>
                 
-                <div id="countdown-container" class="flex justify-center gap-4 mb-12"></div>
+                <!-- Stats Cards -->
+                <div class="flex flex-wrap justify-center gap-6 mb-8">
+                    <div class="glass-card px-6 py-4 rounded-xl text-center">
+                        <div class="text-3xl font-black text-blue-500" id="stats-users">0</div>
+                        <div class="text-sm text-gray-400">مسجل</div>
+                    </div>
+                    <div class="glass-card px-6 py-4 rounded-xl text-center">
+                        <div class="text-3xl font-black text-blue-500" id="stats-agenda">0</div>
+                        <div class="text-sm text-gray-400">فعالية</div>
+                    </div>
+                    <div class="glass-card px-6 py-4 rounded-xl text-center">
+                        <div class="text-3xl font-black text-blue-500" id="stats-gallery">0</div>
+                        <div class="text-sm text-gray-400">صورة</div>
+                    </div>
+                </div>
+                
+                <div id="countdown-container" class="flex flex-wrap justify-center gap-3 md:gap-4 mb-8 md:mb-12 px-4"></div>
 
-                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <button onclick="showSection('login-section')" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 px-12 py-5 rounded-2xl font-bold text-xl transition-all shadow-2xl shadow-blue-600/20 hover:scale-105 active:scale-95">دخول المشتركين</button>
-                    <button onclick="showSection('register-section')" class="w-full sm:w-auto bg-white/5 hover:bg-white/10 border border-white/10 px-12 py-5 rounded-2xl font-bold text-xl transition-all">إنشاء حساب جديد</button>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center px-4">
+                    <button onclick="showSection('login-section')" class="w-full sm:w-auto min-w-[200px] bg-blue-600 hover:bg-blue-500 px-8 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                        دخول المشتركين
+                    </button>
+                    <button onclick="showSection('register-section')" class="w-full sm:w-auto min-w-[200px] bg-white/5 hover:bg-white/10 border border-white/10 px-8 py-4 rounded-2xl font-bold text-lg transition-all focus:ring-2 focus:ring-white/20">
+                        إنشاء حساب جديد
+                    </button>
                 </div>
             </div>
 
             <!-- Content Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-20 pt-20 border-t border-white/5">
-                <div class="lg:col-span-7 space-y-8">
-                    <h3 class="text-3xl font-black italic text-white flex items-center gap-3">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 pt-12 md:pt-16 border-t border-white/5">
+                <div class="lg:col-span-7 space-y-6">
+                    <h3 class="text-2xl md:text-3xl font-black flex items-center gap-2">
                         <span class="text-blue-500">#</span> أجندة المؤتمر
                     </h3>
-                    <div id="landing-agenda-list" class="space-y-4"></div>
+                    <div id="landing-agenda-list" class="space-y-3"></div>
                 </div>
-                <div class="lg:col-span-5 space-y-8">
-                    <h3 class="text-3xl font-black italic text-white flex items-center gap-3">
+                
+                <div class="lg:col-span-5 space-y-6">
+                    <h3 class="text-2xl md:text-3xl font-black flex items-center gap-2">
                         <span class="text-blue-500">#</span> المعرض التقني
                     </h3>
-                    <div id="landing-gallery-list" class="grid grid-cols-2 gap-4"></div>
+                    <div id="landing-gallery-list" class="grid grid-cols-2 gap-3 md:gap-4"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Section: Login & Register -->
-        <section id="auth-forms" class="hidden animate-fade-in max-w-xl mx-auto pt-10">
-            <div id="login-section" class="glass p-10 rounded-[2.5rem] shadow-2xl space-y-8">
+        <!-- Auth Forms -->
+        <section id="auth-forms" class="hidden animate-fade-in max-w-md mx-auto pt-4 md:pt-8">
+            <!-- Login -->
+            <div id="login-section" class="glass p-6 md:p-8 rounded-3xl space-y-6">
                 <div class="text-center">
-                    <h3 class="text-3xl font-black text-white mb-2">تسجيل الدخول</h3>
+                    <h3 class="text-2xl md:text-3xl font-black mb-2">تسجيل الدخول</h3>
                     <p class="text-gray-400 text-sm">أهلاً بعودتك للمتابعة</p>
                 </div>
+                
                 <form id="login-form" class="space-y-4">
-                    <input type="email" id="login-email" required placeholder="البريد الإلكتروني" class="w-full p-4 bg-white/5 rounded-2xl outline-none border border-white/10 focus:border-blue-500 transition text-left">
-                    <input type="password" id="login-pass" required placeholder="كلمة المرور" class="w-full p-4 bg-white/5 rounded-2xl outline-none border border-white/10 focus:border-blue-500 transition text-left">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-bold text-lg shadow-xl shadow-blue-600/20 transition-all">تأكيد الدخول</button>
-                </form>
-                <div class="text-center">
-                    <button onclick="showSection('register-section')" class="text-gray-400 text-sm hover:text-blue-400 transition font-bold">ليس لديك حساب؟ سجل الآن</button>
-                </div>
-            </div>
-
-            <div id="register-section" class="hidden glass p-10 rounded-[2.5rem] shadow-2xl space-y-8">
-                <div class="text-center">
-                    <h3 class="text-3xl font-black text-white mb-2">حساب جديد</h3>
-                </div>
-                <form id="register-form" class="space-y-4">
-                    <input type="text" id="reg-name" required placeholder="الاسم الكامل" class="w-full p-4 bg-white/5 rounded-2xl outline-none border border-white/10 focus:border-blue-500 transition">
-                    <input type="text" id="reg-org" required placeholder="المؤسسة" class="w-full p-4 bg-white/5 rounded-2xl outline-none border border-white/10 focus:border-blue-500 transition">
-                    <input type="email" id="reg-email" required placeholder="البريد الإلكتروني" class="w-full p-4 bg-white/5 rounded-2xl outline-none border border-white/10 focus:border-blue-500 transition text-left">
-                    <input type="password" id="reg-pass" required placeholder="كلمة المرور" class="w-full p-4 bg-white/5 rounded-2xl outline-none border border-white/10 focus:border-blue-500 transition text-left">
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-500 py-5 rounded-2xl font-bold text-lg shadow-xl shadow-green-600/20 transition-all">إنشاء الحساب</button>
-                </form>
-                <div class="text-center">
-                    <button onclick="showSection('login-section')" class="text-gray-400 text-sm hover:text-blue-400 transition font-bold">لديك حساب؟ ادخل هنا</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section: User Dashboard -->
-        <section id="user-dashboard" class="hidden animate-fade-in space-y-10">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-6 glass p-8 rounded-[2rem]">
-                <div class="flex items-center gap-6">
-                    <div id="user-avatar" class="h-20 w-20 bg-blue-600 rounded-2xl flex items-center justify-center text-4xl font-black shadow-2xl"></div>
                     <div>
-                        <h2 id="user-welcome-name" class="text-3xl font-black text-white"></h2>
-                        <span id="user-role-badge" class="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest mt-2 inline-block"></span>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">البريد الإلكتروني</label>
+                        <input type="email" id="login-email" required 
+                               class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-left"
+                               placeholder="admin@example.com">
                     </div>
-                </div>
-                <div class="text-center md:text-left">
-                    <div id="live-clock" class="text-4xl font-black font-mono text-blue-500 tracking-tighter">00:00:00</div>
-                    <p class="text-gray-500 text-xs font-bold uppercase mt-1">توقيت المؤتمر المباشر</p>
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">كلمة المرور</label>
+                        <input type="password" id="login-pass" required 
+                               class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-left"
+                               placeholder="********">
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                        تأكيد الدخول
+                    </button>
+                </form>
+                
+                <div class="text-center">
+                    <button onclick="showSection('register-section')" class="text-gray-400 hover:text-blue-400 transition text-sm font-bold">
+                        ليس لديك حساب؟ سجل الآن
+                    </button>
                 </div>
             </div>
-            <div id="user-agenda-list" class="space-y-4"></div>
-            <div id="user-gallery-list" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+
+            <!-- Register -->
+            <div id="register-section" class="hidden glass p-6 md:p-8 rounded-3xl space-y-6">
+                <div class="text-center">
+                    <h3 class="text-2xl md:text-3xl font-black mb-2">حساب جديد</h3>
+                </div>
+                
+                <form id="register-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">الاسم الكامل</label>
+                        <input type="text" id="reg-name" required 
+                               class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">المؤسسة</label>
+                        <input type="text" id="reg-org" required 
+                               class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">البريد الإلكتروني</label>
+                        <input type="email" id="reg-email" required 
+                               class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-left">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">كلمة المرور</label>
+                        <input type="password" id="reg-pass" required 
+                               class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-left">
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                        إنشاء الحساب
+                    </button>
+                </form>
+                
+                <div class="text-center">
+                    <button onclick="showSection('login-section')" class="text-gray-400 hover:text-blue-400 transition text-sm font-bold">
+                        لديك حساب؟ ادخل هنا
+                    </button>
+                </div>
+            </div>
         </section>
 
-        <!-- Section: Admin Control Panel -->
-        <section id="admin-dashboard" class="hidden animate-fade-in space-y-8">
-            <div class="flex items-center justify-between glass p-6 rounded-3xl">
-                <h2 class="text-2xl font-black text-blue-400">إدارة النظام السحابي</h2>
-                <div id="stat-total" class="bg-white/5 px-6 py-2 rounded-2xl border border-white/10 font-black">0 مسجلين</div>
+        <!-- User Dashboard -->
+        <section id="user-dashboard" class="hidden animate-fade-in space-y-6 md:space-y-8">
+            <div class="glass p-6 rounded-2xl">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-4">
+                        <div id="user-avatar" class="h-16 w-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg"></div>
+                        <div>
+                            <h2 id="user-welcome-name" class="text-2xl font-black"></h2>
+                            <span id="user-role-badge" class="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest inline-block mt-1"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center sm:text-left">
+                        <div id="live-clock" class="text-3xl md:text-4xl font-mono text-blue-500 font-black tracking-tighter">00:00:00</div>
+                        <p class="text-gray-500 text-xs font-bold uppercase mt-1">توقيت المؤتمر</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="space-y-6">
+                <h3 class="text-xl font-black">📋 الأجندة الخاصة بك</h3>
+                <div id="user-agenda-list" class="space-y-3"></div>
+            </div>
+            
+            <div class="space-y-6">
+                <h3 class="text-xl font-black">🖼️ معرض الصور</h3>
+                <div id="user-gallery-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+            </div>
+        </section>
+
+        <!-- Admin Dashboard -->
+        <section id="admin-dashboard" class="hidden animate-fade-in space-y-6 md:space-y-8">
+            <div class="glass p-6 rounded-2xl">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <h2 class="text-xl md:text-2xl font-black text-blue-400">لوحة التحكم</h2>
+                    <div class="flex gap-3">
+                        <div id="stat-total" class="bg-white/5 px-6 py-2 rounded-xl border border-white/10 font-black text-sm">
+                            0 مسجلين
+                        </div>
+                        <button onclick="exportToExcel()" class="bg-green-600/20 hover:bg-green-600 text-green-400 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-colors">
+                            📥 تصدير Excel
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Agenda -->
-                <div class="glass p-8 rounded-[2.5rem] space-y-6">
+            <!-- Admin Profile Settings -->
+            <div class="glass p-6 rounded-2xl space-y-4">
+                <h4 class="text-lg font-black">👤 إعدادات حساب المسؤول</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">الاسم</label>
+                        <input type="text" id="admin-name" class="w-full p-3 bg-white/5 rounded-xl border border-white/10">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">البريد الإلكتروني الجديد</label>
+                        <input type="email" id="admin-new-email" class="w-full p-3 bg-white/5 rounded-xl border border-white/10">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">كلمة المرور الجديدة</label>
+                        <input type="password" id="admin-new-password" class="w-full p-3 bg-white/5 rounded-xl border border-white/10">
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="updateAdminProfile()" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold transition-colors">
+                            تحديث البيانات
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Management -->
+            <div class="glass p-6 rounded-2xl space-y-4">
+                <h4 class="text-lg font-black">👥 إدارة المسجلين</h4>
+                <div id="users-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-2">
+                    <!-- Users will be loaded here -->
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                <!-- Agenda Management -->
+                <div class="glass p-6 rounded-2xl space-y-4">
                     <div class="flex justify-between items-center">
-                        <h4 class="text-xl font-black italic">📝 الأجندة</h4>
-                        <button onclick="addNewAgendaRow()" class="bg-blue-600/20 text-blue-400 px-4 py-2 rounded-xl text-xs font-black hover:bg-blue-600 hover:text-white transition">+ فقرة</button>
+                        <h4 class="text-lg font-black">📝 إدارة الأجندة</h4>
+                        <button onclick="addNewAgendaRow()" 
+                                class="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-colors">
+                            + إضافة فقرة
+                        </button>
                     </div>
-                    <div id="admin-agenda-inputs" class="space-y-4 max-h-[400px] overflow-y-auto pr-2"></div>
+                    
+                    <div id="admin-agenda-inputs" class="space-y-3 max-h-[400px] overflow-y-auto pr-2"></div>
                 </div>
 
-                <!-- Settings & Logo -->
-                <div class="space-y-8">
-                    <div class="glass p-8 rounded-[2.5rem] space-y-6">
-                        <h4 class="text-xl font-black italic">🖼️ هوية المؤتمر (الشعار)</h4>
+                <!-- Settings & Media -->
+                <div class="space-y-6">
+                    <!-- Logo Settings -->
+                    <div class="glass p-6 rounded-2xl space-y-4">
+                        <h4 class="text-lg font-black">🖼️ شعار المؤتمر</h4>
                         
-                        <div class="flex flex-col items-center gap-6">
-                            <!-- Logo Preview in Admin -->
-                            <div id="admin-logo-preview" class="w-32 h-32 bg-slate-900 rounded-3xl border border-white/10 flex items-center justify-center overflow-hidden">
-                                <span id="admin-logo-placeholder" class="text-gray-600 font-bold">بلا شعار</span>
-                                <img id="admin-logo-img" class="hidden w-full h-full object-contain" src="">
+                        <div class="flex flex-col items-center gap-4">
+                            <div id="admin-logo-preview" class="w-24 h-24 bg-slate-900 rounded-2xl border border-white/10 flex items-center justify-center overflow-hidden">
+                                <span id="admin-logo-placeholder" class="text-gray-600 text-sm">images/logo.png</span>
+                                <img id="admin-logo-img" class="hidden w-full h-full object-cover" src="images/logo.png" alt="Logo Preview" onerror="this.style.display='none';document.getElementById('admin-logo-placeholder').style.display='flex'">
                             </div>
                             
-                            <!-- Logo Upload Button -->
-                            <label class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold text-center cursor-pointer transition shadow-lg shadow-blue-600/20">
-                                📁 اختر ملف الشعار للرفع
-                                <input type="file" id="logo-upload-input" class="hidden" accept="image/*">
-                            </label>
-                            
-                            <div id="logo-progress-container" class="hidden w-full space-y-2">
-                                <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                                    <div id="logo-progress-bar" class="h-full bg-blue-500 w-0 transition-all"></div>
-                                </div>
-                            </div>
+                            <p class="text-sm text-gray-400">ضع شعارك في المجلد images/logo.png</p>
                         </div>
 
-                        <div class="space-y-2 mt-6">
-                            <label class="text-[10px] font-black text-gray-500 uppercase">موعد انطلاق المؤتمر</label>
-                            <input type="datetime-local" id="conf-date" class="w-full bg-slate-900 border border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 transition">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase">موعد المؤتمر</label>
+                            <input type="datetime-local" id="conf-date" 
+                                   class="w-full bg-slate-900 border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 transition text-sm">
                         </div>
                     </div>
 
-                    <!-- Media -->
-                    <div class="glass p-8 rounded-[2.5rem] space-y-6">
-                        <h4 class="text-xl font-black italic">📷 معرض الصور</h4>
-                        <input type="file" id="image-upload-input" class="hidden" accept="image/*">
-                        <button onclick="document.getElementById('image-upload-input').click()" class="w-full py-4 bg-white/5 border border-dashed border-white/20 rounded-2xl hover:bg-white/10 transition">رفع صور للفعالية</button>
-                        <div id="admin-gallery-preview" class="grid grid-cols-4 gap-2"></div>
+                    <!-- GitHub Gallery Management - الأقسام المطورة -->
+                    <div class="glass p-6 rounded-2xl space-y-4">
+                        <div class="flex items-center gap-2 mb-4">
+                            <svg class="w-6 h-6 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.03-2.682-.103-.253-.447-1.27.098-2.646 0 0 .84-.269 2.75 1.025.8-.223 1.65-.334 2.5-.334.85 0 1.7.111 2.5.334 1.91-1.294 2.75-1.025 2.75-1.025.545 1.376.201 2.393.099 2.646.64.698 1.03 1.591 1.03 2.682 0 3.841-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+                            </svg>
+                            <h4 class="text-lg font-black">📷 معرض الصور - GitHub</h4>
+                        </div>
+                        
+                        <div class="github-folder p-4 rounded-xl mb-4">
+                            <p class="text-sm text-gray-300 mb-2">
+                                <span class="text-blue-400 font-bold">مجلد images</span> في GitHub
+                            </p>
+                            <p class="text-xs text-gray-500">
+                                الصور المفترض تكون في: <span class="font-mono text-green-400">images/</span>
+                            </p>
+                        </div>
+
+                        <!-- زر تحميل الصور الرئيسي -->
+                        <button onclick="loadImagesFromGithub()" 
+                                class="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 py-4 rounded-xl font-bold text-lg transition-all shadow-lg mb-4 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.03-2.682-.103-.253-.447-1.27.098-2.646 0 0 .84-.269 2.75 1.025.8-.223 1.65-.334 2.5-.334.85 0 1.7.111 2.5.334 1.91-1.294 2.75-1.025 2.75-1.025.545 1.376.201 2.393.099 2.646.64.698 1.03 1.591 1.03 2.682 0 3.841-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+                            </svg>
+                            🔍 تحميل الصور من GitHub تلقائياً
+                        </button>
+
+                        <!-- خيارات إضافية للصور -->
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <button onclick="scanImagesByNumbers()" 
+                                    class="bg-purple-600/20 hover:bg-purple-600 text-purple-400 hover:text-white py-2 rounded-xl text-sm font-bold transition-colors">
+                                🔢 صور مرقمة (1-20)
+                            </button>
+                            <button onclick="scanImagesByNames()" 
+                                    class="bg-orange-600/20 hover:bg-orange-600 text-orange-400 hover:text-white py-2 rounded-xl text-sm font-bold transition-colors">
+                                📝 صور بأسماء
+                            </button>
+                        </div>
+
+                        <!-- إضافة رابط صورة -->
+                        <div class="mt-4 p-4 bg-blue-600/10 rounded-xl border border-blue-500/20">
+                            <h5 class="font-bold text-blue-400 mb-3 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                </svg>
+                                إضافة صورة يدوياً
+                            </h5>
+                            
+                            <div class="flex gap-2">
+                                <input type="url" 
+                                       id="image-url-input" 
+                                       class="flex-1 bg-slate-900 border border-white/10 p-3 rounded-xl text-sm text-white placeholder-gray-500 focus:border-blue-500 outline-none transition"
+                                       placeholder="رابط الصورة المباشر">
+                                <button onclick="addImageFromUrl()" 
+                                        class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl text-sm font-bold transition-colors whitespace-nowrap">
+                                    إضافة
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- عرض إحصائيات -->
+                        <div class="mt-4 p-4 bg-white/5 rounded-xl">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-400">عدد الصور في المعرض:</span>
+                                <span class="text-2xl font-black text-blue-400" id="gallery-count">0</span>
+                            </div>
+                        </div>
+
+                        <!-- معرض الصور المصغر -->
+                        <div id="admin-gallery-preview" class="grid grid-cols-4 gap-2 mt-4"></div>
                     </div>
                 </div>
             </div>
 
-            <button onclick="saveAllToCloud()" class="w-full bg-green-600 hover:bg-green-500 py-6 rounded-3xl font-black text-2xl shadow-xl shadow-green-600/20 transition-all">حفظ ومزامنة التغييرات 🚀</button>
+            <!-- Save Button -->
+            <button onclick="saveAllToCloud()" 
+                    class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 py-4 md:py-5 rounded-xl font-black text-lg md:text-xl shadow-lg hover:shadow-xl transition-all focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+                💾 حفظ ومزامنة التغييرات
+            </button>
         </section>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAq46_s0TiEBJTrhOz05St1zU2FU3PLIao",
@@ -231,166 +686,878 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
-        let currentCloudData = { agenda: [], gallery: [], config: { logo: '', eventDate: '' } };
-        let currentUser = null;
+        // Admin accounts (5 admins)
+        let adminAccounts = JSON.parse(localStorage.getItem('adminAccounts')) || [
+            { email: "admin1@civil.com", password: "admin123", name: "المدير الأول" },
+            { email: "admin2@civil.com", password: "admin123", name: "المدير الثاني" },
+            { email: "admin3@civil.com", password: "admin123", name: "المدير الثالث" },
+            { email: "admin4@civil.com", password: "admin123", name: "المدير الرابع" },
+            { email: "admin5@civil.com", password: "admin123", name: "المدير الخامس" }
+        ];
 
-        window.showToast = (msg, type = "success") => {
-            const container = document.getElementById("toast-container");
-            const toast = document.createElement("div");
-            toast.className = `toast-msg show ${type === 'error' ? 'bg-red-500' : 'bg-blue-600'}`;
-            toast.innerHTML = `<span>${msg}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 3000);
+        let state = {
+            currentUser: null,
+            cloudData: { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } },
+            users: [],
+            isSyncing: false,
+            currentImageIndex: 0
         };
 
-        window.showSection = (id) => {
-            const sections = ['landing-section', 'auth-forms', 'user-dashboard', 'admin-dashboard'];
-            sections.forEach(s => document.getElementById(s).classList.add('hidden'));
-            if(id === 'login-section' || id === 'register-section') {
-                document.getElementById('auth-forms').classList.remove('hidden');
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('register-section').classList.add('hidden');
-                document.getElementById(id).classList.remove('hidden');
+        const elements = {
+            toastContainer: document.getElementById('toast-container'),
+            landingSection: document.getElementById('landing-section'),
+            authForms: document.getElementById('auth-forms'),
+            userDashboard: document.getElementById('user-dashboard'),
+            adminDashboard: document.getElementById('admin-dashboard'),
+            loginSection: document.getElementById('login-section'),
+            registerSection: document.getElementById('register-section'),
+            logoutBtn: document.getElementById('logout-btn'),
+            statusBadge: document.getElementById('status-badge'),
+            logoPlaceholder: document.getElementById('logo-placeholder'),
+            siteLogoImg: document.getElementById('site-logo-img'),
+            adminLogoPlaceholder: document.getElementById('admin-logo-placeholder'),
+            adminLogoImg: document.getElementById('admin-logo-img'),
+            confDate: document.getElementById('conf-date'),
+            statTotal: document.getElementById('stat-total'),
+            statsUsers: document.getElementById('stats-users'),
+            statsAgenda: document.getElementById('stats-agenda'),
+            statsGallery: document.getElementById('stats-gallery'),
+            adminAgendaInputs: document.getElementById('admin-agenda-inputs'),
+            adminGalleryPreview: document.getElementById('admin-gallery-preview'),
+            usersList: document.getElementById('users-list'),
+            adminName: document.getElementById('admin-name'),
+            adminNewEmail: document.getElementById('admin-new-email'),
+            adminNewPassword: document.getElementById('admin-new-password'),
+            imageModal: document.getElementById('imageModal'),
+            modalImage: document.getElementById('modalImage'),
+            imageCounter: document.getElementById('imageCounter'),
+            imageInfo: document.getElementById('imageInfo')
+        };
+
+        // Toast notification function
+        const showToast = (message, type = 'success', duration = 3000) => {
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-3 rounded-xl text-sm font-bold shadow-lg transform transition-all duration-300 ${
+                type === 'error' ? 'bg-red-500/90 text-white' : 'bg-green-500/90 text-white'
+            }`;
+            toast.textContent = message;
+            
+            elements.toastContainer.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('opacity-0'), duration - 300);
+            setTimeout(() => toast.remove(), duration);
+        };
+
+        // Show section function
+        window.showSection = (sectionId) => {
+            elements.landingSection.classList.add('hidden');
+            elements.authForms.classList.add('hidden');
+            elements.userDashboard.classList.add('hidden');
+            elements.adminDashboard.classList.add('hidden');
+            elements.loginSection.classList.add('hidden');
+            elements.registerSection.classList.add('hidden');
+
+            if (sectionId === 'login-section' || sectionId === 'register-section') {
+                elements.authForms.classList.remove('hidden');
+                document.getElementById(sectionId).classList.remove('hidden');
             } else {
-                document.getElementById(id).classList.remove('hidden');
+                document.getElementById(sectionId).classList.remove('hidden');
             }
         };
 
-        // Logo Upload Handler
-        document.getElementById('logo-upload-input').onchange = (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
+        // Check if image exists
+        const checkImageExists = (url) => {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = url;
+            });
+        };
 
-            const storageRef = ref(storage, `brand/logo_${Date.now()}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-            const progressBar = document.getElementById('logo-progress-bar');
-            const container = document.getElementById('logo-progress-container');
+        // Image Preview Functions
+        window.openImagePreview = (imageUrl, index) => {
+            const gallery = state.cloudData.gallery || [];
+            state.currentImageIndex = index;
+            
+            if (elements.modalImage) {
+                elements.modalImage.src = imageUrl;
+                elements.imageModal.classList.add('show');
+                updateImageCounter();
+                updateImageInfo(imageUrl);
+            }
+        };
 
-            container.classList.remove('hidden');
-            uploadTask.on('state_changed', 
-                (snap) => progressBar.style.width = (snap.bytesTransferred / snap.totalBytes) * 100 + '%',
-                () => showToast("فشل رفع الشعار", "error"),
-                () => {
-                    getDownloadURL(uploadTask.snapshot.ref).then(url => {
-                        currentCloudData.config.logo = url;
-                        updateLogoDisplay(url);
-                        saveAllToCloud();
-                        container.classList.add('hidden');
-                        showToast("تم رفع الشعار الجديد بنجاح");
-                    });
+        window.closeModal = () => {
+            elements.imageModal.classList.remove('show');
+        };
+
+        window.closeModalOnClickOutside = (event) => {
+            if (event.target === elements.imageModal) {
+                closeModal();
+            }
+        };
+
+        window.changeImage = (direction) => {
+            const gallery = state.cloudData.gallery || [];
+            if (gallery.length === 0) return;
+            
+            state.currentImageIndex = (state.currentImageIndex + direction + gallery.length) % gallery.length;
+            const newImageUrl = gallery[state.currentImageIndex];
+            
+            if (elements.modalImage) {
+                elements.modalImage.src = newImageUrl;
+                updateImageCounter();
+                updateImageInfo(newImageUrl);
+            }
+        };
+
+        const updateImageCounter = () => {
+            const gallery = state.cloudData.gallery || [];
+            if (elements.imageCounter) {
+                elements.imageCounter.textContent = `${state.currentImageIndex + 1} / ${gallery.length}`;
+            }
+        };
+
+        const updateImageInfo = (imageUrl) => {
+            if (elements.imageInfo) {
+                const fileName = imageUrl.split('/').pop() || 'صورة';
+                const fileExtension = fileName.split('.').pop() || 'غير معروف';
+                
+                elements.imageInfo.innerHTML = `
+                    <div><span>📁</span> ${fileName}</div>
+                    <div><span>📌</span> ${fileExtension.toUpperCase()}</div>
+                `;
+            }
+        };
+
+        // Handle keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (elements.imageModal?.classList.contains('show')) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                } else if (e.key === 'ArrowLeft') {
+                    changeImage(-1);
+                } else if (e.key === 'ArrowRight') {
+                    changeImage(1);
                 }
-            );
-        };
-
-        function updateLogoDisplay(url) {
-            const navImg = document.getElementById('site-logo-img');
-            const navPlaceholder = document.getElementById('logo-placeholder');
-            const adminImg = document.getElementById('admin-logo-img');
-            const adminPlaceholder = document.getElementById('admin-logo-placeholder');
-
-            if(url) {
-                navImg.src = url; navImg.classList.remove('hidden');
-                navPlaceholder.classList.add('hidden');
-                if(adminImg) { adminImg.src = url; adminImg.classList.remove('hidden'); }
-                if(adminPlaceholder) adminPlaceholder.classList.add('hidden');
-            }
-        }
-
-        // Real-time Sync
-        onSnapshot(doc(db, "conference", "data"), (snap) => {
-            if (snap.exists()) {
-                currentCloudData = snap.data();
-                updateUI();
             }
         });
 
-        function updateUI() {
-            updateLogoDisplay(currentCloudData.config?.logo);
-            renderLandingContent();
-            if(currentUser) renderUserUI();
-            if(!document.getElementById('admin-dashboard').classList.contains('hidden')) {
-                renderAdminGalleryPreview();
-                document.getElementById('conf-date').value = currentCloudData.config?.eventDate || '';
+        // الدالة الرئيسية لتحميل الصور من GitHub - الأكثر شمولاً
+        window.loadImagesFromGithub = async () => {
+            showToast('جاري البحث عن الصور في مجلد images...', 'success');
+            
+            const foundImages = [];
+            const extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+            
+            // 1. أولاً: البحث عن الصور المرقمة (1.jpg, 2.jpg, ... 50.jpg)
+            for (let i = 1; i <= 50; i++) {
+                for (const ext of extensions) {
+                    const imgPath = `images/${i}.${ext}`;
+                    const exists = await checkImageExists(imgPath);
+                    if (exists) {
+                        foundImages.push(imgPath);
+                        console.log('✅ لقيت صورة مرقمة:', imgPath);
+                    }
+                }
             }
-        }
-
-        function renderLandingContent() {
-            const list = document.getElementById('landing-agenda-list');
-            list.innerHTML = (currentCloudData.agenda || []).map(item => `
-                <div class="glass-card p-4 rounded-2xl flex items-center justify-between">
-                    <div class="flex gap-4 items-center">
-                        <span class="text-blue-500 font-bold font-mono">${item.time}</span>
-                        <span class="font-bold text-white">${item.title}</span>
-                    </div>
-                </div>
-            `).join('');
-
-            const gallery = document.getElementById('landing-gallery-list');
-            gallery.innerHTML = (currentCloudData.gallery || []).slice(0, 4).map(url => `
-                <div class="aspect-square rounded-xl overflow-hidden border border-white/10">
-                    <img src="${url}" class="w-full h-full object-cover">
-                </div>
-            `).join('');
-        }
-
-        window.addNewAgendaRow = () => {
-            const container = document.getElementById('admin-agenda-inputs');
-            const div = document.createElement('div');
-            div.className = "bg-white/5 p-4 rounded-2xl border border-white/5 flex gap-2 items-center animate-fade-in";
-            div.innerHTML = `
-                <input type="time" class="agenda-time-input bg-slate-900 p-2 rounded-xl text-blue-400 font-bold w-24">
-                <input type="text" class="agenda-title-input bg-slate-900 p-2 rounded-xl text-white flex-1" placeholder="العنوان">
-                <button onclick="this.parentElement.remove()" class="text-red-500 font-bold px-2">✕</button>
-            `;
-            container.prepend(div);
+            
+            // 2. ثانياً: البحث عن الصور بأسماء شائعة
+            const commonNames = [
+                // أسماء إنجليزية
+                'photo', 'image', 'pic', 'picture', 'img',
+                'gallery', 'event', 'conference', 'meeting',
+                'team', 'sponsor', 'partner', 'speaker',
+                'workshop', 'seminar', 'training', 'course',
+                'background', 'banner', 'header', 'footer',
+                'logo', 'icon', 'avatar', 'profile',
+                'slide', 'presentation', 'slide1', 'slide2',
+                'main', 'home', 'about', 'contact',
+                // أسماء عربية (قد تكون موجودة)
+                'صورة', 'حدث', 'معرض', 'مؤتمر',
+                'فريق', 'راعي', 'شريك', 'متحدث'
+            ];
+            
+            for (const name of commonNames) {
+                for (let i = 1; i <= 10; i++) {
+                    for (const ext of extensions) {
+                        // بدون رقم
+                        const imgPath1 = `images/${name}.${ext}`;
+                        const exists1 = await checkImageExists(imgPath1);
+                        if (exists1) {
+                            foundImages.push(imgPath1);
+                            console.log('✅ لقيت صورة:', imgPath1);
+                        }
+                        
+                        // مع رقم
+                        const imgPath2 = `images/${name}${i}.${ext}`;
+                        const exists2 = await checkImageExists(imgPath2);
+                        if (exists2) {
+                            foundImages.push(imgPath2);
+                            console.log('✅ لقيت صورة:', imgPath2);
+                        }
+                    }
+                }
+            }
+            
+            // 3. ثالثاً: البحث عن الصور في مجلدات فرعية (ممكن)
+            const subfolders = ['gallery', 'photos', 'img', 'uploads', 'images'];
+            for (const folder of subfolders) {
+                for (let i = 1; i <= 20; i++) {
+                    for (const ext of extensions) {
+                        const imgPath = `${folder}/${i}.${ext}`;
+                        const exists = await checkImageExists(imgPath);
+                        if (exists) {
+                            foundImages.push(imgPath);
+                            console.log('✅ لقيت صورة في مجلد:', imgPath);
+                        }
+                    }
+                }
+            }
+            
+            // إزالة التكرارات
+            const uniqueImages = [...new Set(foundImages)];
+            
+            if (uniqueImages.length > 0) {
+                state.cloudData.gallery = uniqueImages;
+                renderGallery();
+                showToast(`🎉 تم العثور على ${uniqueImages.length} صورة في مجلد images`);
+            } else {
+                showToast('⚠️ لم يتم العثور على صور. تأكد من رفع الصور لمجلد images', 'error');
+            }
         };
 
-        window.saveAllToCloud = async () => {
-            const times = document.querySelectorAll('.agenda-time-input');
-            const titles = document.querySelectorAll('.agenda-title-input');
-            const newAgenda = Array.from(times).map((t, i) => ({
-                time: t.value,
-                title: titles[i].value
-            })).filter(a => a.time && a.title).sort((a,b) => a.time.localeCompare(b.time));
+        // دالة للبحث عن الصور المرقمة فقط
+        window.scanImagesByNumbers = async () => {
+            showToast('جاري البحث عن الصور المرقمة...', 'success');
             
-            const config = {
-                logo: currentCloudData.config.logo || '',
-                eventDate: document.getElementById('conf-date').value
-            };
+            const foundImages = [];
+            const extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
             
-            await setDoc(doc(db, "conference", "data"), { 
-                agenda: newAgenda, 
-                gallery: currentCloudData.gallery || [], 
-                config: config 
-            });
-            showToast("تم المزامنة");
+            for (let i = 1; i <= 30; i++) {
+                for (const ext of extensions) {
+                    const imgPath = `images/${i}.${ext}`;
+                    const exists = await checkImageExists(imgPath);
+                    if (exists) {
+                        foundImages.push(imgPath);
+                    }
+                }
+            }
+            
+            if (foundImages.length > 0) {
+                // دمج مع الصور الموجودة
+                state.cloudData.gallery = [...(state.cloudData.gallery || []), ...foundImages];
+                state.cloudData.gallery = [...new Set(state.cloudData.gallery)]; // إزالة التكرار
+                renderGallery();
+                showToast(`تم العثور على ${foundImages.length} صورة مرقمة`);
+            } else {
+                showToast('لم يتم العثور على صور مرقمة', 'error');
+            }
         };
 
-        document.getElementById('login-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-            if(email === "admin@civil.com" && pass === "123") {
-                currentUser = { name: "المدير", type: "أدمن" };
-                document.getElementById('logout-btn').classList.remove('hidden');
-                showSection('admin-dashboard');
+        // دالة للبحث عن الصور بأسماء محددة
+        window.scanImagesByNames = async () => {
+            showToast('جاري البحث عن الصور...', 'success');
+            
+            // ** هنا تحط أسماء الصور الفعلية اللي عندك **
+            // عدل هذه القائمة حسب أسماء الصور الموجودة في مجلد images
+            const yourImages = [
+                'images/photo1.jpg',
+                'images/photo2.jpg',
+                'images/event1.jpg',
+                'images/gallery1.jpg',
+                'images/team1.jpg',
+                'images/sponsor1.jpg',
+                'images/logo.png',
+                // أضف كل أسماء الصور اللي عندك هنا
+            ];
+            
+            const foundImages = [];
+            
+            for (const imgPath of yourImages) {
+                const exists = await checkImageExists(imgPath);
+                if (exists) {
+                    foundImages.push(imgPath);
+                    console.log('لقيت صورة:', imgPath);
+                }
+            }
+            
+            if (foundImages.length > 0) {
+                state.cloudData.gallery = [...(state.cloudData.gallery || []), ...foundImages];
+                state.cloudData.gallery = [...new Set(state.cloudData.gallery)];
+                renderGallery();
+                showToast(`تم إضافة ${foundImages.length} صورة من القائمة`);
+            } else {
+                showToast('لم يتم العثور على الصور في القائمة', 'error');
+            }
+        };
+
+        // إضافة صورة من رابط
+        window.addImageFromUrl = () => {
+            const urlInput = document.getElementById('image-url-input');
+            let url = urlInput.value.trim();
+            
+            if (!url) {
+                showToast('الرجاء إدخال رابط الصورة', 'error');
                 return;
             }
-            const q = query(collection(db, "users"), where("email", "==", email), where("pass", "==", pass));
-            const snap = await getDocs(q);
-            if(!snap.empty) {
-                currentUser = snap.docs[0].data();
-                document.getElementById('logout-btn').classList.remove('hidden');
-                showSection('user-dashboard');
-            } else {
-                showToast("خطأ في الدخول", "error");
+            
+            if (!state.cloudData.gallery) {
+                state.cloudData.gallery = [];
+            }
+            
+            state.cloudData.gallery.push(url);
+            renderGallery();
+            urlInput.value = '';
+            
+            showToast('تم إضافة الصورة بنجاح');
+        };
+
+        // Remove gallery image
+        window.removeGalleryImage = (index) => {
+            if (state.cloudData.gallery && state.cloudData.gallery[index]) {
+                if (confirm('هل أنت متأكد من حذف هذه الصورة؟')) {
+                    state.cloudData.gallery.splice(index, 1);
+                    renderGallery();
+                    showToast('تم حذف الصورة');
+                }
             }
         };
 
-        window.handleLogout = () => { location.reload(); };
+        // Update logo display
+        const updateLogoDisplay = (url) => {
+            if (url && url !== 'images/logo.png') {
+                elements.siteLogoImg.src = url;
+                elements.siteLogoImg.classList.remove('hidden');
+                elements.logoPlaceholder.classList.add('hidden');
+                
+                if (elements.adminLogoImg) {
+                    elements.adminLogoImg.src = url;
+                    elements.adminLogoImg.classList.remove('hidden');
+                    elements.adminLogoPlaceholder.classList.add('hidden');
+                }
+            } else {
+                elements.siteLogoImg.src = 'images/logo.png';
+                elements.siteLogoImg.classList.remove('hidden');
+                elements.logoPlaceholder.classList.add('hidden');
+                
+                if (elements.adminLogoImg) {
+                    elements.adminLogoImg.src = 'images/logo.png';
+                    elements.adminLogoImg.classList.remove('hidden');
+                    elements.adminLogoPlaceholder.classList.add('hidden');
+                }
+            }
+        };
 
+        // Load users from Firestore
+        const loadUsers = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, "users"));
+                state.users = [];
+                querySnapshot.forEach((doc) => {
+                    state.users.push({ id: doc.id, ...doc.data() });
+                });
+                
+                if (elements.statsUsers) {
+                    elements.statsUsers.textContent = state.users.length;
+                }
+                if (elements.statTotal) {
+                    elements.statTotal.textContent = `${state.users.length} مسجلين`;
+                }
+                
+                renderUsersList();
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        };
+
+        // Render users list
+        const renderUsersList = () => {
+            if (!elements.usersList) return;
+            
+            elements.usersList.innerHTML = state.users.map(user => `
+                <div class="bg-white/5 p-3 rounded-xl border border-white/10 flex items-center justify-between">
+                    <div>
+                        <div class="font-bold">${user.name || 'بدون اسم'}</div>
+                        <div class="text-sm text-gray-400">${user.email}</div>
+                        <div class="text-xs text-gray-500">${user.org || 'بدون مؤسسة'}</div>
+                    </div>
+                    <button onclick="deleteUser('${user.id}')" class="text-red-500 hover:text-red-400 px-2">✕</button>
+                </div>
+            `).join('');
+        };
+
+        // Delete user
+        window.deleteUser = async (userId) => {
+            if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
+                try {
+                    await deleteDoc(doc(db, "users", userId));
+                    showToast('تم حذف المستخدم');
+                    loadUsers();
+                } catch (error) {
+                    showToast('فشل حذف المستخدم', 'error');
+                }
+            }
+        };
+
+        // Export to Excel
+        window.exportToExcel = () => {
+            const data = state.users.map(user => ({
+                'الاسم': user.name || '',
+                'البريد الإلكتروني': user.email || '',
+                'المؤسسة': user.org || '',
+                'تاريخ التسجيل': user.registeredAt ? new Date(user.registeredAt).toLocaleString('ar-EG') : ''
+            }));
+            
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "المسجلين");
+            XLSX.writeFile(wb, "registered_users.xlsx");
+            
+            showToast('تم تصدير الملف');
+        };
+
+        // Update admin profile
+        window.updateAdminProfile = () => {
+            if (!state.currentUser || state.currentUser.type !== 'admin') return;
+            
+            const newName = elements.adminName.value;
+            const newEmail = elements.adminNewEmail.value;
+            const newPassword = elements.adminNewPassword.value;
+            
+            const adminIndex = adminAccounts.findIndex(a => a.email === state.currentUser.email);
+            
+            if (adminIndex !== -1) {
+                if (newName) adminAccounts[adminIndex].name = newName;
+                if (newEmail) adminAccounts[adminIndex].email = newEmail;
+                if (newPassword) adminAccounts[adminIndex].password = newPassword;
+                
+                localStorage.setItem('adminAccounts', JSON.stringify(adminAccounts));
+                
+                state.currentUser = { 
+                    ...adminAccounts[adminIndex], 
+                    type: "admin" 
+                };
+                
+                document.getElementById('user-welcome-name').textContent = `مرحباً ${adminAccounts[adminIndex].name}`;
+                document.getElementById('user-avatar').textContent = adminAccounts[adminIndex].name.charAt(0);
+                
+                showToast('تم تحديث البيانات بنجاح');
+                
+                elements.adminName.value = '';
+                elements.adminNewEmail.value = '';
+                elements.adminNewPassword.value = '';
+            }
+        };
+
+        // Real-time sync from Firestore
+        const unsubscribe = onSnapshot(
+            doc(db, "conference", "data"),
+            (snap) => {
+                if (snap.exists()) {
+                    state.cloudData = snap.data();
+                } else {
+                    state.cloudData = { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } };
+                }
+                updateUI();
+                loadUsers();
+                elements.statusBadge.classList.remove('hidden');
+            },
+            (error) => {
+                console.error('Sync error:', error);
+                elements.statusBadge.classList.add('hidden');
+                showToast('مشكلة في الاتصال بالخادم', 'error');
+            }
+        );
+
+        // Update UI based on state
+        const updateUI = () => {
+            updateLogoDisplay(state.cloudData.config?.logo);
+            
+            if (elements.statsAgenda) {
+                elements.statsAgenda.textContent = state.cloudData.agenda?.length || 0;
+            }
+            if (elements.statsGallery) {
+                elements.statsGallery.textContent = state.cloudData.gallery?.length || 0;
+            }
+            
+            renderLandingContent();
+            
+            if (state.currentUser) {
+                renderUserUI();
+            }
+            
+            if (!elements.adminDashboard.classList.contains('hidden')) {
+                renderAdminAgendaInputs();
+                renderGallery();
+                if (elements.confDate) {
+                    elements.confDate.value = state.cloudData.config?.eventDate || '';
+                }
+                
+                if (state.currentUser && state.currentUser.type === 'admin') {
+                    elements.adminName.placeholder = state.currentUser.name || '';
+                }
+            }
+        };
+
+        // Render gallery in all places
+        const renderGallery = () => {
+            const galleryImages = state.cloudData.gallery || [];
+            
+            // تحديث عداد الصور
+            const galleryCount = document.getElementById('gallery-count');
+            if (galleryCount) {
+                galleryCount.textContent = galleryImages.length;
+            }
+            
+            // Landing page gallery
+            const landingGallery = document.getElementById('landing-gallery-list');
+            if (landingGallery) {
+                landingGallery.innerHTML = galleryImages.slice(0, 4).map((url, index) => `
+                    <div class="thumbnail aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors" onclick="openImagePreview('${url}', ${index})">
+                        <img src="${url}" 
+                             loading="lazy" 
+                             class="w-full h-full object-cover" 
+                             alt="Gallery" 
+                             onerror="this.onerror=null; this.src='https://via.placeholder.com/400?text=Image+Not+Found'; this.classList.add('opacity-50');">
+                    </div>
+                `).join('');
+            }
+            
+            // User dashboard gallery
+            const userGallery = document.getElementById('user-gallery-list');
+            if (userGallery) {
+                userGallery.innerHTML = galleryImages.map((url, index) => `
+                    <div class="thumbnail aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors" onclick="openImagePreview('${url}', ${index})">
+                        <img src="${url}" 
+                             loading="lazy" 
+                             class="w-full h-full object-cover" 
+                             alt="Gallery" 
+                             onerror="this.onerror=null; this.src='https://via.placeholder.com/400?text=No+Image';">
+                    </div>
+                `).join('');
+            }
+            
+            // Admin gallery preview
+            if (elements.adminGalleryPreview) {
+                elements.adminGalleryPreview.innerHTML = galleryImages.map((url, index) => `
+                    <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10">
+                        <div class="thumbnail w-full h-full" onclick="openImagePreview('${url}', ${index})">
+                            <img src="${url}" 
+                                 class="w-full h-full object-cover" 
+                                 alt="Gallery ${index + 1}" 
+                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/400?text=Error';">
+                        </div>
+                        <button onclick="event.stopPropagation(); removeGalleryImage(${index})" 
+                                class="absolute top-1 right-1 bg-red-500/80 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                            ✕
+                        </button>
+                        <div class="absolute bottom-1 left-1 bg-black/50 text-white text-[8px] px-1 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                            ${index + 1}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        };
+
+        // Render landing page content
+        const renderLandingContent = () => {
+            const agendaList = document.getElementById('landing-agenda-list');
+            if (agendaList) {
+                agendaList.innerHTML = (state.cloudData.agenda || [])
+                    .sort((a, b) => a.time?.localeCompare(b.time))
+                    .map(item => `
+                        <div class="glass-card p-4 rounded-xl flex items-center justify-between hover:border-blue-500/30 transition-colors">
+                            <div class="flex gap-3 items-center">
+                                <span class="text-blue-500 font-bold font-mono text-sm bg-blue-500/10 px-2 py-1 rounded">${item.time || '--:--'}</span>
+                                <span class="font-bold text-white">${item.title || 'بدون عنوان'}</span>
+                            </div>
+                        </div>
+                    `).join('');
+            }
+        };
+
+        // Render user UI
+        const renderUserUI = () => {
+            const agendaList = document.getElementById('user-agenda-list');
+            if (agendaList) {
+                agendaList.innerHTML = (state.cloudData.agenda || [])
+                    .map(item => `
+                        <div class="glass-card p-4 rounded-xl flex items-center justify-between">
+                            <div class="flex gap-3 items-center">
+                                <span class="text-blue-500 font-bold font-mono">${item.time}</span>
+                                <span class="font-bold text-white">${item.title}</span>
+                            </div>
+                        </div>
+                    `).join('');
+            }
+        };
+
+        // Render admin agenda inputs
+        const renderAdminAgendaInputs = () => {
+            if (!elements.adminAgendaInputs) return;
+            
+            elements.adminAgendaInputs.innerHTML = (state.cloudData.agenda || [])
+                .sort((a, b) => a.time?.localeCompare(b.time))
+                .map((item, index) => `
+                    <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex gap-2 items-center animate-fade-in" data-agenda-index="${index}">
+                        <input type="time" value="${item.time || ''}" 
+                               class="agenda-time-input bg-slate-900 p-2 rounded-lg text-blue-400 font-bold w-24 text-sm border border-white/10 focus:border-blue-500 outline-none">
+                        <input type="text" value="${item.title || ''}" 
+                               class="agenda-title-input bg-slate-900 p-2 rounded-lg text-white flex-1 text-sm border border-white/10 focus:border-blue-500 outline-none" 
+                               placeholder="عنوان الفقرة">
+                        <button onclick="this.closest('div').remove()" 
+                                class="text-red-500 hover:text-red-400 font-bold px-2 transition-colors" 
+                                aria-label="حذف">✕</button>
+                    </div>
+                `).join('');
+        };
+
+        // Add new agenda row
+        window.addNewAgendaRow = () => {
+            const div = document.createElement('div');
+            div.className = "bg-white/5 p-3 rounded-xl border border-white/5 flex gap-2 items-center animate-fade-in";
+            div.innerHTML = `
+                <input type="time" class="agenda-time-input bg-slate-900 p-2 rounded-lg text-blue-400 font-bold w-24 text-sm border border-white/10">
+                <input type="text" class="agenda-title-input bg-slate-900 p-2 rounded-lg text-white flex-1 text-sm border border-white/10" placeholder="عنوان الفقرة">
+                <button onclick="this.closest('div').remove()" class="text-red-500 hover:text-red-400 font-bold px-2">✕</button>
+            `;
+            elements.adminAgendaInputs.prepend(div);
+        };
+
+        // Save all to Firestore
+        window.saveAllToCloud = async () => {
+            if (state.isSyncing) {
+                showToast('جاري المزامنة بالفعل...', 'error');
+                return;
+            }
+
+            state.isSyncing = true;
+            showToast('جاري حفظ التغييرات...', 'success');
+
+            try {
+                const times = document.querySelectorAll('.agenda-time-input');
+                const titles = document.querySelectorAll('.agenda-title-input');
+                
+                const newAgenda = Array.from(times)
+                    .map((t, i) => ({
+                        time: t.value,
+                        title: titles[i]?.value || ''
+                    }))
+                    .filter(a => a.time && a.title.trim())
+                    .sort((a, b) => a.time.localeCompare(b.time));
+
+                const config = {
+                    logo: state.cloudData.config?.logo || 'images/logo.png',
+                    eventDate: elements.confDate?.value || ''
+                };
+
+                await setDoc(doc(db, "conference", "data"), {
+                    agenda: newAgenda,
+                    gallery: state.cloudData.gallery || [],
+                    config: config,
+                    lastUpdated: new Date().toISOString()
+                });
+
+                showToast('تم حفظ جميع التغييرات بنجاح');
+            } catch (error) {
+                console.error('Save error:', error);
+                showToast('فشل في حفظ التغييرات', 'error');
+            } finally {
+                state.isSyncing = false;
+            }
+        };
+
+        // Login Handler
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-pass').value;
+
+            // Check admin accounts
+            const admin = adminAccounts.find(a => a.email === email && a.password === password);
+            if (admin) {
+                state.currentUser = { 
+                    name: admin.name, 
+                    type: "admin",
+                    email: admin.email,
+                    originalEmail: admin.email
+                };
+                
+                document.getElementById('user-welcome-name').textContent = `مرحباً ${admin.name}`;
+                document.getElementById('user-role-badge').textContent = "مدير النظام";
+                document.getElementById('user-avatar').textContent = admin.name.charAt(0);
+                
+                elements.logoutBtn.classList.remove('hidden');
+                showSection('admin-dashboard');
+                showToast(`مرحباً بك ${admin.name}`, 'success');
+                loadUsers();
+                
+                if (elements.adminName) {
+                    elements.adminName.placeholder = admin.name;
+                }
+                return;
+            }
+
+            // User login
+            try {
+                const q = query(
+                    collection(db, "users"), 
+                    where("email", "==", email), 
+                    where("pass", "==", password)
+                );
+                
+                const snap = await getDocs(q);
+                
+                if (!snap.empty) {
+                    const userData = snap.docs[0].data();
+                    state.currentUser = { 
+                        ...userData, 
+                        type: "user",
+                        id: snap.docs[0].id 
+                    };
+                    
+                    document.getElementById('user-welcome-name').textContent = `مرحباً ${userData.name || 'مستخدم'}`;
+                    document.getElementById('user-role-badge').textContent = userData.org || 'مشترك';
+                    document.getElementById('user-avatar').textContent = (userData.name || 'U').charAt(0);
+                    
+                    elements.logoutBtn.classList.remove('hidden');
+                    showSection('user-dashboard');
+                    renderUserUI();
+                    showToast('تم تسجيل الدخول بنجاح', 'success');
+                } else {
+                    showToast('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('حدث خطأ في تسجيل الدخول', 'error');
+            }
+        });
+
+        // Register Handler
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userData = {
+                name: document.getElementById('reg-name').value,
+                org: document.getElementById('reg-org').value,
+                email: document.getElementById('reg-email').value,
+                pass: document.getElementById('reg-pass').value,
+                registeredAt: new Date().toISOString()
+            };
+
+            try {
+                const q = query(collection(db, "users"), where("email", "==", userData.email));
+                const snap = await getDocs(q);
+                
+                if (!snap.empty) {
+                    showToast('البريد الإلكتروني مسجل مسبقاً', 'error');
+                    return;
+                }
+
+                await setDoc(doc(collection(db, "users")), userData);
+                
+                showToast('تم إنشاء الحساب بنجاح', 'success');
+                showSection('login-section');
+                
+                document.getElementById('register-form').reset();
+            } catch (error) {
+                console.error('Registration error:', error);
+                showToast('حدث خطأ في إنشاء الحساب', 'error');
+            }
+        });
+
+        // Logout Handler
+        window.handleLogout = () => {
+            state.currentUser = null;
+            elements.logoutBtn.classList.add('hidden');
+            showSection('landing-section');
+            showToast('تم تسجيل الخروج بنجاح', 'success');
+        };
+
+        // Live Clock
+        const updateLiveClock = () => {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ar-EG', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false 
+            });
+            
+            const clockElement = document.getElementById('live-clock');
+            if (clockElement) {
+                clockElement.textContent = timeString;
+            }
+        };
+        setInterval(updateLiveClock, 1000);
+
+        // Countdown Timer
+        const updateCountdown = () => {
+            const container = document.getElementById('countdown-container');
+            if (!container) return;
+
+            const eventDate = state.cloudData.config?.eventDate;
+            if (!eventDate) {
+                container.innerHTML = '<div class="text-gray-500">لم يتم تحديد موعد المؤتمر بعد</div>';
+                return;
+            }
+
+            const event = new Date(eventDate).getTime();
+            const now = new Date().getTime();
+            const distance = event - now;
+
+            if (distance < 0) {
+                container.innerHTML = '<div class="text-green-500 font-bold">المؤتمر قد بدأ!</div>';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            container.innerHTML = `
+                <div class="glass-card px-4 py-3 rounded-xl text-center min-w-[70px]">
+                    <div class="text-2xl font-black text-blue-500">${days}</div>
+                    <div class="text-xs text-gray-400">يوم</div>
+                </div>
+                <div class="glass-card px-4 py-3 rounded-xl text-center min-w-[70px]">
+                    <div class="text-2xl font-black text-blue-500">${hours}</div>
+                    <div class="text-xs text-gray-400">ساعة</div>
+                </div>
+                <div class="glass-card px-4 py-3 rounded-xl text-center min-w-[70px]">
+                    <div class="text-2xl font-black text-blue-500">${minutes}</div>
+                    <div class="text-xs text-gray-400">دقيقة</div>
+                </div>
+                <div class="glass-card px-4 py-3 rounded-xl text-center min-w-[70px]">
+                    <div class="text-2xl font-black text-blue-500">${seconds}</div>
+                    <div class="text-xs text-gray-400">ثانية</div>
+                </div>
+            `;
+        };
+        setInterval(updateCountdown, 1000);
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            showSection('landing-section');
+            
+            state.cloudData = { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } };
+            
+            updateUI();
+            
+            // محاولة تحميل الصور تلقائياً عند فتح الصفحة
+            setTimeout(() => {
+                if (state.cloudData.gallery.length === 0) {
+                    loadImagesFromGithub();
+                }
+            }, 1000);
+        });
+
+        window.showToast = showToast;
     </script>
 </body>
 </html>
