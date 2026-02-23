@@ -22,10 +22,6 @@
             min-height: 100vh;
         }
         
-        @media (prefers-reduced-motion: reduce) {
-            * { animation-duration: 0.01ms !important; }
-        }
-        
         .hero-pattern { 
             background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
             background-size: 40px 40px;
@@ -84,16 +80,6 @@
         
         .will-change-transform { will-change: transform; }
         .will-change-opacity { will-change: opacity; }
-        
-        /*拖拽上传样式*/
-        .drop-zone {
-            border: 2px dashed #3b82f6;
-            transition: all 0.3s ease;
-        }
-        .drop-zone.dragover {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: #f59e0b;
-        }
     </style>
 </head>
 <body class="hero-pattern min-h-screen flex flex-col">
@@ -374,10 +360,7 @@
                                 <img id="admin-logo-img" class="hidden w-full h-full object-cover" src="images/logo.png" alt="Logo Preview" onerror="this.style.display='none';document.getElementById('admin-logo-placeholder').style.display='flex'">
                             </div>
                             
-                            <div class="w-full">
-                                <label class="block text-sm font-bold text-gray-400 mb-2">رفع شعار جديد</label>
-                                <input type="file" id="logo-upload" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
-                            </div>
+                            <p class="text-sm text-gray-400">ضع شعارك في المجلد images/logo.png</p>
                         </div>
 
                         <div class="space-y-2">
@@ -387,58 +370,34 @@
                         </div>
                     </div>
 
-                    <!-- Gallery Management with Auto Upload -->
+                    <!-- Gallery Management -->
                     <div class="glass p-6 rounded-2xl space-y-4">
                         <h4 class="text-lg font-black">📷 معرض الصور</h4>
                         
-                        <!-- Auto Upload Section -->
-                        <div class="space-y-4">
-                            <div class="bg-blue-600/10 p-4 rounded-xl border border-blue-500/20">
-                                <h5 class="font-bold text-blue-400 mb-2 flex items-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                                    </svg>
-                                    رفع صور تلقائي
-                                </h5>
-                                
-                                <!-- Drop Zone -->
-                                <div id="drop-zone" class="drop-zone border-2 border-dashed border-blue-500/30 rounded-xl p-6 text-center cursor-pointer hover:border-blue-500 transition-colors" onclick="document.getElementById('gallery-upload').click()">
-                                    <input type="file" id="gallery-upload" multiple accept="image/*" class="hidden" onchange="handleImageUpload(this.files)">
-                                    <svg class="w-10 h-10 mx-auto text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
-                                    <p class="text-sm text-gray-400">اسحب وأفلت الصور هنا أو اضغط للاختيار</p>
-                                    <p class="text-xs text-gray-500 mt-1">PNG, JPG, GIF - مقاسات مختلفة</p>
-                                </div>
-                                
-                                <!-- Quick Upload Buttons -->
-                                <div class="flex flex-wrap gap-2 mt-4">
-                                    <button onclick="triggerFolderUpload()" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path>
-                                        </svg>
-                                        رفع مجلد
-                                    </button>
-                                    <button onclick="scanImagesFolder()" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl text-xs font-bold transition-colors">
-                                        🔍 مسح مجلد images المحلي
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Progress Bar for Uploads -->
-                            <div id="upload-progress" class="hidden">
-                                <div class="flex justify-between text-xs text-gray-400 mb-1">
-                                    <span>جاري الرفع...</span>
-                                    <span id="upload-progress-percent">0%</span>
-                                </div>
-                                <div class="w-full bg-white/5 rounded-full h-2">
-                                    <div id="upload-progress-bar" class="bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
-                                </div>
-                            </div>
-                            
-                            <!-- Image Preview Grid -->
-                            <div id="admin-gallery-preview" class="grid grid-cols-4 gap-2 mt-4"></div>
+                        <p class="text-sm text-gray-400">الصور الموجودة في مجلد images:</p>
+                        
+                        <div class="flex gap-2">
+                            <button onclick="scanImagesFolder()" 
+                                    class="flex-1 py-3 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white rounded-xl text-sm font-bold transition-colors">
+                                🔍 مسح مجلد images
+                            </button>
+                            <button onclick="addSampleImages()" 
+                                    class="flex-1 py-3 bg-green-600/20 hover:bg-green-600 text-green-400 hover:text-white rounded-xl text-sm font-bold transition-colors">
+                                🖼️ صور تجريبية
+                            </button>
                         </div>
+                        
+                        <div class="mt-2">
+                            <label class="block text-sm font-bold text-gray-400 mb-2">أو اختر صوراً من جهازك</label>
+                            <input type="file" 
+                                   id="local-images" 
+                                   multiple 
+                                   accept="image/*"
+                                   class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                                   onchange="handleLocalImageSelection(this.files)">
+                        </div>
+                        
+                        <div id="admin-gallery-preview" class="grid grid-cols-4 gap-2 mt-4"></div>
                     </div>
                 </div>
             </div>
@@ -454,7 +413,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getFirestore, doc, setDoc, onSnapshot, collection, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL, listAll } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAq46_s0TiEBJTrhOz05St1zU2FU3PLIao",
@@ -467,7 +425,6 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
         // Admin accounts (5 admins)
         let adminAccounts = JSON.parse(localStorage.getItem('adminAccounts')) || [
@@ -509,12 +466,10 @@
             usersList: document.getElementById('users-list'),
             adminName: document.getElementById('admin-name'),
             adminNewEmail: document.getElementById('admin-new-email'),
-            adminNewPassword: document.getElementById('admin-new-password'),
-            uploadProgress: document.getElementById('upload-progress'),
-            uploadProgressBar: document.getElementById('upload-progress-bar'),
-            uploadProgressPercent: document.getElementById('upload-progress-percent')
+            adminNewPassword: document.getElementById('admin-new-password')
         };
 
+        // Toast notification function
         const showToast = (message, type = 'success', duration = 3000) => {
             const toast = document.createElement('div');
             toast.className = `px-4 py-3 rounded-xl text-sm font-bold shadow-lg transform transition-all duration-300 ${
@@ -528,6 +483,7 @@
             setTimeout(() => toast.remove(), duration);
         };
 
+        // Show section function
         window.showSection = (sectionId) => {
             elements.landingSection.classList.add('hidden');
             elements.authForms.classList.add('hidden');
@@ -544,156 +500,103 @@
             }
         };
 
-        // Image Upload Functions
-        window.handleImageUpload = async (files) => {
-            if (!files || files.length === 0) return;
-            
-            elements.uploadProgress.classList.remove('hidden');
-            let completed = 0;
-            
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                if (!file.type.startsWith('image/')) continue;
-                
-                try {
-                    // Create a unique filename
-                    const timestamp = Date.now();
-                    const filename = `gallery/${timestamp}_${file.name}`;
-                    const storageRef = ref(storage, filename);
-                    
-                    // Upload file
-                    await uploadBytes(storageRef, file);
-                    
-                    // Get download URL
-                    const downloadURL = await getDownloadURL(storageRef);
-                    
-                    // Add to gallery if not already present
-                    if (!state.cloudData.gallery.includes(downloadURL)) {
-                        state.cloudData.gallery.push(downloadURL);
-                    }
-                    
-                    completed++;
-                    const percent = Math.round((completed / files.length) * 100);
-                    elements.uploadProgressBar.style.width = percent + '%';
-                    elements.uploadProgressPercent.textContent = percent + '%';
-                    
-                } catch (error) {
-                    console.error('Upload error:', error);
-                    showToast('فشل رفع الصورة: ' + file.name, 'error');
-                }
-            }
-            
-            renderAdminGalleryPreview();
-            elements.uploadProgress.classList.add('hidden');
-            showToast(`تم رفع ${completed} صورة بنجاح`);
+        // Check if image exists
+        const checkImageExists = (url) => {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = url;
+            });
         };
 
-        // Setup drag and drop
-        const setupDragAndDrop = () => {
-            const dropZone = document.getElementById('drop-zone');
-            if (!dropZone) return;
-            
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropZone.addEventListener(eventName, preventDefaults, false);
-            });
-            
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropZone.addEventListener(eventName, () => {
-                    dropZone.classList.add('dragover');
-                }, false);
-            });
-            
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropZone.addEventListener(eventName, () => {
-                    dropZone.classList.remove('dragover');
-                }, false);
-            });
-            
-            dropZone.addEventListener('drop', (e) => {
-                const files = e.dataTransfer.files;
-                handleImageUpload(files);
-            }, false);
-        };
-
-        // Trigger folder upload
-        window.triggerFolderUpload = () => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.webkitdirectory = true;
-            input.multiple = true;
-            input.accept = 'image/*';
-            input.onchange = (e) => handleImageUpload(e.target.files);
-            input.click();
-        };
-
-        // Logo upload handler
-        document.getElementById('logo-upload')?.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            try {
-                const storageRef = ref(storage, 'logo/logo.png');
-                await uploadBytes(storageRef, file);
-                const downloadURL = await getDownloadURL(storageRef);
-                
-                state.cloudData.config.logo = downloadURL;
-                updateLogoDisplay(downloadURL);
-                showToast('تم رفع الشعار بنجاح');
-            } catch (error) {
-                showToast('فشل رفع الشعار', 'error');
-            }
-        });
-
-        // Scan local images folder (simulated)
+        // Scan images folder for local images
         window.scanImagesFolder = async () => {
             showToast('جاري مسح مجلد images...', 'success');
             
-            try {
-                // List all files from Firebase Storage gallery folder
-                const listRef = ref(storage, 'gallery');
-                const res = await listAll(listRef);
-                
-                for (const itemRef of res.items) {
-                    const url = await getDownloadURL(itemRef);
-                    if (!state.cloudData.gallery.includes(url)) {
-                        state.cloudData.gallery.push(url);
+            const foundImages = [];
+            const extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            const baseNames = [
+                '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
+                'photo1', 'photo2', 'photo3', 'photo4',
+                'gallery1', 'gallery2', 'gallery3', 'gallery4',
+                'image1', 'image2', 'image3', 'image4',
+                'event1', 'event2', 'event3',
+                'conference1', 'conference2', 'conference3',
+                'background', 'header', 'footer', 'main'
+            ];
+            
+            // Try all possible combinations
+            for (const name of baseNames) {
+                for (const ext of extensions) {
+                    const url = `images/${name}.${ext}`;
+                    const exists = await checkImageExists(url);
+                    if (exists) {
+                        foundImages.push(url);
+                        console.log('Found image:', url);
                     }
                 }
-                
-                renderAdminGalleryPreview();
-                showToast(`تم العثور على ${state.cloudData.gallery.length} صورة`);
-            } catch (error) {
-                // If no files in storage, provide sample images
-                const sampleImages = [
-                    'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400',
-                    'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400',
-                    'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400',
-                    'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400'
-                ];
-                
-                sampleImages.forEach(img => {
-                    if (!state.cloudData.gallery.includes(img)) {
-                        state.cloudData.gallery.push(img);
-                    }
-                });
-                
-                renderAdminGalleryPreview();
-                showToast('تم تحميل صور تجريبية');
+            }
+            
+            // Remove duplicates
+            const uniqueImages = [...new Set(foundImages)];
+            
+            if (uniqueImages.length > 0) {
+                state.cloudData.gallery = uniqueImages;
+                renderGallery();
+                showToast(`تم العثور على ${uniqueImages.length} صورة في مجلد images`);
+            } else {
+                showToast('لم يتم العثور على صور في مجلد images', 'error');
             }
         };
 
+        // Add sample images
+        window.addSampleImages = () => {
+            state.cloudData.gallery = [
+                'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400',
+                'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400',
+                'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400',
+                'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400',
+                'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400',
+                'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400'
+            ];
+            renderGallery();
+            showToast('تم إضافة صور تجريبية');
+        };
+
+        // Handle local image selection from file input
+        window.handleLocalImageSelection = (files) => {
+            if (!files || files.length === 0) return;
+            
+            const newImages = [];
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                // Create local URL for the image
+                const url = URL.createObjectURL(file);
+                newImages.push(url);
+            }
+            
+            // Add new images to gallery
+            if (!state.cloudData.gallery) {
+                state.cloudData.gallery = [];
+            }
+            state.cloudData.gallery = [...state.cloudData.gallery, ...newImages];
+            
+            // Update display
+            renderGallery();
+            showToast(`تمت إضافة ${newImages.length} صورة`);
+        };
+
+        // Remove gallery image
         window.removeGalleryImage = (index) => {
             if (state.cloudData.gallery && state.cloudData.gallery[index]) {
                 state.cloudData.gallery.splice(index, 1);
-                renderAdminGalleryPreview();
+                renderGallery();
             }
         };
 
+        // Update logo display
         const updateLogoDisplay = (url) => {
             if (url && url !== 'images/logo.png') {
                 elements.siteLogoImg.src = url;
@@ -706,6 +609,7 @@
                     elements.adminLogoPlaceholder.classList.add('hidden');
                 }
             } else {
+                // Try local logo
                 elements.siteLogoImg.src = 'images/logo.png';
                 elements.siteLogoImg.classList.remove('hidden');
                 elements.logoPlaceholder.classList.add('hidden');
@@ -740,6 +644,7 @@
             }
         };
 
+        // Render users list
         const renderUsersList = () => {
             if (!elements.usersList) return;
             
@@ -755,6 +660,7 @@
             `).join('');
         };
 
+        // Delete user
         window.deleteUser = async (userId) => {
             if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
                 try {
@@ -767,6 +673,7 @@
             }
         };
 
+        // Export to Excel
         window.exportToExcel = () => {
             const data = state.users.map(user => ({
                 'الاسم': user.name || '',
@@ -783,6 +690,7 @@
             showToast('تم تصدير الملف');
         };
 
+        // Update admin profile
         window.updateAdminProfile = () => {
             if (!state.currentUser || state.currentUser.type !== 'admin') return;
             
@@ -815,7 +723,7 @@
             }
         };
 
-        // Real-time sync
+        // Real-time sync from Firestore
         const unsubscribe = onSnapshot(
             doc(db, "conference", "data"),
             (snap) => {
@@ -835,6 +743,7 @@
             }
         );
 
+        // Update UI based on state
         const updateUI = () => {
             updateLogoDisplay(state.cloudData.config?.logo);
             
@@ -853,7 +762,7 @@
             
             if (!elements.adminDashboard.classList.contains('hidden')) {
                 renderAdminAgendaInputs();
-                renderAdminGalleryPreview();
+                renderGallery();
                 if (elements.confDate) {
                     elements.confDate.value = state.cloudData.config?.eventDate || '';
                 }
@@ -864,6 +773,56 @@
             }
         };
 
+        // Render gallery in all places
+        const renderGallery = () => {
+            const galleryImages = state.cloudData.gallery || [];
+            
+            // Landing page gallery
+            const landingGallery = document.getElementById('landing-gallery-list');
+            if (landingGallery) {
+                landingGallery.innerHTML = galleryImages.slice(0, 4).map(url => `
+                    <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors cursor-pointer group" onclick="window.open('${url}', '_blank')">
+                        <img src="${url}" 
+                             loading="lazy" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" 
+                             alt="Gallery" 
+                             onerror="this.onerror=null; this.src='https://via.placeholder.com/400?text=Image+Not+Found'; this.classList.add('opacity-50');">
+                    </div>
+                `).join('');
+            }
+            
+            // User dashboard gallery
+            const userGallery = document.getElementById('user-gallery-list');
+            if (userGallery) {
+                userGallery.innerHTML = galleryImages.map(url => `
+                    <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors cursor-pointer" onclick="window.open('${url}', '_blank')">
+                        <img src="${url}" 
+                             loading="lazy" 
+                             class="w-full h-full object-cover hover:scale-110 transition-transform duration-300" 
+                             alt="Gallery" 
+                             onerror="this.onerror=null; this.src='https://via.placeholder.com/400?text=No+Image';">
+                    </div>
+                `).join('');
+            }
+            
+            // Admin gallery preview
+            if (elements.adminGalleryPreview) {
+                elements.adminGalleryPreview.innerHTML = galleryImages.map((url, index) => `
+                    <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10">
+                        <img src="${url}" 
+                             class="w-full h-full object-cover" 
+                             alt="Gallery ${index + 1}" 
+                             onerror="this.onerror=null; this.src='https://via.placeholder.com/400?text=Error';">
+                        <button onclick="removeGalleryImage(${index})" 
+                                class="absolute top-1 right-1 bg-red-500/80 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                            ✕
+                        </button>
+                    </div>
+                `).join('');
+            }
+        };
+
+        // Render landing page content
         const renderLandingContent = () => {
             const agendaList = document.getElementById('landing-agenda-list');
             if (agendaList) {
@@ -878,19 +837,9 @@
                         </div>
                     `).join('');
             }
-
-            const galleryList = document.getElementById('landing-gallery-list');
-            if (galleryList) {
-                galleryList.innerHTML = (state.cloudData.gallery || [])
-                    .slice(0, 4)
-                    .map(url => `
-                        <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors cursor-pointer group" onclick="window.open('${url}', '_blank')">
-                            <img src="${url}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" alt="Gallery" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
-                        </div>
-                    `).join('');
-            }
         };
 
+        // Render user UI
         const renderUserUI = () => {
             const agendaList = document.getElementById('user-agenda-list');
             if (agendaList) {
@@ -904,18 +853,9 @@
                         </div>
                     `).join('');
             }
-
-            const galleryList = document.getElementById('user-gallery-list');
-            if (galleryList) {
-                galleryList.innerHTML = (state.cloudData.gallery || [])
-                    .map(url => `
-                        <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors cursor-pointer" onclick="window.open('${url}', '_blank')">
-                            <img src="${url}" loading="lazy" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300" alt="Gallery" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
-                        </div>
-                    `).join('');
-            }
         };
 
+        // Render admin agenda inputs
         const renderAdminAgendaInputs = () => {
             if (!elements.adminAgendaInputs) return;
             
@@ -935,20 +875,7 @@
                 `).join('');
         };
 
-        const renderAdminGalleryPreview = () => {
-            if (!elements.adminGalleryPreview) return;
-            
-            elements.adminGalleryPreview.innerHTML = (state.cloudData.gallery || [])
-                .map((url, index) => `
-                    <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10">
-                        <img src="${url}" class="w-full h-full object-cover" alt="Gallery ${index + 1}" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
-                        <button onclick="removeGalleryImage(${index})" 
-                                class="absolute top-1 right-1 bg-red-500/80 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity"
-                                aria-label="حذف">✕</button>
-                    </div>
-                `).join('');
-        };
-
+        // Add new agenda row
         window.addNewAgendaRow = () => {
             const div = document.createElement('div');
             div.className = "bg-white/5 p-3 rounded-xl border border-white/5 flex gap-2 items-center animate-fade-in";
@@ -960,6 +887,7 @@
             elements.adminAgendaInputs.prepend(div);
         };
 
+        // Save all to Firestore
         window.saveAllToCloud = async () => {
             if (state.isSyncing) {
                 showToast('جاري المزامنة بالفعل...', 'error');
@@ -1009,6 +937,7 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-pass').value;
 
+            // Check admin accounts
             const admin = adminAccounts.find(a => a.email === email && a.password === password);
             if (admin) {
                 state.currentUser = { 
@@ -1033,6 +962,7 @@
                 return;
             }
 
+            // User login
             try {
                 const q = query(
                     collection(db, "users"), 
@@ -1174,9 +1104,9 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             showSection('landing-section');
-            setupDragAndDrop();
             
             state.cloudData = { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } };
+            
             updateUI();
         });
 
