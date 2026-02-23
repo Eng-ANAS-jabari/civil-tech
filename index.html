@@ -7,9 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- تحميل Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
     <style>
         :root { 
             --primary: #3b82f6; 
@@ -85,157 +82,21 @@
         }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
         
-        .loading-spinner {
-            border: 3px solid rgba(255,255,255,0.1);
-            border-radius: 50%;
-            border-top: 3px solid #3b82f6;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
+        .will-change-transform { will-change: transform; }
+        .will-change-opacity { will-change: opacity; }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        /*拖拽上传样式*/
+        .drop-zone {
+            border: 2px dashed #3b82f6;
+            transition: all 0.3s ease;
         }
-
-        /* معرض الصور */
-        .gallery-item {
-            position: relative;
-            overflow: hidden;
-            border-radius: 0.75rem;
-            aspect-ratio: 1;
-            cursor: pointer;
-        }
-
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .gallery-item:hover img {
-            transform: scale(1.1);
-        }
-
-        .gallery-item::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .gallery-item:hover::after {
-            opacity: 1;
-        }
-
-        /* نافذة عرض الصور المكبرة */
-        .lightbox {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        .lightbox.active {
-            display: flex;
-        }
-
-        .lightbox img {
-            max-width: 90%;
-            max-height: 80vh;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-
-        .lightbox-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            transition: background 0.3s ease;
-        }
-
-        .lightbox-close:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .lightbox-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            transition: background 0.3s ease;
-        }
-
-        .lightbox-nav:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .lightbox-nav.prev {
-            left: 20px;
-        }
-
-        .lightbox-nav.next {
-            right: 20px;
-        }
-
-        .lightbox-counter {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            background: rgba(0,0,0,0.5);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
+        .drop-zone.dragover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #f59e0b;
         }
     </style>
 </head>
 <body class="hero-pattern min-h-screen flex flex-col">
-
-    <!-- شاشة التحميل -->
-    <div id="loading-screen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center flex-col gap-4">
-        <div class="loading-spinner"></div>
-        <div class="text-blue-500 font-bold">جاري تحميل النظام...</div>
-    </div>
-
-    <!-- نافذة عرض الصور المكبرة -->
-    <div id="lightbox" class="lightbox">
-        <button class="lightbox-close" onclick="closeLightbox()">×</button>
-        <button class="lightbox-nav prev" onclick="navigateLightbox(-1)">‹</button>
-        <img id="lightbox-img" src="" alt="">
-        <button class="lightbox-nav next" onclick="navigateLightbox(1)">›</button>
-        <div id="lightbox-counter" class="lightbox-counter"></div>
-    </div>
 
     <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
@@ -513,7 +374,10 @@
                                 <img id="admin-logo-img" class="hidden w-full h-full object-cover" src="images/logo.png" alt="Logo Preview" onerror="this.style.display='none';document.getElementById('admin-logo-placeholder').style.display='flex'">
                             </div>
                             
-                            <p class="text-sm text-gray-400">ضع شعارك في المجلد images/logo.png</p>
+                            <div class="w-full">
+                                <label class="block text-sm font-bold text-gray-400 mb-2">رفع شعار جديد</label>
+                                <input type="file" id="logo-upload" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
+                            </div>
                         </div>
 
                         <div class="space-y-2">
@@ -523,24 +387,58 @@
                         </div>
                     </div>
 
-                    <!-- Gallery Management -->
+                    <!-- Gallery Management with Auto Upload -->
                     <div class="glass p-6 rounded-2xl space-y-4">
                         <h4 class="text-lg font-black">📷 معرض الصور</h4>
                         
-                        <p class="text-sm text-gray-400">الصور الموجودة في مجلد images:</p>
-                        
-                        <div class="grid grid-cols-2 gap-2 mb-4">
-                            <button onclick="scanImagesFolder()" 
-                                    class="py-2 bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white rounded-xl text-xs font-black transition-colors">
-                                🔍 مسح مجلد images
-                            </button>
-                            <button onclick="syncGalleryToFirebase()" 
-                                    class="py-2 bg-green-600/20 hover:bg-green-600 text-green-400 hover:text-white rounded-xl text-xs font-black transition-colors">
-                                💾 حفظ المعرض
-                            </button>
+                        <!-- Auto Upload Section -->
+                        <div class="space-y-4">
+                            <div class="bg-blue-600/10 p-4 rounded-xl border border-blue-500/20">
+                                <h5 class="font-bold text-blue-400 mb-2 flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                    </svg>
+                                    رفع صور تلقائي
+                                </h5>
+                                
+                                <!-- Drop Zone -->
+                                <div id="drop-zone" class="drop-zone border-2 border-dashed border-blue-500/30 rounded-xl p-6 text-center cursor-pointer hover:border-blue-500 transition-colors" onclick="document.getElementById('gallery-upload').click()">
+                                    <input type="file" id="gallery-upload" multiple accept="image/*" class="hidden" onchange="handleImageUpload(this.files)">
+                                    <svg class="w-10 h-10 mx-auto text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <p class="text-sm text-gray-400">اسحب وأفلت الصور هنا أو اضغط للاختيار</p>
+                                    <p class="text-xs text-gray-500 mt-1">PNG, JPG, GIF - مقاسات مختلفة</p>
+                                </div>
+                                
+                                <!-- Quick Upload Buttons -->
+                                <div class="flex flex-wrap gap-2 mt-4">
+                                    <button onclick="triggerFolderUpload()" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl text-xs font-bold transition-colors flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        رفع مجلد
+                                    </button>
+                                    <button onclick="scanImagesFolder()" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl text-xs font-bold transition-colors">
+                                        🔍 مسح مجلد images المحلي
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Progress Bar for Uploads -->
+                            <div id="upload-progress" class="hidden">
+                                <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                    <span>جاري الرفع...</span>
+                                    <span id="upload-progress-percent">0%</span>
+                                </div>
+                                <div class="w-full bg-white/5 rounded-full h-2">
+                                    <div id="upload-progress-bar" class="bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Image Preview Grid -->
+                            <div id="admin-gallery-preview" class="grid grid-cols-4 gap-2 mt-4"></div>
                         </div>
-                        
-                        <div id="admin-gallery-preview" class="grid grid-cols-4 gap-2 max-h-[300px] overflow-y-auto p-2"></div>
                     </div>
                 </div>
             </div>
@@ -553,15 +451,11 @@
         </section>
     </main>
 
-    <script>
-        // إخفاء شاشة التحميل بعد تحميل الصفحة
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.getElementById('loading-screen').style.display = 'none';
-            }, 1000);
-        });
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, listAll } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAq46_s0TiEBJTrhOz05St1zU2FU3PLIao",
             authDomain: "civiltech-e0a16.firebaseapp.com",
@@ -571,62 +465,11 @@
             appId: "1:859519915000:web:fd506ad7290e116e073c0d"
         };
 
-        // Initialize Firebase مع التحقق من الأخطاء
-        let app, db;
-        try {
-            app = firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-            console.log('✅ Firebase initialized successfully');
-        } catch (error) {
-            console.error('❌ Firebase initialization error:', error);
-        }
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
 
-        // متغيرات نافذة عرض الصور
-        let currentImageIndex = 0;
-        let galleryImages = [];
-
-        // دوال نافذة عرض الصور
-        window.openLightbox = (index) => {
-            currentImageIndex = index;
-            updateLightboxImage();
-            document.getElementById('lightbox').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        };
-
-        window.closeLightbox = () => {
-            document.getElementById('lightbox').classList.remove('active');
-            document.body.style.overflow = '';
-        };
-
-        window.navigateLightbox = (direction) => {
-            currentImageIndex += direction;
-            if (currentImageIndex < 0) currentImageIndex = galleryImages.length - 1;
-            if (currentImageIndex >= galleryImages.length) currentImageIndex = 0;
-            updateLightboxImage();
-        };
-
-        const updateLightboxImage = () => {
-            const img = document.getElementById('lightbox-img');
-            const counter = document.getElementById('lightbox-counter');
-            
-            if (galleryImages.length > 0 && currentImageIndex >= 0 && currentImageIndex < galleryImages.length) {
-                img.src = galleryImages[currentImageIndex];
-                counter.textContent = `${currentImageIndex + 1} / ${galleryImages.length}`;
-            }
-        };
-
-        // إغلاق النافذة بالضغط على ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeLightbox();
-            } else if (e.key === 'ArrowLeft') {
-                navigateLightbox(-1);
-            } else if (e.key === 'ArrowRight') {
-                navigateLightbox(1);
-            }
-        });
-
-        // Admin accounts (5 admins) - سيتم حفظها في localStorage
+        // Admin accounts (5 admins)
         let adminAccounts = JSON.parse(localStorage.getItem('adminAccounts')) || [
             { email: "admin1@civil.com", password: "admin123", name: "المدير الأول" },
             { email: "admin2@civil.com", password: "admin123", name: "المدير الثاني" },
@@ -666,7 +509,10 @@
             usersList: document.getElementById('users-list'),
             adminName: document.getElementById('admin-name'),
             adminNewEmail: document.getElementById('admin-new-email'),
-            adminNewPassword: document.getElementById('admin-new-password')
+            adminNewPassword: document.getElementById('admin-new-password'),
+            uploadProgress: document.getElementById('upload-progress'),
+            uploadProgressBar: document.getElementById('upload-progress-bar'),
+            uploadProgressPercent: document.getElementById('upload-progress-percent')
         };
 
         const showToast = (message, type = 'success', duration = 3000) => {
@@ -698,117 +544,153 @@
             }
         };
 
-        // تحديث بيانات المسؤول
-        window.updateAdminProfile = () => {
-            if (!state.currentUser || state.currentUser.type !== 'admin') return;
+        // Image Upload Functions
+        window.handleImageUpload = async (files) => {
+            if (!files || files.length === 0) return;
             
-            const newName = elements.adminName.value;
-            const newEmail = elements.adminNewEmail.value;
-            const newPassword = elements.adminNewPassword.value;
+            elements.uploadProgress.classList.remove('hidden');
+            let completed = 0;
             
-            // Find current admin
-            const adminIndex = adminAccounts.findIndex(a => a.email === state.currentUser.email);
-            
-            if (adminIndex !== -1) {
-                if (newName) adminAccounts[adminIndex].name = newName;
-                if (newEmail) adminAccounts[adminIndex].email = newEmail;
-                if (newPassword) adminAccounts[adminIndex].password = newPassword;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (!file.type.startsWith('image/')) continue;
                 
-                // Save to localStorage
-                localStorage.setItem('adminAccounts', JSON.stringify(adminAccounts));
-                
-                // Update current user
-                state.currentUser = { 
-                    ...adminAccounts[adminIndex], 
-                    type: "admin" 
-                };
-                
-                // Update UI
-                document.getElementById('user-welcome-name').textContent = `مرحباً ${adminAccounts[adminIndex].name}`;
-                document.getElementById('user-avatar').textContent = adminAccounts[adminIndex].name.charAt(0);
-                
-                showToast('تم تحديث البيانات بنجاح');
-                
-                // Clear fields
-                elements.adminName.value = '';
-                elements.adminNewEmail.value = '';
-                elements.adminNewPassword.value = '';
-            }
-        };
-
-        // مسح مجلد images والبحث عن الصور الموجودة فعلياً
-        const scanImagesFolder = async () => {
-            showToast('جاري مسح مجلد images...', 'success');
-            
-            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
-            const foundImages = [];
-            
-            // قائمة بأسماء الصور المحتملة
-            const possibleNames = [
-                // أسماء رقمية
-                ...Array.from({ length: 50 }, (_, i) => `image${i + 1}`),
-                ...Array.from({ length: 20 }, (_, i) => `photo${i + 1}`),
-                ...Array.from({ length: 20 }, (_, i) => `img${i + 1}`),
-                ...Array.from({ length: 20 }, (_, i) => `pic${i + 1}`),
-                // أسماء وصفية
-                'logo', 'background', 'banner', 'header', 'footer',
-                'conference', 'event', 'workshop', 'seminar', 'meeting',
-                'speaker', 'audience', 'presentation', 'stage', 'hall',
-                'sponsor', 'partner', 'exhibition', 'booth', 'stand',
-                'team', 'group', 'attendees', 'participants', 'guests',
-                'main', 'hero', 'cover', 'thumbnail', 'featured'
-            ];
-
-            // تجربة كل اسم مع كل امتداد
-            for (const name of possibleNames) {
-                for (const ext of imageExtensions) {
-                    const imagePath = `images/${name}.${ext}`;
-                    try {
-                        const response = await fetch(imagePath, { method: 'HEAD' });
-                        if (response.ok) {
-                            foundImages.push(imagePath);
-                            console.log(`✅ Found image: ${imagePath}`);
-                        }
-                    } catch (e) {
-                        // تجاهل الأخطاء
+                try {
+                    // Create a unique filename
+                    const timestamp = Date.now();
+                    const filename = `gallery/${timestamp}_${file.name}`;
+                    const storageRef = ref(storage, filename);
+                    
+                    // Upload file
+                    await uploadBytes(storageRef, file);
+                    
+                    // Get download URL
+                    const downloadURL = await getDownloadURL(storageRef);
+                    
+                    // Add to gallery if not already present
+                    if (!state.cloudData.gallery.includes(downloadURL)) {
+                        state.cloudData.gallery.push(downloadURL);
                     }
+                    
+                    completed++;
+                    const percent = Math.round((completed / files.length) * 100);
+                    elements.uploadProgressBar.style.width = percent + '%';
+                    elements.uploadProgressPercent.textContent = percent + '%';
+                    
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    showToast('فشل رفع الصورة: ' + file.name, 'error');
                 }
-            }
-
-            // إزالة التكرارات
-            const uniqueImages = [...new Set(foundImages)];
-            
-            if (uniqueImages.length > 0) {
-                state.cloudData.gallery = uniqueImages;
-                galleryImages = uniqueImages;
-                showToast(`تم العثور على ${uniqueImages.length} صورة`, 'success');
-            } else {
-                showToast('لم يتم العثور على صور في مجلد images', 'error');
             }
             
             renderAdminGalleryPreview();
-            renderLandingContent();
-            
-            return uniqueImages;
+            elements.uploadProgress.classList.add('hidden');
+            showToast(`تم رفع ${completed} صورة بنجاح`);
         };
 
-        window.scanImagesFolder = scanImagesFolder;
-
-        // مزامنة المعرض مع Firebase
-        window.syncGalleryToFirebase = async () => {
-            if (!db) {
-                showToast('Firebase غير مهيأ', 'error');
-                return;
+        // Setup drag and drop
+        const setupDragAndDrop = () => {
+            const dropZone = document.getElementById('drop-zone');
+            if (!dropZone) return;
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
             }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.add('dragover');
+                }, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.remove('dragover');
+                }, false);
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                const files = e.dataTransfer.files;
+                handleImageUpload(files);
+            }, false);
+        };
 
+        // Trigger folder upload
+        window.triggerFolderUpload = () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.webkitdirectory = true;
+            input.multiple = true;
+            input.accept = 'image/*';
+            input.onchange = (e) => handleImageUpload(e.target.files);
+            input.click();
+        };
+
+        // Logo upload handler
+        document.getElementById('logo-upload')?.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
             try {
-                await db.collection("conference").doc("data").update({
-                    gallery: state.cloudData.gallery || []
-                });
-                showToast('تم حفظ المعرض في Firebase', 'success');
+                const storageRef = ref(storage, 'logo/logo.png');
+                await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(storageRef);
+                
+                state.cloudData.config.logo = downloadURL;
+                updateLogoDisplay(downloadURL);
+                showToast('تم رفع الشعار بنجاح');
             } catch (error) {
-                console.error('Error syncing gallery:', error);
-                showToast('فشل في حفظ المعرض', 'error');
+                showToast('فشل رفع الشعار', 'error');
+            }
+        });
+
+        // Scan local images folder (simulated)
+        window.scanImagesFolder = async () => {
+            showToast('جاري مسح مجلد images...', 'success');
+            
+            try {
+                // List all files from Firebase Storage gallery folder
+                const listRef = ref(storage, 'gallery');
+                const res = await listAll(listRef);
+                
+                for (const itemRef of res.items) {
+                    const url = await getDownloadURL(itemRef);
+                    if (!state.cloudData.gallery.includes(url)) {
+                        state.cloudData.gallery.push(url);
+                    }
+                }
+                
+                renderAdminGalleryPreview();
+                showToast(`تم العثور على ${state.cloudData.gallery.length} صورة`);
+            } catch (error) {
+                // If no files in storage, provide sample images
+                const sampleImages = [
+                    'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400',
+                    'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400',
+                    'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400',
+                    'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400'
+                ];
+                
+                sampleImages.forEach(img => {
+                    if (!state.cloudData.gallery.includes(img)) {
+                        state.cloudData.gallery.push(img);
+                    }
+                });
+                
+                renderAdminGalleryPreview();
+                showToast('تم تحميل صور تجريبية');
+            }
+        };
+
+        window.removeGalleryImage = (index) => {
+            if (state.cloudData.gallery && state.cloudData.gallery[index]) {
+                state.cloudData.gallery.splice(index, 1);
+                renderAdminGalleryPreview();
             }
         };
 
@@ -824,7 +706,6 @@
                     elements.adminLogoPlaceholder.classList.add('hidden');
                 }
             } else {
-                // Try local logo
                 elements.siteLogoImg.src = 'images/logo.png';
                 elements.siteLogoImg.classList.remove('hidden');
                 elements.logoPlaceholder.classList.add('hidden');
@@ -840,18 +721,12 @@
         // Load users from Firestore
         const loadUsers = async () => {
             try {
-                if (!db) {
-                    console.error('Firestore not initialized');
-                    return;
-                }
-                
-                const querySnapshot = await db.collection("users").get();
+                const querySnapshot = await getDocs(collection(db, "users"));
                 state.users = [];
                 querySnapshot.forEach((doc) => {
                     state.users.push({ id: doc.id, ...doc.data() });
                 });
                 
-                // Update stats
                 if (elements.statsUsers) {
                     elements.statsUsers.textContent = state.users.length;
                 }
@@ -862,7 +737,6 @@
                 renderUsersList();
             } catch (error) {
                 console.error('Error loading users:', error);
-                showToast('خطأ في تحميل المستخدمين', 'error');
             }
         };
 
@@ -884,11 +758,10 @@
         window.deleteUser = async (userId) => {
             if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
                 try {
-                    await db.collection("users").doc(userId).delete();
+                    await deleteDoc(doc(db, "users", userId));
                     showToast('تم حذف المستخدم');
                     loadUsers();
                 } catch (error) {
-                    console.error('Error deleting user:', error);
                     showToast('فشل حذف المستخدم', 'error');
                 }
             }
@@ -910,40 +783,61 @@
             showToast('تم تصدير الملف');
         };
 
-        // Real-time sync مع معالجة الأخطاء
-        const setupRealtimeSync = () => {
-            if (!db) {
-                console.error('Cannot setup sync: Firestore not initialized');
-                return;
-            }
-
-            try {
-                db.collection("conference").doc("data").onSnapshot(
-                    (snap) => {
-                        if (snap.exists) {
-                            state.cloudData = snap.data();
-                        } else {
-                            state.cloudData = { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } };
-                        }
-                        updateUI();
-                        loadUsers();
-                        elements.statusBadge.classList.remove('hidden');
-                    },
-                    (error) => {
-                        console.error('Sync error:', error);
-                        elements.statusBadge.classList.add('hidden');
-                        showToast('مشكلة في الاتصال بالخادم', 'error');
-                    }
-                );
-            } catch (error) {
-                console.error('Error setting up sync:', error);
+        window.updateAdminProfile = () => {
+            if (!state.currentUser || state.currentUser.type !== 'admin') return;
+            
+            const newName = elements.adminName.value;
+            const newEmail = elements.adminNewEmail.value;
+            const newPassword = elements.adminNewPassword.value;
+            
+            const adminIndex = adminAccounts.findIndex(a => a.email === state.currentUser.email);
+            
+            if (adminIndex !== -1) {
+                if (newName) adminAccounts[adminIndex].name = newName;
+                if (newEmail) adminAccounts[adminIndex].email = newEmail;
+                if (newPassword) adminAccounts[adminIndex].password = newPassword;
+                
+                localStorage.setItem('adminAccounts', JSON.stringify(adminAccounts));
+                
+                state.currentUser = { 
+                    ...adminAccounts[adminIndex], 
+                    type: "admin" 
+                };
+                
+                document.getElementById('user-welcome-name').textContent = `مرحباً ${adminAccounts[adminIndex].name}`;
+                document.getElementById('user-avatar').textContent = adminAccounts[adminIndex].name.charAt(0);
+                
+                showToast('تم تحديث البيانات بنجاح');
+                
+                elements.adminName.value = '';
+                elements.adminNewEmail.value = '';
+                elements.adminNewPassword.value = '';
             }
         };
+
+        // Real-time sync
+        const unsubscribe = onSnapshot(
+            doc(db, "conference", "data"),
+            (snap) => {
+                if (snap.exists()) {
+                    state.cloudData = snap.data();
+                } else {
+                    state.cloudData = { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } };
+                }
+                updateUI();
+                loadUsers();
+                elements.statusBadge.classList.remove('hidden');
+            },
+            (error) => {
+                console.error('Sync error:', error);
+                elements.statusBadge.classList.add('hidden');
+                showToast('مشكلة في الاتصال بالخادم', 'error');
+            }
+        );
 
         const updateUI = () => {
             updateLogoDisplay(state.cloudData.config?.logo);
             
-            // Update stats
             if (elements.statsAgenda) {
                 elements.statsAgenda.textContent = state.cloudData.agenda?.length || 0;
             }
@@ -964,7 +858,6 @@
                     elements.confDate.value = state.cloudData.config?.eventDate || '';
                 }
                 
-                // Fill admin profile fields
                 if (state.currentUser && state.currentUser.type === 'admin') {
                     elements.adminName.placeholder = state.currentUser.name || '';
                 }
@@ -988,12 +881,11 @@
 
             const galleryList = document.getElementById('landing-gallery-list');
             if (galleryList) {
-                galleryImages = state.cloudData.gallery || [];
-                galleryList.innerHTML = galleryImages
-                    .slice(0, 6)
-                    .map((url, index) => `
-                        <div class="gallery-item" onclick="openLightbox(${index})">
-                            <img src="${url}" loading="lazy" alt="Gallery ${index + 1}" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
+                galleryList.innerHTML = (state.cloudData.gallery || [])
+                    .slice(0, 4)
+                    .map(url => `
+                        <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors cursor-pointer group" onclick="window.open('${url}', '_blank')">
+                            <img src="${url}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" alt="Gallery" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
                         </div>
                     `).join('');
             }
@@ -1015,11 +907,10 @@
 
             const galleryList = document.getElementById('user-gallery-list');
             if (galleryList) {
-                galleryImages = state.cloudData.gallery || [];
-                galleryList.innerHTML = galleryImages
-                    .map((url, index) => `
-                        <div class="gallery-item" onclick="openLightbox(${index})">
-                            <img src="${url}" loading="lazy" alt="Gallery ${index + 1}" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
+                galleryList.innerHTML = (state.cloudData.gallery || [])
+                    .map(url => `
+                        <div class="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors cursor-pointer" onclick="window.open('${url}', '_blank')">
+                            <img src="${url}" loading="lazy" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300" alt="Gallery" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
                         </div>
                     `).join('');
             }
@@ -1047,28 +938,15 @@
         const renderAdminGalleryPreview = () => {
             if (!elements.adminGalleryPreview) return;
             
-            galleryImages = state.cloudData.gallery || [];
-            elements.adminGalleryPreview.innerHTML = galleryImages
+            elements.adminGalleryPreview.innerHTML = (state.cloudData.gallery || [])
                 .map((url, index) => `
                     <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10">
                         <img src="${url}" class="w-full h-full object-cover" alt="Gallery ${index + 1}" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
                         <button onclick="removeGalleryImage(${index})" 
                                 class="absolute top-1 right-1 bg-red-500/80 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity"
                                 aria-label="حذف">✕</button>
-                        <div class="absolute bottom-1 left-1 text-xs bg-black/50 text-white px-1 rounded">
-                            ${index + 1}
-                        </div>
                     </div>
                 `).join('');
-        };
-
-        window.removeGalleryImage = (index) => {
-            if (state.cloudData.gallery && state.cloudData.gallery[index]) {
-                state.cloudData.gallery.splice(index, 1);
-                galleryImages = state.cloudData.gallery;
-                renderAdminGalleryPreview();
-                renderLandingContent();
-            }
         };
 
         window.addNewAgendaRow = () => {
@@ -1085,11 +963,6 @@
         window.saveAllToCloud = async () => {
             if (state.isSyncing) {
                 showToast('جاري المزامنة بالفعل...', 'error');
-                return;
-            }
-
-            if (!db) {
-                showToast('Firebase غير مهيأ', 'error');
                 return;
             }
 
@@ -1113,7 +986,7 @@
                     eventDate: elements.confDate?.value || ''
                 };
 
-                await db.collection("conference").doc("data").set({
+                await setDoc(doc(db, "conference", "data"), {
                     agenda: newAgenda,
                     gallery: state.cloudData.gallery || [],
                     config: config,
@@ -1136,7 +1009,6 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-pass').value;
 
-            // Check admin accounts (from localStorage)
             const admin = adminAccounts.find(a => a.email === email && a.password === password);
             if (admin) {
                 state.currentUser = { 
@@ -1155,34 +1027,27 @@
                 showToast(`مرحباً بك ${admin.name}`, 'success');
                 loadUsers();
                 
-                // Set placeholder for admin name
                 if (elements.adminName) {
                     elements.adminName.placeholder = admin.name;
                 }
-                
-                // Scan images folder automatically for admin
-                setTimeout(() => scanImagesFolder(), 1000);
                 return;
             }
 
-            // User login
             try {
-                if (!db) {
-                    showToast('قاعدة البيانات غير متصلة', 'error');
-                    return;
-                }
-
-                const querySnapshot = await db.collection("users")
-                    .where("email", "==", email)
-                    .where("pass", "==", password)
-                    .get();
+                const q = query(
+                    collection(db, "users"), 
+                    where("email", "==", email), 
+                    where("pass", "==", password)
+                );
                 
-                if (!querySnapshot.empty) {
-                    const userData = querySnapshot.docs[0].data();
+                const snap = await getDocs(q);
+                
+                if (!snap.empty) {
+                    const userData = snap.docs[0].data();
                     state.currentUser = { 
                         ...userData, 
                         type: "user",
-                        id: querySnapshot.docs[0].id 
+                        id: snap.docs[0].id 
                     };
                     
                     document.getElementById('user-welcome-name').textContent = `مرحباً ${userData.name || 'مستخدم'}`;
@@ -1215,21 +1080,15 @@
             };
 
             try {
-                if (!db) {
-                    showToast('قاعدة البيانات غير متصلة', 'error');
-                    return;
-                }
-
-                const querySnapshot = await db.collection("users")
-                    .where("email", "==", userData.email)
-                    .get();
+                const q = query(collection(db, "users"), where("email", "==", userData.email));
+                const snap = await getDocs(q);
                 
-                if (!querySnapshot.empty) {
+                if (!snap.empty) {
                     showToast('البريد الإلكتروني مسجل مسبقاً', 'error');
                     return;
                 }
 
-                await db.collection("users").add(userData);
+                await setDoc(doc(collection(db, "users")), userData);
                 
                 showToast('تم إنشاء الحساب بنجاح', 'success');
                 showSection('login-section');
@@ -1315,18 +1174,10 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             showSection('landing-section');
+            setupDragAndDrop();
             
-            // Clear existing data
             state.cloudData = { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } };
-            
             updateUI();
-            
-            // Setup realtime sync if Firebase is initialized
-            if (db) {
-                setupRealtimeSync();
-            } else {
-                showToast('خطأ في الاتصال بقاعدة البيانات', 'error');
-            }
         });
 
         window.showToast = showToast;
