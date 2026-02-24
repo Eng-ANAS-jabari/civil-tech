@@ -827,33 +827,33 @@
                             </p>
                         </div>
 
-                        <!-- Force Refresh Gallery Button - جديد -->
+                        <!-- Force Refresh Gallery Button -->
                         <button onclick="forceRefreshGallery()" 
                                 class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl text-sm font-bold transition-colors mb-2">
                             🔄 تحديث المعرض وعرض الصور
                         </button>
 
-                        <!-- Debug Info - جديد -->
+                        <!-- Debug Info -->
                         <div id="gallery-debug-info" class="text-xs bg-slate-900 p-3 rounded-xl border border-blue-500/30 mb-2 hidden">
                             <p class="text-blue-400 font-bold mb-1">معلومات التصحيح:</p>
                             <div id="debug-content"></div>
                         </div>
 
-                        <!-- Image Search Buttons -->
+                        <!-- Image Search Buttons - معدلة للتعرف على جميع الصور -->
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="loadAllImagesFromFolder()" 
-                                    class="bg-purple-600/20 hover:bg-purple-600 text-purple-400 hover:text-white py-3 rounded-xl text-sm font-bold transition-colors">
-                                🔍 تحميل جميع الصور من المجلد
+                            <button onclick="scanAllImagesInFolder()" 
+                                    class="bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl text-sm font-bold transition-colors">
+                                📸 مسح جميع الصور في المجلد
                             </button>
-                            <button onclick="findAnyImages()" 
-                                    class="bg-green-600/20 hover:bg-green-600 text-green-400 hover:text-white py-3 rounded-xl text-sm font-bold transition-colors">
-                                🎯 بحث شامل عن أي صورة
+                            <button onclick="autoDetectImages()" 
+                                    class="bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl text-sm font-bold transition-colors">
+                                🔍 كشف تلقائي عن الصور
                             </button>
                         </div>
 
-                        <button onclick="tryHardcoreImageSearch()" 
-                                class="w-full mt-2 bg-orange-600/20 hover:bg-orange-600 text-orange-400 hover:text-white py-3 rounded-xl text-sm font-bold transition-colors">
-                            ⚡ بحث متقدم (الأقوى)
+                        <button onclick="emergencyImageScan()" 
+                                class="w-full mt-2 bg-red-600 hover:bg-red-500 text-white py-3 rounded-xl text-sm font-bold transition-colors">
+                            🚨 مسح طوارئ شامل (لجميع الصور)
                         </button>
 
                         <!-- Manual URL Input -->
@@ -902,7 +902,7 @@
                                 <li>اضغط على "Add file" ← "Upload files"</li>
                                 <li>اسحب الصور التي تريد رفعها</li>
                                 <li>أضف تعليق و اضغط "Commit changes"</li>
-                                <li>بعد الرفع، اضغط على أي زر بحث أعلاه</li>
+                                <li>بعد الرفع، اضغط على "مسح جميع الصور في المجلد"</li>
                             </ol>
                         </div>
 
@@ -1280,9 +1280,266 @@
             document.getElementById('quick-add-time').focus();
         };
 
-        // ============ نظام الموافقة على الصور - معدل بالكامل ============
+        // ============ دوال جديدة للتعرف على جميع الصور ============
 
-        // دالة جديدة لعرض معلومات التصحيح
+        // دالة مسح جميع الصور في المجلد
+        window.scanAllImagesInFolder = async () => {
+            showToast('جاري مسح جميع الصور في المجلد...', 'success');
+            
+            const extensions = ['jpg', 'jpeg', 'JPG', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'webp', 'WEBP', 'svg', 'SVG'];
+            const possibleNames = [];
+            const foundImages = [];
+            
+            // إنشاء قائمة بأسماء الصور المحتملة من ملفات GitHub
+            // هذه الأسماء مأخوذة من الصورة التي أرسلتها
+            const exactNames = [
+                '8ee3850dc5ac65749712c3a212dc6218.jpg',
+                'IMG_7997.JPG',
+                'IMG_8000.JPG',
+                'IMG_8008.JPG',
+                'b5e6982aa744a4c5c2219c2ca04c7f06.jpg',
+                'e333b0fec9ab128422db16dab3633200.jpg',
+                'images1.JPG'
+            ];
+            
+            // إضافة الأسماء الدقيقة
+            for (const name of exactNames) {
+                const imgPath = `images/${name}`;
+                const exists = await checkImageExists(imgPath);
+                if (exists) {
+                    foundImages.push(imgPath);
+                }
+            }
+            
+            // البحث عن أسماء شائعة
+            const commonPatterns = [
+                'IMG_', 'img_', 'IMAGE_', 'image_', 'PHOTO_', 'photo_', 'pic_', 'picture_',
+                'images', 'img', 'photo', 'pic', 'صورة', 'حدث', 'معرض'
+            ];
+            
+            for (let i = 1; i <= 100; i++) {
+                for (const ext of extensions) {
+                    // أنماط مختلفة للأسماء
+                    const patterns = [
+                        `${i}.${ext}`,
+                        `IMG_${i}.${ext}`,
+                        `img_${i}.${ext}`,
+                        `IMAGE_${i}.${ext}`,
+                        `image_${i}.${ext}`,
+                        `PHOTO_${i}.${ext}`,
+                        `photo_${i}.${ext}`,
+                        `images${i}.${ext}`,
+                        `image${i}.${ext}`,
+                        `photo${i}.${ext}`,
+                        `pic${i}.${ext}`,
+                        `picture${i}.${ext}`
+                    ];
+                    
+                    for (const pattern of patterns) {
+                        const imgPath = `images/${pattern}`;
+                        const exists = await checkImageExists(imgPath);
+                        if (exists) {
+                            foundImages.push(imgPath);
+                        }
+                    }
+                }
+            }
+            
+            const uniqueImages = [...new Set(foundImages)];
+            
+            if (uniqueImages.length > 0) {
+                const pendingImages = uniqueImages.map(url => ({
+                    url: url,
+                    name: url.split('/').pop(),
+                    dateAdded: new Date().toISOString()
+                }));
+                
+                const existingPending = state.cloudData.pendingImages || [];
+                const existingApproved = state.cloudData.approvedImages || [];
+                const existingUrls = new Set([
+                    ...existingPending.map(img => img.url),
+                    ...existingApproved.map(img => img.url)
+                ]);
+                
+                const newPending = pendingImages.filter(img => !existingUrls.has(img.url));
+                
+                state.cloudData.pendingImages = [...existingPending, ...newPending];
+                
+                renderPendingImages();
+                
+                showToast(`🎉 تم العثور على ${newPending.length} صورة جديدة من أصل ${uniqueImages.length} صورة`);
+            } else {
+                showToast('⚠️ لم يتم العثور على صور', 'error');
+            }
+        };
+
+        // دالة الكشف التلقائي عن الصور
+        window.autoDetectImages = async () => {
+            showToast('جاري الكشف التلقائي عن الصور...', 'success');
+            
+            const extensions = ['jpg', 'jpeg', 'JPG', 'JPEG', 'png', 'PNG', 'gif', 'GIF'];
+            const foundImages = [];
+            
+            // البحث عن الصور بناءً على أسماء شائعة في GitHub
+            const possibleNames = [
+                // الأسماء التي تظهر في الصورة
+                '8ee3850dc5ac65749712c3a212dc6218',
+                'IMG_7997',
+                'IMG_8000',
+                'IMG_8008',
+                'b5e6982aa744a4c5c2219c2ca04c7f06',
+                'e333b0fec9ab128422db16dab3633200',
+                'images1',
+                
+                // أسماء شائعة أخرى
+                'logo', 'icon', 'avatar', 'profile', 'cover', 'banner',
+                'background', 'header', 'footer', 'slide', 'presentation',
+                'team', 'sponsor', 'speaker', 'workshop', 'seminar'
+            ];
+            
+            for (const name of possibleNames) {
+                for (const ext of extensions) {
+                    const imgPath = `images/${name}.${ext}`;
+                    const exists = await checkImageExists(imgPath);
+                    if (exists) {
+                        foundImages.push(imgPath);
+                    }
+                    
+                    // تجربة الأحرف الكبيرة
+                    const imgPathUpper = `images/${name.toUpperCase()}.${ext.toUpperCase()}`;
+                    if (imgPathUpper !== imgPath) {
+                        const existsUpper = await checkImageExists(imgPathUpper);
+                        if (existsUpper) {
+                            foundImages.push(imgPathUpper);
+                        }
+                    }
+                }
+            }
+            
+            const uniqueImages = [...new Set(foundImages)];
+            
+            if (uniqueImages.length > 0) {
+                const pendingImages = uniqueImages.map(url => ({
+                    url: url,
+                    name: url.split('/').pop(),
+                    dateAdded: new Date().toISOString()
+                }));
+                
+                const existingPending = state.cloudData.pendingImages || [];
+                const existingApproved = state.cloudData.approvedImages || [];
+                const existingUrls = new Set([
+                    ...existingPending.map(img => img.url),
+                    ...existingApproved.map(img => img.url)
+                ]);
+                
+                const newPending = pendingImages.filter(img => !existingUrls.has(img.url));
+                
+                state.cloudData.pendingImages = [...existingPending, ...newPending];
+                
+                renderPendingImages();
+                
+                showToast(`🎉 تم العثور على ${newPending.length} صورة جديدة`);
+            } else {
+                showToast('⚠️ لم يتم العثور على صور', 'error');
+            }
+        };
+
+        // دالة مسح الطوارئ الشامل
+        window.emergencyImageScan = async () => {
+            showToast('🚨 جاري المسح الشامل للطوارئ...', 'success');
+            
+            const extensions = ['jpg', 'jpeg', 'JPG', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'webp', 'WEBP'];
+            const foundImages = [];
+            
+            // مسح شامل لجميع الاحتمالات
+            const basePaths = ['images/', './images/', '/images/', 'img/', './img/', '/img/'];
+            
+            // قائمة موسعة من الأسماء المحتملة
+            const allPossibleNames = [
+                // من الصورة
+                '8ee3850dc5ac65749712c3a212dc6218',
+                'IMG_7997',
+                'IMG_8000',
+                'IMG_8008',
+                'b5e6982aa744a4c5c2219c2ca04c7f06',
+                'e333b0fec9ab128422db16dab3633200',
+                'images1',
+                
+                // أرقام
+                '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
+                '11', '12', '13', '14', '15', '16', '17', '18', '19', '20',
+                '21', '22', '23', '24', '25', '26', '27', '28', '29', '30',
+                '100', '101', '102', '103', '104', '105',
+                
+                // كلمات شائعة
+                'logo', 'icon', 'avatar', 'profile', 'cover', 'banner',
+                'background', 'header', 'footer', 'slide', 'presentation',
+                'team', 'sponsor', 'speaker', 'workshop', 'seminar',
+                'conference', 'event', 'gallery', 'photo', 'image', 'img',
+                'صورة', 'حدث', 'معرض', 'مؤتمر', 'فريق', 'راعي', 'شريك', 'متحدث',
+                
+                // أنماط IMG
+                'IMG_0001', 'IMG_0002', 'IMG_0003', 'IMG_0004', 'IMG_0005',
+                'IMG_0010', 'IMG_0020', 'IMG_0030', 'IMG_0040', 'IMG_0050',
+                'IMG_0100', 'IMG_0200', 'IMG_0300', 'IMG_0400', 'IMG_0500',
+                'IMG_1000', 'IMG_2000', 'IMG_3000', 'IMG_4000', 'IMG_5000',
+                
+                // أنماط أخرى
+                'DSC_0001', 'DSC_0002', 'DSC_0003', 'DSC_0004', 'DSC_0005',
+                'PANO_0001', 'PANO_0002', 'PANO_0003', 'PANO_0004', 'PANO_0005'
+            ];
+            
+            for (const basePath of basePaths) {
+                for (const name of allPossibleNames) {
+                    for (const ext of extensions) {
+                        const imgPath = basePath + name + '.' + ext;
+                        const exists = await checkImageExists(imgPath);
+                        if (exists) {
+                            foundImages.push(imgPath);
+                        }
+                    }
+                }
+            }
+            
+            // البحث في الصفحة الحالية
+            document.querySelectorAll('img').forEach(img => {
+                const src = img.src;
+                if (src && (src.includes('images/') || src.includes('img/')) && !foundImages.includes(src)) {
+                    foundImages.push(src);
+                }
+            });
+            
+            const uniqueImages = [...new Set(foundImages)];
+            
+            if (uniqueImages.length > 0) {
+                const pendingImages = uniqueImages.map(url => ({
+                    url: url,
+                    name: url.split('/').pop(),
+                    dateAdded: new Date().toISOString()
+                }));
+                
+                const existingPending = state.cloudData.pendingImages || [];
+                const existingApproved = state.cloudData.approvedImages || [];
+                const existingUrls = new Set([
+                    ...existingPending.map(img => img.url),
+                    ...existingApproved.map(img => img.url)
+                ]);
+                
+                const newPending = pendingImages.filter(img => !existingUrls.has(img.url));
+                
+                state.cloudData.pendingImages = [...existingPending, ...newPending];
+                
+                renderPendingImages();
+                
+                showToast(`🎉 تم العثور على ${newPending.length} صورة جديدة من أصل ${uniqueImages.length} صورة`);
+            } else {
+                showToast('⚠️ لم يتم العثور على صور', 'error');
+            }
+        };
+
+        // ============ نظام الموافقة على الصور ============
+
+        // دالة عرض معلومات التصحيح
         window.showDebugInfo = () => {
             if (!elements.debugInfo || !elements.debugContent) return;
             
@@ -1300,22 +1557,19 @@
                     ` : ''}
                     ${pending.length > 0 ? `
                         <p class="text-xs mt-2">أول صورة بانتظار: ${pending[0]?.url}</p>
+                        <button onclick="approveAllPending()" class="mt-2 bg-green-600 text-white px-2 py-1 rounded text-xs">موافقة على الكل</button>
                     ` : ''}
                 </div>
             `;
             
             elements.debugContent.innerHTML = debugHtml;
             elements.debugInfo.classList.remove('hidden');
-            
-            showToast('تم عرض معلومات التصحيح');
         };
 
-        // دالة جديدة لتحديث المعرض بالقوة
+        // دالة تحديث المعرض بالقوة
         window.forceRefreshGallery = () => {
-            // تحديث gallery من approvedImages
             state.cloudData.gallery = (state.cloudData.approvedImages || []).map(img => img.url);
             
-            // تحديث العدادات
             if (elements.galleryCount) {
                 elements.galleryCount.textContent = state.cloudData.gallery.length;
             }
@@ -1329,7 +1583,6 @@
                 elements.approvedCount.textContent = (state.cloudData.approvedImages || []).length;
             }
             
-            // إعادة رسم المعارض
             renderGallery();
             renderPendingImages();
             renderApprovedImages();
@@ -1414,7 +1667,7 @@
             `).join('');
         };
 
-        // دوال الموافقة على الصور - معدلة
+        // دوال الموافقة على الصور
         window.approveImage = (imageUrl) => {
             const pending = state.cloudData.pendingImages || [];
             const approved = state.cloudData.approvedImages || [];
@@ -1434,7 +1687,6 @@
                 state.cloudData.pendingImages = pending;
                 state.cloudData.approvedImages = approved;
                 
-                // تحديث معرض المستخدمين
                 state.cloudData.gallery = state.cloudData.approvedImages.map(img => img.url);
                 
                 renderPendingImages();
@@ -1533,253 +1785,7 @@
             }
         };
 
-        // ============ دوال البحث عن الصور ============
-        
-        window.loadAllImagesFromFolder = async () => {
-            showToast('جاري البحث عن جميع الصور في مجلد images...', 'success');
-            
-            const extensions = ['jpg', 'jpeg', 'JPG', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'webp', 'WEBP', 'svg', 'SVG'];
-            const foundImages = [];
-            const maxAttempts = 100;
-            
-            for (let i = 1; i <= maxAttempts; i++) {
-                for (const ext of extensions) {
-                    const imgPath = `images/${i}.${ext}`;
-                    const exists = await checkImageExists(imgPath);
-                    if (exists) {
-                        foundImages.push(imgPath);
-                    }
-                }
-            }
-            
-            const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
-            for (const letter of letters) {
-                for (let j = 1; j <= 5; j++) {
-                    for (const ext of extensions) {
-                        const possibleNames = [
-                            `${letter}${j}`,
-                            `img_${letter}${j}`,
-                            `photo_${letter}${j}`,
-                            `image_${letter}${j}`,
-                            `IMG_${j}${letter}`,
-                            `image${j}${letter}`,
-                            `photo${j}${letter}`
-                        ];
-                        
-                        for (const name of possibleNames) {
-                            const imgPath = `images/${name}.${ext}`;
-                            const exists = await checkImageExists(imgPath);
-                            if (exists) {
-                                foundImages.push(imgPath);
-                            }
-                        }
-                    }
-                }
-            }
-            
-            for (let num = 1000; num <= 9999; num++) {
-                for (const ext of extensions) {
-                    const patterns = [
-                        `IMG_${num}`,
-                        `img_${num}`,
-                        `IMAGE_${num}`,
-                        `image_${num}`,
-                        `PHOTO_${num}`,
-                        `photo_${num}`,
-                        `images${num}`,
-                        `image${num}`,
-                        `photo${num}`
-                    ];
-                    
-                    for (const pattern of patterns) {
-                        const imgPath = `images/${pattern}.${ext}`;
-                        const exists = await checkImageExists(imgPath);
-                        if (exists) {
-                            foundImages.push(imgPath);
-                        }
-                    }
-                }
-            }
-            
-            const uniqueImages = [...new Set(foundImages)];
-            
-            if (uniqueImages.length > 0) {
-                const pendingImages = uniqueImages.map(url => ({
-                    url: url,
-                    name: url.split('/').pop(),
-                    dateAdded: new Date().toISOString()
-                }));
-                
-                const existingPending = state.cloudData.pendingImages || [];
-                const existingApproved = state.cloudData.approvedImages || [];
-                const existingUrls = new Set([
-                    ...existingPending.map(img => img.url),
-                    ...existingApproved.map(img => img.url)
-                ]);
-                
-                const newPending = pendingImages.filter(img => !existingUrls.has(img.url));
-                
-                state.cloudData.pendingImages = [...existingPending, ...newPending];
-                
-                renderPendingImages();
-                
-                showToast(`🎉 تمت إضافة ${newPending.length} صورة جديدة بانتظار الموافقة`);
-            } else {
-                showToast('⚠️ لم يتم العثور على صور', 'error');
-            }
-        };
-
-        window.findAnyImages = async () => {
-            showToast('جاري البحث عن أي صور في المجلد...', 'success');
-            
-            const extensions = ['jpg', 'jpeg', 'JPG', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'webp', 'WEBP'];
-            const foundImages = [];
-            
-            const paths = ['images/', './images/', '/images/', 'img/', './img/', '/img/'];
-            
-            const commonNames = [
-                '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
-                '11', '12', '13', '14', '15', '16', '17', '18', '19', '20',
-                'IMG_7997', 'IMG_8000', 'IMG_8008', 'images1', 'photo1',
-                'photo', 'image', 'img', 'pic', 'picture',
-                'gallery', 'event', 'conference', 'team',
-                'logo', 'icon', 'avatar', 'profile',
-                'background', 'banner', 'header', 'footer',
-                'slide', 'presentation', 'slide1', 'slide2',
-                'main', 'home', 'about', 'contact',
-                'صورة', 'حدث', 'معرض', 'مؤتمر',
-                'فريق', 'راعي', 'شريك', 'متحدث'
-            ];
-            
-            for (const basePath of paths) {
-                for (const name of commonNames) {
-                    for (const ext of extensions) {
-                        const imgPath = basePath + name + '.' + ext;
-                        const exists = await checkImageExists(imgPath);
-                        if (exists) {
-                            foundImages.push(imgPath);
-                        }
-                        
-                        const imgPathUpper = basePath + name.toUpperCase() + '.' + ext.toUpperCase();
-                        if (imgPathUpper !== imgPath) {
-                            const existsUpper = await checkImageExists(imgPathUpper);
-                            if (existsUpper) {
-                                foundImages.push(imgPathUpper);
-                            }
-                        }
-                    }
-                }
-            }
-            
-            document.querySelectorAll('img').forEach(img => {
-                const src = img.src;
-                if (src && src.includes('images/') && !foundImages.includes(src)) {
-                    foundImages.push(src);
-                }
-            });
-            
-            const uniqueImages = [...new Set(foundImages)];
-            
-            if (uniqueImages.length > 0) {
-                const pendingImages = uniqueImages.map(url => ({
-                    url: url,
-                    name: url.split('/').pop(),
-                    dateAdded: new Date().toISOString()
-                }));
-                
-                const existingPending = state.cloudData.pendingImages || [];
-                const existingApproved = state.cloudData.approvedImages || [];
-                const existingUrls = new Set([
-                    ...existingPending.map(img => img.url),
-                    ...existingApproved.map(img => img.url)
-                ]);
-                
-                const newPending = pendingImages.filter(img => !existingUrls.has(img.url));
-                
-                state.cloudData.pendingImages = [...existingPending, ...newPending];
-                
-                renderPendingImages();
-                
-                showToast(`🎉 تمت إضافة ${newPending.length} صورة جديدة بانتظار الموافقة`);
-            } else {
-                await tryHardcoreImageSearch();
-            }
-        };
-
-        window.tryHardcoreImageSearch = async () => {
-            showToast('جاري البحث الشامل عن الصور...', 'success');
-            
-            const extensions = ['jpg', 'jpeg', 'JPG', 'JPEG', 'png', 'PNG'];
-            const foundImages = [];
-            const basePaths = ['images/', 'img/', 'photos/', 'gallery/'];
-            
-            const commonNames = [
-                '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
-                '11', '12', '13', '14', '15', '16', '17', '18', '19', '20',
-                '21', '22', '23', '24', '25', '26', '27', '28', '29', '30',
-                'IMG_7997', 'IMG_8000', 'IMG_8008', 'images1', 'photo1',
-                'photo', 'image', 'img', 'pic', 'picture',
-                'gallery', 'event', 'conference', 'team', 'sponsor', 'speaker',
-                'workshop', 'seminar', 'training', 'course',
-                'background', 'banner', 'header', 'footer', 'logo', 'icon',
-                'slide', 'presentation', 'main', 'home', 'about', 'contact',
-                'صورة', 'حدث', 'معرض', 'مؤتمر', 'فريق', 'راعي', 'شريك', 'متحدث'
-            ];
-            
-            for (const basePath of basePaths) {
-                for (const name of commonNames) {
-                    for (const ext of extensions) {
-                        const imgPath = basePath + name + '.' + ext;
-                        const exists = await checkImageExists(imgPath);
-                        if (exists) {
-                            foundImages.push(imgPath);
-                        }
-                        
-                        const imgPath2 = basePath + name.toUpperCase() + '.' + ext.toUpperCase();
-                        if (imgPath2 !== imgPath) {
-                            const exists2 = await checkImageExists(imgPath2);
-                            if (exists2) {
-                                foundImages.push(imgPath2);
-                            }
-                        }
-                        
-                        const imgPath3 = basePath + 'IMG_' + name + '.' + ext;
-                        const exists3 = await checkImageExists(imgPath3);
-                        if (exists3) {
-                            foundImages.push(imgPath3);
-                        }
-                    }
-                }
-            }
-            
-            const uniqueImages = [...new Set(foundImages)];
-            
-            if (uniqueImages.length > 0) {
-                const pendingImages = uniqueImages.map(url => ({
-                    url: url,
-                    name: url.split('/').pop(),
-                    dateAdded: new Date().toISOString()
-                }));
-                
-                const existingPending = state.cloudData.pendingImages || [];
-                const existingApproved = state.cloudData.approvedImages || [];
-                const existingUrls = new Set([
-                    ...existingPending.map(img => img.url),
-                    ...existingApproved.map(img => img.url)
-                ]);
-                
-                const newPending = pendingImages.filter(img => !existingUrls.has(img.url));
-                
-                state.cloudData.pendingImages = [...existingPending, ...newPending];
-                
-                renderPendingImages();
-                
-                showToast(`🎉 تمت إضافة ${newPending.length} صورة جديدة بانتظار الموافقة`);
-            } else {
-                showToast('⚠️ لم يتم العثور على صور. تأكد من رفع الصور لمجلد images', 'error');
-            }
-        };
-
+        // إضافة صورة من رابط
         window.addImageFromUrl = () => {
             const urlInput = document.getElementById('image-url-input');
             let url = urlInput.value.trim();
@@ -1804,6 +1810,7 @@
             showToast('تم إضافة الصورة بانتظار الموافقة');
         };
 
+        // Remove gallery image
         window.removeGalleryImage = (index) => {
             if (state.cloudData.gallery && state.cloudData.gallery[index]) {
                 if (confirm('هل أنت متأكد من حذف هذه الصورة؟')) {
@@ -2335,12 +2342,10 @@
                 if (snap.exists()) {
                     state.cloudData = snap.data();
                     
-                    // التأكد من وجود المصفوفات الأساسية
                     if (!state.cloudData.pendingImages) state.cloudData.pendingImages = [];
                     if (!state.cloudData.approvedImages) state.cloudData.approvedImages = [];
                     if (!state.cloudData.agenda) state.cloudData.agenda = [];
                     
-                    // تحديث gallery لتكون متطابقة مع approvedImages
                     state.cloudData.gallery = (state.cloudData.approvedImages || []).map(img => img.url);
                     
                     state.lastUpdated = new Date();
@@ -2411,7 +2416,6 @@
             
             updateAgendaStats();
             
-            // تحديث العدادات
             if (elements.galleryCount) {
                 elements.galleryCount.textContent = state.cloudData.gallery?.length || 0;
             }
@@ -2431,7 +2435,6 @@
                 elements.galleryCount.textContent = galleryImages.length;
             }
             
-            // الصفحة الرئيسية
             const landingGallery = document.getElementById('landing-gallery-list');
             if (landingGallery) {
                 if (galleryImages.length === 0) {
@@ -2455,7 +2458,6 @@
                 }
             }
             
-            // لوحة المستخدم
             const userGallery = document.getElementById('user-gallery-list');
             if (userGallery) {
                 if (galleryImages.length === 0) {
@@ -2547,7 +2549,6 @@
                     eventDate: elements.confDate?.value || ''
                 };
 
-                // تحديث gallery لتكون متطابقة مع approvedImages قبل الحفظ
                 state.cloudData.gallery = (state.cloudData.approvedImages || []).map(img => img.url);
 
                 await setDoc(doc(db, "conference", "data"), {
@@ -2780,7 +2781,7 @@
             
             setTimeout(() => {
                 if (state.cloudData.gallery.length === 0 && state.cloudData.pendingImages.length === 0) {
-                    findAnyImages();
+                    autoDetectImages();
                 }
             }, 1000);
         });
