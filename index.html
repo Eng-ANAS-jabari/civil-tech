@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام CIVIL TECH 2025 - النسخة الاحترافية</title>
+    <title>نظام CIVIL TECH 2025 - المتقدم</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { 
             --primary: #3b82f6; 
@@ -289,6 +290,35 @@
             background: rgba(59, 130, 246, 0.1);
             border-color: #f59e0b;
         }
+
+        /* Judge card styles */
+        .judge-badge {
+            background: linear-gradient(135deg, #f59e0b20, #f59e0b40);
+            border: 1px solid #f59e0b;
+        }
+        
+        .criteria-input {
+            direction: ltr;
+            text-align: right;
+        }
+
+        .rating-star {
+            color: #fbbf24;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .rating-star:hover {
+            transform: scale(1.2);
+            color: #f59e0b;
+        }
+
+        /* Chart container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
     </style>
 </head>
 <body class="hero-pattern min-h-screen flex flex-col">
@@ -363,6 +393,10 @@
                         <div class="text-3xl font-black text-blue-500" id="stats-gallery">0</div>
                         <div class="text-sm text-gray-400">صورة</div>
                     </div>
+                    <div class="glass-card px-6 py-4 rounded-xl text-center">
+                        <div class="text-3xl font-black text-amber-500" id="stats-groups">0</div>
+                        <div class="text-sm text-gray-400">مجموعة</div>
+                    </div>
                 </div>
                 
                 <div id="countdown-container" class="flex flex-wrap justify-center gap-3 md:gap-4 mb-8 md:mb-12 px-4"></div>
@@ -374,6 +408,16 @@
                     <button onclick="showSection('register-section')" class="w-full sm:w-auto min-w-[200px] bg-white/5 hover:bg-white/10 border border-white/10 px-8 py-4 rounded-2xl font-bold text-lg transition-all focus:ring-2 focus:ring-white/20">
                         إنشاء حساب جديد
                     </button>
+                </div>
+            </div>
+
+            <!-- Live Results Preview -->
+            <div class="glass p-6 rounded-2xl">
+                <h3 class="text-2xl font-black mb-6 flex items-center gap-2">
+                    <span class="text-amber-500">📊</span> النتائج المباشرة للمسابقة
+                </h3>
+                <div class="chart-container">
+                    <canvas id="results-chart"></canvas>
                 </div>
             </div>
 
@@ -445,7 +489,7 @@
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-bold text-gray-400 mb-1">المؤسسة</label>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">المؤسسة / المجموعة</label>
                         <input type="text" id="reg-org" required 
                                class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
                     </div>
@@ -460,6 +504,11 @@
                         <label class="block text-sm font-bold text-gray-400 mb-1">كلمة المرور</label>
                         <input type="password" id="reg-pass" required 
                                class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-left">
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="reg-is-judge" class="w-5 h-5">
+                        <label for="reg-is-judge" class="text-sm text-gray-300">تسجيل كحكم (للمسؤول فقط)</label>
                     </div>
                     
                     <button type="submit" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900">
@@ -503,6 +552,50 @@
                 <h3 class="text-xl font-black">🖼️ معرض الصور</h3>
                 <div id="user-gallery-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
             </div>
+
+            <!-- Public Voting Section for Users -->
+            <div class="glass p-6 rounded-2xl space-y-4">
+                <h3 class="text-xl font-black flex items-center gap-2">
+                    <span class="text-amber-500">⭐</span> تصويت الجمهور (10%)
+                </h3>
+                <div id="public-voting-groups" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- Judge Dashboard -->
+        <section id="judge-dashboard" class="hidden animate-fade-in space-y-6 md:space-y-8">
+            <div class="glass p-6 rounded-2xl">
+                <div class="flex items-center gap-4">
+                    <div class="judge-badge w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black">
+                        ⚖️
+                    </div>
+                    <div>
+                        <h2 id="judge-welcome-name" class="text-2xl font-black"></h2>
+                        <span class="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest">حكم المسابقة</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evaluation Criteria -->
+            <div class="glass p-6 rounded-2xl space-y-6">
+                <h3 class="text-xl font-black">📝 تقييم المجموعات</h3>
+                
+                <!-- Criteria Info -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-center text-xs">
+                    <div class="bg-blue-500/20 p-2 rounded-lg">الابتكار 20%</div>
+                    <div class="bg-green-500/20 p-2 rounded-lg">التنفيذ 25%</div>
+                    <div class="bg-purple-500/20 p-2 rounded-lg">التأثير 25%</div>
+                    <div class="bg-amber-500/20 p-2 rounded-lg">العرض 20%</div>
+                    <div class="bg-red-500/20 p-2 rounded-lg">الالتزام 10%</div>
+                </div>
+
+                <!-- Groups for Evaluation -->
+                <div id="judge-groups-list" class="space-y-4"></div>
+                
+                <button onclick="submitJudgeEvaluations()" class="w-full bg-amber-600 hover:bg-amber-500 py-4 rounded-xl font-bold text-lg transition-all">
+                    ✅ تأكيد التقييمات
+                </button>
+            </div>
         </section>
 
         <!-- Admin Dashboard -->
@@ -545,12 +638,28 @@
                 </div>
             </div>
 
+            <!-- Groups Management -->
+            <div class="glass p-6 rounded-2xl space-y-4">
+                <h4 class="text-lg font-black">👥 إدارة المجموعات المشاركة</h4>
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="new-group-name" placeholder="اسم المجموعة الجديدة" class="flex-1 p-3 bg-white/5 rounded-xl border border-white/10">
+                    <input type="text" id="new-group-member" placeholder="الأعضاء" class="flex-1 p-3 bg-white/5 rounded-xl border border-white/10">
+                    <button onclick="addNewGroup()" class="bg-green-600 hover:bg-green-500 px-6 py-3 rounded-xl font-bold">إضافة</button>
+                </div>
+                <div id="groups-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-2"></div>
+            </div>
+
+            <!-- Judges Management -->
+            <div class="glass p-6 rounded-2xl space-y-4">
+                <h4 class="text-lg font-black">⚖️ إدارة الحكام</h4>
+                <div id="judges-list" class="space-y-2 max-h-[200px] overflow-y-auto pr-2"></div>
+                <p class="text-xs text-gray-500">* يمكن تفعيل/إلغاء تفعيل صلاحية التحكيم من القائمة أعلاه</p>
+            </div>
+
             <!-- Users Management -->
             <div class="glass p-6 rounded-2xl space-y-4">
                 <h4 class="text-lg font-black">👥 إدارة المسجلين</h4>
-                <div id="users-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-2">
-                    <!-- Users will be loaded here -->
-                </div>
+                <div id="users-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-2"></div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
@@ -589,7 +698,7 @@
                         </div>
                     </div>
 
-                    <!-- GitHub Gallery Management - الأقسام المطورة -->
+                    <!-- GitHub Gallery Management -->
                     <div class="glass p-6 rounded-2xl space-y-4">
                         <div class="flex items-center gap-2 mb-4">
                             <svg class="w-6 h-6 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
@@ -607,41 +716,12 @@
                             </p>
                         </div>
 
-                        <!-- زر تحميل الصور الرئيسي -->
-                        <button onclick="loadImagesFromGithub()" 
-                                class="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700 py-4 rounded-xl font-bold text-lg transition-all shadow-lg mb-4 flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.03-2.682-.103-.253-.447-1.27.098-2.646 0 0 .84-.269 2.75 1.025.8-.223 1.65-.334 2.5-.334.85 0 1.7.111 2.5.334 1.91-1.294 2.75-1.025 2.75-1.025.545 1.376.201 2.393.099 2.646.64.698 1.03 1.591 1.03 2.682 0 3.841-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-                            </svg>
-                            🔍 تحميل الصور من GitHub تلقائياً
-                        </button>
-
-                        <!-- خيارات إضافية للصور -->
-                        <div class="grid grid-cols-2 gap-2 mb-4">
-                            <button onclick="scanImagesByNumbers()" 
-                                    class="bg-purple-600/20 hover:bg-purple-600 text-purple-400 hover:text-white py-2 rounded-xl text-sm font-bold transition-colors">
-                                🔢 صور مرقمة (1-20)
-                            </button>
-                            <button onclick="scanImagesByNames()" 
-                                    class="bg-orange-600/20 hover:bg-orange-600 text-orange-400 hover:text-white py-2 rounded-xl text-sm font-bold transition-colors">
-                                📝 صور بأسماء
-                            </button>
-                        </div>
-
-                        <!-- إضافة رابط صورة -->
-                        <div class="mt-4 p-4 bg-blue-600/10 rounded-xl border border-blue-500/20">
-                            <h5 class="font-bold text-blue-400 mb-3 flex items-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                                </svg>
-                                إضافة صورة يدوياً
-                            </h5>
-                            
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-gray-400">رابط صورة مباشر</label>
                             <div class="flex gap-2">
-                                <input type="url" 
-                                       id="image-url-input" 
+                                <input type="url" id="image-url-input" 
                                        class="flex-1 bg-slate-900 border border-white/10 p-3 rounded-xl text-sm text-white placeholder-gray-500 focus:border-blue-500 outline-none transition"
-                                       placeholder="رابط الصورة المباشر">
+                                       placeholder="https://example.com/image.jpg">
                                 <button onclick="addImageFromUrl()" 
                                         class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl text-sm font-bold transition-colors whitespace-nowrap">
                                     إضافة
@@ -649,7 +729,34 @@
                             </div>
                         </div>
 
-                        <!-- عرض إحصائيات -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="scanLocalImages()" 
+                                    class="bg-purple-600/20 hover:bg-purple-600 text-purple-400 hover:text-white py-2 rounded-xl text-sm font-bold transition-colors">
+                                🔍 فحص الصور المحلية
+                            </button>
+                            <button onclick="showImageUploadGuide()" 
+                                    class="bg-orange-600/20 hover:bg-orange-600 text-orange-400 hover:text-white py-2 rounded-xl text-sm font-bold transition-colors">
+                                📖 دليل الرفع
+                            </button>
+                        </div>
+
+                        <!-- Image Upload Guide Modal (Hidden by default) -->
+                        <div id="upload-guide" class="hidden mt-4 p-4 bg-blue-600/20 rounded-xl border border-blue-500/30">
+                            <h5 class="font-bold text-blue-400 mb-2">📌 خطوات رفع الصور:</h5>
+                            <ol class="text-sm text-gray-300 space-y-2 list-decimal pr-4">
+                                <li>افتح مجلد <span class="font-mono text-green-400">images</span> في مشروع GitHub</li>
+                                <li>اضغط على "Add file" ← "Upload files"</li>
+                                <li>اسحب الصور التي تريد رفعها</li>
+                                <li>أضف تعليق و اضغط "Commit changes"</li>
+                                <li>بعد الرفع، أسماء الصور ستكون:</li>
+                                <ul class="pr-4 mt-1 space-y-1">
+                                    <li>• <span class="font-mono">images/photo1.jpg</span></li>
+                                    <li>• <span class="font-mono">images/event.jpg</span></li>
+                                    <li>• <span class="font-mono">images/gallery.png</span></li>
+                                </ul>
+                            </ol>
+                        </div>
+
                         <div class="mt-4 p-4 bg-white/5 rounded-xl">
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-400">عدد الصور في المعرض:</span>
@@ -657,7 +764,6 @@
                             </div>
                         </div>
 
-                        <!-- معرض الصور المصغر -->
                         <div id="admin-gallery-preview" class="grid grid-cols-4 gap-2 mt-4"></div>
                     </div>
                 </div>
@@ -673,7 +779,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, getDocs, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, getDocs, query, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAq46_s0TiEBJTrhOz05St1zU2FU3PLIao",
@@ -698,10 +804,20 @@
 
         let state = {
             currentUser: null,
-            cloudData: { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } },
+            cloudData: { 
+                agenda: [], 
+                gallery: [], 
+                config: { logo: 'images/logo.png', eventDate: '' },
+                groups: [],  // المجموعات المشاركة
+                evaluations: {}, // تقييمات الحكام
+                publicVotes: {} // تصويت الجمهور
+            },
             users: [],
+            judges: [],
+            groups: [],
             isSyncing: false,
-            currentImageIndex: 0
+            currentImageIndex: 0,
+            resultsChart: null
         };
 
         const elements = {
@@ -709,6 +825,7 @@
             landingSection: document.getElementById('landing-section'),
             authForms: document.getElementById('auth-forms'),
             userDashboard: document.getElementById('user-dashboard'),
+            judgeDashboard: document.getElementById('judge-dashboard'),
             adminDashboard: document.getElementById('admin-dashboard'),
             loginSection: document.getElementById('login-section'),
             registerSection: document.getElementById('register-section'),
@@ -723,9 +840,14 @@
             statsUsers: document.getElementById('stats-users'),
             statsAgenda: document.getElementById('stats-agenda'),
             statsGallery: document.getElementById('stats-gallery'),
+            statsGroups: document.getElementById('stats-groups'),
             adminAgendaInputs: document.getElementById('admin-agenda-inputs'),
             adminGalleryPreview: document.getElementById('admin-gallery-preview'),
             usersList: document.getElementById('users-list'),
+            judgesList: document.getElementById('judges-list'),
+            groupsList: document.getElementById('groups-list'),
+            publicVotingGroups: document.getElementById('public-voting-groups'),
+            judgeGroupsList: document.getElementById('judge-groups-list'),
             adminName: document.getElementById('admin-name'),
             adminNewEmail: document.getElementById('admin-new-email'),
             adminNewPassword: document.getElementById('admin-new-password'),
@@ -754,6 +876,7 @@
             elements.landingSection.classList.add('hidden');
             elements.authForms.classList.add('hidden');
             elements.userDashboard.classList.add('hidden');
+            if (elements.judgeDashboard) elements.judgeDashboard.classList.add('hidden');
             elements.adminDashboard.classList.add('hidden');
             elements.loginSection.classList.add('hidden');
             elements.registerSection.classList.add('hidden');
@@ -845,97 +968,14 @@
             }
         });
 
-        // الدالة الرئيسية لتحميل الصور من GitHub - الأكثر شمولاً
-        window.loadImagesFromGithub = async () => {
+        // دالة لفحص الصور المحلية
+        window.scanLocalImages = async () => {
             showToast('جاري البحث عن الصور في مجلد images...', 'success');
             
             const foundImages = [];
             const extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
             
-            // 1. أولاً: البحث عن الصور المرقمة (1.jpg, 2.jpg, ... 50.jpg)
-            for (let i = 1; i <= 50; i++) {
-                for (const ext of extensions) {
-                    const imgPath = `images/${i}.${ext}`;
-                    const exists = await checkImageExists(imgPath);
-                    if (exists) {
-                        foundImages.push(imgPath);
-                        console.log('✅ لقيت صورة مرقمة:', imgPath);
-                    }
-                }
-            }
-            
-            // 2. ثانياً: البحث عن الصور بأسماء شائعة
-            const commonNames = [
-                // أسماء إنجليزية
-                'photo', 'image', 'pic', 'picture', 'img',
-                'gallery', 'event', 'conference', 'meeting',
-                'team', 'sponsor', 'partner', 'speaker',
-                'workshop', 'seminar', 'training', 'course',
-                'background', 'banner', 'header', 'footer',
-                'logo', 'icon', 'avatar', 'profile',
-                'slide', 'presentation', 'slide1', 'slide2',
-                'main', 'home', 'about', 'contact',
-                // أسماء عربية (قد تكون موجودة)
-                'صورة', 'حدث', 'معرض', 'مؤتمر',
-                'فريق', 'راعي', 'شريك', 'متحدث'
-            ];
-            
-            for (const name of commonNames) {
-                for (let i = 1; i <= 10; i++) {
-                    for (const ext of extensions) {
-                        // بدون رقم
-                        const imgPath1 = `images/${name}.${ext}`;
-                        const exists1 = await checkImageExists(imgPath1);
-                        if (exists1) {
-                            foundImages.push(imgPath1);
-                            console.log('✅ لقيت صورة:', imgPath1);
-                        }
-                        
-                        // مع رقم
-                        const imgPath2 = `images/${name}${i}.${ext}`;
-                        const exists2 = await checkImageExists(imgPath2);
-                        if (exists2) {
-                            foundImages.push(imgPath2);
-                            console.log('✅ لقيت صورة:', imgPath2);
-                        }
-                    }
-                }
-            }
-            
-            // 3. ثالثاً: البحث عن الصور في مجلدات فرعية (ممكن)
-            const subfolders = ['gallery', 'photos', 'img', 'uploads', 'images'];
-            for (const folder of subfolders) {
-                for (let i = 1; i <= 20; i++) {
-                    for (const ext of extensions) {
-                        const imgPath = `${folder}/${i}.${ext}`;
-                        const exists = await checkImageExists(imgPath);
-                        if (exists) {
-                            foundImages.push(imgPath);
-                            console.log('✅ لقيت صورة في مجلد:', imgPath);
-                        }
-                    }
-                }
-            }
-            
-            // إزالة التكرارات
-            const uniqueImages = [...new Set(foundImages)];
-            
-            if (uniqueImages.length > 0) {
-                state.cloudData.gallery = uniqueImages;
-                renderGallery();
-                showToast(`🎉 تم العثور على ${uniqueImages.length} صورة في مجلد images`);
-            } else {
-                showToast('⚠️ لم يتم العثور على صور. تأكد من رفع الصور لمجلد images', 'error');
-            }
-        };
-
-        // دالة للبحث عن الصور المرقمة فقط
-        window.scanImagesByNumbers = async () => {
-            showToast('جاري البحث عن الصور المرقمة...', 'success');
-            
-            const foundImages = [];
-            const extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-            
+            // البحث عن الصور المرقمة
             for (let i = 1; i <= 30; i++) {
                 for (const ext of extensions) {
                     const imgPath = `images/${i}.${ext}`;
@@ -946,51 +986,42 @@
                 }
             }
             
-            if (foundImages.length > 0) {
-                // دمج مع الصور الموجودة
-                state.cloudData.gallery = [...(state.cloudData.gallery || []), ...foundImages];
-                state.cloudData.gallery = [...new Set(state.cloudData.gallery)]; // إزالة التكرار
-                renderGallery();
-                showToast(`تم العثور على ${foundImages.length} صورة مرقمة`);
-            } else {
-                showToast('لم يتم العثور على صور مرقمة', 'error');
-            }
-        };
-
-        // دالة للبحث عن الصور بأسماء محددة
-        window.scanImagesByNames = async () => {
-            showToast('جاري البحث عن الصور...', 'success');
-            
-            // ** هنا تحط أسماء الصور الفعلية اللي عندك **
-            // عدل هذه القائمة حسب أسماء الصور الموجودة في مجلد images
-            const yourImages = [
-                'images/photo1.jpg',
-                'images/photo2.jpg',
-                'images/event1.jpg',
-                'images/gallery1.jpg',
-                'images/team1.jpg',
-                'images/sponsor1.jpg',
-                'images/logo.png',
-                // أضف كل أسماء الصور اللي عندك هنا
+            // البحث عن الصور بأسماء شائعة
+            const commonNames = [
+                'photo', 'image', 'pic', 'gallery', 'event',
+                'team', 'sponsor', 'speaker', 'workshop',
+                'background', 'banner', 'logo', 'icon',
+                'slide', 'presentation', 'main', 'home',
+                'صورة', 'حدث', 'معرض', 'مؤتمر'
             ];
             
-            const foundImages = [];
-            
-            for (const imgPath of yourImages) {
-                const exists = await checkImageExists(imgPath);
-                if (exists) {
-                    foundImages.push(imgPath);
-                    console.log('لقيت صورة:', imgPath);
+            for (const name of commonNames) {
+                for (const ext of extensions) {
+                    const imgPath = `images/${name}.${ext}`;
+                    const exists = await checkImageExists(imgPath);
+                    if (exists) {
+                        foundImages.push(imgPath);
+                    }
                 }
             }
             
-            if (foundImages.length > 0) {
-                state.cloudData.gallery = [...(state.cloudData.gallery || []), ...foundImages];
+            const uniqueImages = [...new Set(foundImages)];
+            
+            if (uniqueImages.length > 0) {
+                state.cloudData.gallery = [...(state.cloudData.gallery || []), ...uniqueImages];
                 state.cloudData.gallery = [...new Set(state.cloudData.gallery)];
                 renderGallery();
-                showToast(`تم إضافة ${foundImages.length} صورة من القائمة`);
+                showToast(`🎉 تم العثور على ${uniqueImages.length} صورة`);
             } else {
-                showToast('لم يتم العثور على الصور في القائمة', 'error');
+                showToast('⚠️ لم يتم العثور على صور', 'error');
+            }
+        };
+
+        // Show upload guide
+        window.showImageUploadGuide = () => {
+            const guide = document.getElementById('upload-guide');
+            if (guide) {
+                guide.classList.toggle('hidden');
             }
         };
 
@@ -1056,8 +1087,14 @@
             try {
                 const querySnapshot = await getDocs(collection(db, "users"));
                 state.users = [];
+                state.judges = [];
+                
                 querySnapshot.forEach((doc) => {
-                    state.users.push({ id: doc.id, ...doc.data() });
+                    const userData = { id: doc.id, ...doc.data() };
+                    state.users.push(userData);
+                    if (userData.isJudge) {
+                        state.judges.push(userData);
+                    }
                 });
                 
                 if (elements.statsUsers) {
@@ -1068,6 +1105,7 @@
                 }
                 
                 renderUsersList();
+                renderJudgesList();
             } catch (error) {
                 console.error('Error loading users:', error);
             }
@@ -1079,14 +1117,67 @@
             
             elements.usersList.innerHTML = state.users.map(user => `
                 <div class="bg-white/5 p-3 rounded-xl border border-white/10 flex items-center justify-between">
-                    <div>
-                        <div class="font-bold">${user.name || 'بدون اسم'}</div>
+                    <div class="flex-1">
+                        <div class="font-bold flex items-center gap-2">
+                            ${user.name || 'بدون اسم'}
+                            ${user.isJudge ? '<span class="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">حكم</span>' : ''}
+                        </div>
                         <div class="text-sm text-gray-400">${user.email}</div>
                         <div class="text-xs text-gray-500">${user.org || 'بدون مؤسسة'}</div>
                     </div>
-                    <button onclick="deleteUser('${user.id}')" class="text-red-500 hover:text-red-400 px-2">✕</button>
+                    <div class="flex gap-2">
+                        ${!user.isJudge ? `
+                            <button onclick="toggleJudge('${user.id}')" class="text-amber-500 hover:text-amber-400 px-2 text-sm">
+                                ⚖️ تعيين حكم
+                            </button>
+                        ` : `
+                            <button onclick="toggleJudge('${user.id}')" class="text-red-500 hover:text-red-400 px-2 text-sm">
+                                ❌ إزالة التحكيم
+                            </button>
+                        `}
+                        <button onclick="deleteUser('${user.id}')" class="text-red-500 hover:text-red-400 px-2">✕</button>
+                    </div>
                 </div>
             `).join('');
+        };
+
+        // Render judges list
+        const renderJudgesList = () => {
+            if (!elements.judgesList) return;
+            
+            elements.judgesList.innerHTML = state.judges.map(judge => `
+                <div class="judge-badge p-3 rounded-xl flex items-center justify-between">
+                    <div>
+                        <div class="font-bold">${judge.name}</div>
+                        <div class="text-sm text-amber-400">${judge.email}</div>
+                    </div>
+                    <button onclick="toggleJudge('${judge.id}')" class="text-red-500 hover:text-red-400 text-sm">
+                        إلغاء التفعيل
+                    </button>
+                </div>
+            `).join('');
+            
+            if (state.judges.length === 0) {
+                elements.judgesList.innerHTML = '<div class="text-gray-500 text-center p-4">لا يوجد حكام حالياً</div>';
+            }
+        };
+
+        // Toggle judge status
+        window.toggleJudge = async (userId) => {
+            try {
+                const userRef = doc(db, "users", userId);
+                const user = state.users.find(u => u.id === userId);
+                
+                if (user) {
+                    await updateDoc(userRef, {
+                        isJudge: !user.isJudge
+                    });
+                    showToast(user.isJudge ? 'تم إلغاء صلاحية التحكيم' : 'تم تعيين المستخدم كحكم');
+                    loadUsers();
+                }
+            } catch (error) {
+                showToast('حدث خطأ', 'error');
+            }
         };
 
         // Delete user
@@ -1102,12 +1193,336 @@
             }
         };
 
+        // Groups Management
+        window.addNewGroup = () => {
+            const nameInput = document.getElementById('new-group-name');
+            const memberInput = document.getElementById('new-group-member');
+            
+            const name = nameInput.value.trim();
+            const members = memberInput.value.trim();
+            
+            if (!name) {
+                showToast('الرجاء إدخال اسم المجموعة', 'error');
+                return;
+            }
+            
+            if (!state.cloudData.groups) {
+                state.cloudData.groups = [];
+            }
+            
+            const newGroup = {
+                id: Date.now().toString(),
+                name: name,
+                members: members || 'غير محدد',
+                totalScore: 0
+            };
+            
+            state.cloudData.groups.push(newGroup);
+            renderGroupsList();
+            
+            nameInput.value = '';
+            memberInput.value = '';
+            
+            showToast('تم إضافة المجموعة');
+        };
+
+        const renderGroupsList = () => {
+            if (!elements.groupsList) return;
+            
+            const groups = state.cloudData.groups || [];
+            elements.groupsList.innerHTML = groups.map(group => `
+                <div class="bg-white/5 p-3 rounded-xl border border-white/10">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-blue-400">${group.name}</div>
+                            <div class="text-sm text-gray-400">الأعضاء: ${group.members}</div>
+                        </div>
+                        <button onclick="deleteGroup('${group.id}')" class="text-red-500 hover:text-red-400">✕</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            if (elements.statsGroups) {
+                elements.statsGroups.textContent = groups.length;
+            }
+        };
+
+        window.deleteGroup = (groupId) => {
+            if (state.cloudData.groups) {
+                state.cloudData.groups = state.cloudData.groups.filter(g => g.id !== groupId);
+                renderGroupsList();
+                showToast('تم حذف المجموعة');
+            }
+        };
+
+        // Render evaluation interface for judges
+        const renderJudgeEvaluation = () => {
+            if (!elements.judgeGroupsList) return;
+            
+            const groups = state.cloudData.groups || [];
+            const judgeId = state.currentUser?.id;
+            
+            if (groups.length === 0) {
+                elements.judgeGroupsList.innerHTML = '<div class="text-gray-500 text-center p-4">لا توجد مجموعات للتقييم</div>';
+                return;
+            }
+            
+            elements.judgeGroupsList.innerHTML = groups.map(group => {
+                const judgeEval = state.cloudData.evaluations?.[group.id]?.[judgeId] || {
+                    innovation: 0,
+                    execution: 0,
+                    impact: 0,
+                    presentation: 0,
+                    commitment: 0
+                };
+                
+                return `
+                    <div class="glass-card p-4 rounded-xl space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-bold text-lg">${group.name}</h4>
+                            <span class="text-sm text-gray-400">${group.members}</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
+                            <div>
+                                <label class="text-xs text-gray-400 block">الابتكار (20%)</label>
+                                <input type="number" min="0" max="20" value="${judgeEval.innovation}" 
+                                       class="criteria-input w-full p-2 bg-slate-900 rounded-lg border border-white/10 text-sm"
+                                       onchange="updateJudgeEval('${group.id}', 'innovation', this.value)">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 block">التنفيذ (25%)</label>
+                                <input type="number" min="0" max="25" value="${judgeEval.execution}"
+                                       class="criteria-input w-full p-2 bg-slate-900 rounded-lg border border-white/10 text-sm"
+                                       onchange="updateJudgeEval('${group.id}', 'execution', this.value)">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 block">التأثير (25%)</label>
+                                <input type="number" min="0" max="25" value="${judgeEval.impact}"
+                                       class="criteria-input w-full p-2 bg-slate-900 rounded-lg border border-white/10 text-sm"
+                                       onchange="updateJudgeEval('${group.id}', 'impact', this.value)">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 block">العرض (20%)</label>
+                                <input type="number" min="0" max="20" value="${judgeEval.presentation}"
+                                       class="criteria-input w-full p-2 bg-slate-900 rounded-lg border border-white/10 text-sm"
+                                       onchange="updateJudgeEval('${group.id}', 'presentation', this.value)">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 block">الالتزام (10%)</label>
+                                <input type="number" min="0" max="10" value="${judgeEval.commitment}"
+                                       class="criteria-input w-full p-2 bg-slate-900 rounded-lg border border-white/10 text-sm"
+                                       onchange="updateJudgeEval('${group.id}', 'commitment', this.value)">
+                            </div>
+                        </div>
+                        
+                        <div class="text-left text-sm">
+                            المجموع: <span class="text-amber-500 font-bold" id="total-${group.id}">
+                                ${Object.values(judgeEval).reduce((a, b) => a + Number(b), 0)}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        // Update judge evaluation
+        window.updateJudgeEval = (groupId, criteria, value) => {
+            const numValue = Math.min(parseInt(value) || 0, getMaxForCriteria(criteria));
+            
+            if (!state.cloudData.evaluations) {
+                state.cloudData.evaluations = {};
+            }
+            if (!state.cloudData.evaluations[groupId]) {
+                state.cloudData.evaluations[groupId] = {};
+            }
+            if (!state.cloudData.evaluations[groupId][state.currentUser.id]) {
+                state.cloudData.evaluations[groupId][state.currentUser.id] = {
+                    innovation: 0,
+                    execution: 0,
+                    impact: 0,
+                    presentation: 0,
+                    commitment: 0
+                };
+            }
+            
+            state.cloudData.evaluations[groupId][state.currentUser.id][criteria] = numValue;
+            
+            const total = Object.values(state.cloudData.evaluations[groupId][state.currentUser.id]).reduce((a, b) => a + b, 0);
+            document.getElementById(`total-${groupId}`).textContent = total;
+            
+            updateResultsChart();
+        };
+
+        const getMaxForCriteria = (criteria) => {
+            const maxValues = {
+                innovation: 20,
+                execution: 25,
+                impact: 25,
+                presentation: 20,
+                commitment: 10
+            };
+            return maxValues[criteria] || 0;
+        };
+
+        // Submit judge evaluations
+        window.submitJudgeEvaluations = async () => {
+            showToast('جاري حفظ التقييمات...');
+            await saveAllToCloud();
+            showToast('تم حفظ التقييمات بنجاح');
+        };
+
+        // Render public voting
+        const renderPublicVoting = () => {
+            if (!elements.publicVotingGroups) return;
+            
+            const groups = state.cloudData.groups || [];
+            const userId = state.currentUser?.id;
+            
+            if (groups.length === 0) {
+                elements.publicVotingGroups.innerHTML = '<div class="text-gray-500 text-center p-4">لا توجد مجموعات للتصويت</div>';
+                return;
+            }
+            
+            elements.publicVotingGroups.innerHTML = groups.map(group => {
+                const userVote = state.cloudData.publicVotes?.[group.id]?.[userId] || 0;
+                
+                return `
+                    <div class="glass-card p-4 rounded-xl">
+                        <h4 class="font-bold text-lg mb-2">${group.name}</h4>
+                        <p class="text-sm text-gray-400 mb-3">${group.members}</p>
+                        
+                        <div class="flex items-center gap-2 mb-2">
+                            ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(star => `
+                                <span class="rating-star text-xl ${star <= userVote ? 'text-amber-500' : 'text-gray-600'}"
+                                      onclick="voteForGroup('${group.id}', ${star})">★</span>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="text-sm text-gray-400">
+                            متوسط التصويت: <span class="text-amber-500 font-bold" id="vote-avg-${group.id}">
+                                ${calculateAverageVote(group.id)}
+                            </span>/10
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        // Vote for group
+        window.voteForGroup = (groupId, stars) => {
+            const userId = state.currentUser?.id;
+            if (!userId) return;
+            
+            if (!state.cloudData.publicVotes) {
+                state.cloudData.publicVotes = {};
+            }
+            if (!state.cloudData.publicVotes[groupId]) {
+                state.cloudData.publicVotes[groupId] = {};
+            }
+            
+            state.cloudData.publicVotes[groupId][userId] = stars;
+            renderPublicVoting();
+            updateResultsChart();
+            showToast(`تم التصويت للمجموعة بـ ${stars} نجوم`);
+        };
+
+        const calculateAverageVote = (groupId) => {
+            const votes = state.cloudData.publicVotes?.[groupId];
+            if (!votes) return '0.0';
+            
+            const values = Object.values(votes);
+            if (values.length === 0) return '0.0';
+            
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+            return avg.toFixed(1);
+        };
+
+        // Update results chart
+        const updateResultsChart = () => {
+            const ctx = document.getElementById('results-chart')?.getContext('2d');
+            if (!ctx) return;
+            
+            const groups = state.cloudData.groups || [];
+            const groupNames = groups.map(g => g.name);
+            
+            // Calculate final scores (judges average + public votes)
+            const finalScores = groups.map(group => {
+                // Judges scores (80%)
+                const judgeEvals = state.cloudData.evaluations?.[group.id] || {};
+                const judgeValues = Object.values(judgeEvals);
+                let judgeAvg = 0;
+                
+                if (judgeValues.length > 0) {
+                    const judgeTotals = judgeValues.map(j => 
+                        (j.innovation || 0) + (j.execution || 0) + (j.impact || 0) + 
+                        (j.presentation || 0) + (j.commitment || 0)
+                    );
+                    judgeAvg = judgeTotals.reduce((a, b) => a + b, 0) / judgeValues.length;
+                }
+                
+                // Public votes (10%) - convert to 10-point scale
+                const publicVotes = state.cloudData.publicVotes?.[group.id] || {};
+                const voteValues = Object.values(publicVotes);
+                let publicAvg = 0;
+                
+                if (voteValues.length > 0) {
+                    publicAvg = voteValues.reduce((a, b) => a + b, 0) / voteValues.length;
+                }
+                
+                // Final score: judges (80%) + public (10% of 100 = 10 points max)
+                const finalScore = (judgeAvg * 0.8) + (publicAvg * 1); // publicAvg already out of 10
+                
+                return Math.min(finalScore, 100).toFixed(1);
+            });
+            
+            if (state.resultsChart) {
+                state.resultsChart.destroy();
+            }
+            
+            state.resultsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: groupNames,
+                    datasets: [{
+                        label: 'النتيجة النهائية',
+                        data: finalScores,
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#f8fafc' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#f8fafc' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#f8fafc' }
+                        }
+                    }
+                }
+            });
+        };
+
         // Export to Excel
         window.exportToExcel = () => {
             const data = state.users.map(user => ({
                 'الاسم': user.name || '',
                 'البريد الإلكتروني': user.email || '',
                 'المؤسسة': user.org || '',
+                'نوع الحساب': user.isJudge ? 'حكم' : 'مستخدم',
                 'تاريخ التسجيل': user.registeredAt ? new Date(user.registeredAt).toLocaleString('ar-EG') : ''
             }));
             
@@ -1159,7 +1574,14 @@
                 if (snap.exists()) {
                     state.cloudData = snap.data();
                 } else {
-                    state.cloudData = { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } };
+                    state.cloudData = { 
+                        agenda: [], 
+                        gallery: [], 
+                        config: { logo: 'images/logo.png', eventDate: '' },
+                        groups: [],
+                        evaluations: {},
+                        publicVotes: {}
+                    };
                 }
                 updateUI();
                 loadUsers();
@@ -1182,11 +1604,22 @@
             if (elements.statsGallery) {
                 elements.statsGallery.textContent = state.cloudData.gallery?.length || 0;
             }
+            if (elements.statsGroups) {
+                elements.statsGroups.textContent = state.cloudData.groups?.length || 0;
+            }
             
             renderLandingContent();
+            renderGroupsList();
+            updateResultsChart();
             
             if (state.currentUser) {
                 renderUserUI();
+                
+                if (state.currentUser.type === 'judge') {
+                    renderJudgeEvaluation();
+                } else if (state.currentUser.type === 'user') {
+                    renderPublicVoting();
+                }
             }
             
             if (!elements.adminDashboard.classList.contains('hidden')) {
@@ -1338,6 +1771,7 @@
             showToast('جاري حفظ التغييرات...', 'success');
 
             try {
+                // Save agenda
                 const times = document.querySelectorAll('.agenda-time-input');
                 const titles = document.querySelectorAll('.agenda-title-input');
                 
@@ -1358,6 +1792,9 @@
                     agenda: newAgenda,
                     gallery: state.cloudData.gallery || [],
                     config: config,
+                    groups: state.cloudData.groups || [],
+                    evaluations: state.cloudData.evaluations || {},
+                    publicVotes: state.cloudData.publicVotes || {},
                     lastUpdated: new Date().toISOString()
                 });
 
@@ -1414,19 +1851,30 @@
                 
                 if (!snap.empty) {
                     const userData = snap.docs[0].data();
+                    const userType = userData.isJudge ? "judge" : "user";
+                    
                     state.currentUser = { 
                         ...userData, 
-                        type: "user",
+                        type: userType,
                         id: snap.docs[0].id 
                     };
                     
                     document.getElementById('user-welcome-name').textContent = `مرحباً ${userData.name || 'مستخدم'}`;
-                    document.getElementById('user-role-badge').textContent = userData.org || 'مشترك';
+                    document.getElementById('user-role-badge').textContent = userType === 'judge' ? 'حكم' : (userData.org || 'مشترك');
                     document.getElementById('user-avatar').textContent = (userData.name || 'U').charAt(0);
                     
                     elements.logoutBtn.classList.remove('hidden');
-                    showSection('user-dashboard');
-                    renderUserUI();
+                    
+                    if (userType === 'judge') {
+                        document.getElementById('judge-welcome-name').textContent = userData.name || 'حكم';
+                        showSection('judge-dashboard');
+                        renderJudgeEvaluation();
+                    } else {
+                        showSection('user-dashboard');
+                        renderUserUI();
+                        renderPublicVoting();
+                    }
+                    
                     showToast('تم تسجيل الدخول بنجاح', 'success');
                 } else {
                     showToast('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'error');
@@ -1446,6 +1894,7 @@
                 org: document.getElementById('reg-org').value,
                 email: document.getElementById('reg-email').value,
                 pass: document.getElementById('reg-pass').value,
+                isJudge: document.getElementById('reg-is-judge').checked,
                 registeredAt: new Date().toISOString()
             };
 
@@ -1545,14 +1994,21 @@
         document.addEventListener('DOMContentLoaded', () => {
             showSection('landing-section');
             
-            state.cloudData = { agenda: [], gallery: [], config: { logo: 'images/logo.png', eventDate: '' } };
+            state.cloudData = { 
+                agenda: [], 
+                gallery: [], 
+                config: { logo: 'images/logo.png', eventDate: '' },
+                groups: [],
+                evaluations: {},
+                publicVotes: {}
+            };
             
             updateUI();
             
             // محاولة تحميل الصور تلقائياً عند فتح الصفحة
             setTimeout(() => {
                 if (state.cloudData.gallery.length === 0) {
-                    loadImagesFromGithub();
+                    scanLocalImages();
                 }
             }, 1000);
         });
