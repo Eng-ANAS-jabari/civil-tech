@@ -332,6 +332,68 @@
             background-color: #1e293b;
             color: #f8fafc;
         }
+
+        /* Agenda styles */
+        .agenda-item {
+            transition: all 0.3s ease;
+        }
+        
+        .agenda-item:hover {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .time-picker {
+            direction: ltr;
+        }
+
+        /* Admin agenda controls */
+        .agenda-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .agenda-time-input {
+            font-family: monospace;
+        }
+
+        /* Fix for gallery display */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        .gallery-item {
+            aspect-ratio: 1/1;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body class="hero-pattern min-h-screen flex flex-col">
@@ -448,6 +510,11 @@
                         <span class="text-blue-500">#</span> المعرض التقني
                     </h3>
                     <div id="landing-gallery-list" class="grid grid-cols-2 gap-3 md:gap-4"></div>
+                    
+                    <!-- رسالة في حال عدم وجود صور -->
+                    <div id="no-gallery-message" class="hidden text-center p-8 border border-dashed border-white/10 rounded-xl">
+                        <p class="text-gray-500">لا توجد صور في المعرض حالياً</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -692,13 +759,35 @@
                 <div class="glass p-6 rounded-2xl space-y-4">
                     <div class="flex justify-between items-center">
                         <h4 class="text-lg font-black">📝 إدارة الأجندة</h4>
-                        <button onclick="addNewAgendaRow()" 
-                                class="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-colors">
-                            + إضافة فقرة
-                        </button>
+                        <div class="flex gap-2">
+                            <button onclick="sortAgendaByTime()" 
+                                    class="bg-purple-600/20 hover:bg-purple-600 text-purple-400 hover:text-white px-3 py-2 rounded-xl text-xs font-black transition-colors">
+                                🔄 ترتيب حسب الوقت
+                            </button>
+                            <button onclick="addNewAgendaRow()" 
+                                    class="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-colors">
+                                + إضافة فقرة
+                            </button>
+                        </div>
                     </div>
                     
-                    <div id="admin-agenda-inputs" class="space-y-3 max-h-[400px] overflow-y-auto pr-2"></div>
+                    <div id="admin-agenda-inputs" class="space-y-3 max-h-[500px] overflow-y-auto pr-2"></div>
+
+                    <!-- Quick Add -->
+                    <div class="mt-4 p-4 bg-blue-600/10 rounded-xl border border-blue-500/30">
+                        <h5 class="font-bold text-blue-400 mb-3">➕ إضافة فقرة جديدة</h5>
+                        <div class="flex gap-2">
+                            <input type="time" id="quick-add-time" class="time-picker bg-slate-900 p-3 rounded-lg text-blue-400 font-bold border border-white/10 focus:border-blue-500 outline-none w-32">
+                            <input type="text" id="quick-add-title" placeholder="عنوان الفقرة" class="flex-1 bg-slate-900 p-3 rounded-lg text-white border border-white/10 focus:border-blue-500 outline-none">
+                            <button onclick="quickAddAgendaItem()" class="bg-green-600 hover:bg-green-500 px-6 py-3 rounded-lg font-bold">إضافة</button>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="flex justify-between text-sm text-gray-400 mt-2">
+                        <span>عدد الفقرات: <span id="agenda-count" class="text-blue-400 font-bold">0</span></span>
+                        <span>آخر تحديث: <span id="agenda-last-updated" class="text-gray-300">-</span></span>
+                    </div>
                 </div>
 
                 <!-- Settings & Media -->
@@ -738,6 +827,18 @@
                             </p>
                         </div>
 
+                        <!-- Force Refresh Gallery Button - جديد -->
+                        <button onclick="forceRefreshGallery()" 
+                                class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl text-sm font-bold transition-colors mb-2">
+                            🔄 تحديث المعرض وعرض الصور
+                        </button>
+
+                        <!-- Debug Info - جديد -->
+                        <div id="gallery-debug-info" class="text-xs bg-slate-900 p-3 rounded-xl border border-blue-500/30 mb-2 hidden">
+                            <p class="text-blue-400 font-bold mb-1">معلومات التصحيح:</p>
+                            <div id="debug-content"></div>
+                        </div>
+
                         <!-- Image Search Buttons -->
                         <div class="grid grid-cols-2 gap-2">
                             <button onclick="loadAllImagesFromFolder()" 
@@ -766,6 +867,7 @@
                             <h5 class="font-bold text-lg mb-3 flex items-center gap-2">
                                 <span class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>
                                 صور بانتظار الموافقة (Pending)
+                                <span id="pending-count" class="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full">0</span>
                             </h5>
                             <div id="pending-images-list" class="grid grid-cols-4 gap-2 max-h-[300px] overflow-y-auto p-2 bg-yellow-500/5 rounded-xl"></div>
                         </div>
@@ -775,6 +877,7 @@
                             <h5 class="font-bold text-lg mb-3 flex items-center gap-2">
                                 <span class="w-2 h-2 bg-green-500 rounded-full"></span>
                                 صور موافق عليها (Approved)
+                                <span id="approved-count" class="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">0</span>
                             </h5>
                             <div id="approved-images-list" class="grid grid-cols-4 gap-2 max-h-[300px] overflow-y-auto p-2 bg-green-500/5 rounded-xl"></div>
                         </div>
@@ -805,7 +908,7 @@
 
                         <div class="mt-4 p-4 bg-white/5 rounded-xl">
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-400">عدد الصور في المعرض:</span>
+                                <span class="text-sm text-gray-400">عدد الصور في المعرض العام:</span>
                                 <span class="text-2xl font-black text-blue-400" id="gallery-count">0</span>
                             </div>
                         </div>
@@ -863,7 +966,8 @@
             groups: [],
             isSyncing: false,
             currentImageIndex: 0,
-            resultsChart: null
+            resultsChart: null,
+            lastUpdated: null
         };
 
         const elements = {
@@ -902,7 +1006,14 @@
             imageInfo: document.getElementById('imageInfo'),
             pendingImagesList: document.getElementById('pending-images-list'),
             approvedImagesList: document.getElementById('approved-images-list'),
-            galleryCount: document.getElementById('gallery-count')
+            galleryCount: document.getElementById('gallery-count'),
+            agendaCount: document.getElementById('agenda-count'),
+            agendaLastUpdated: document.getElementById('agenda-last-updated'),
+            pendingCount: document.getElementById('pending-count'),
+            approvedCount: document.getElementById('approved-count'),
+            debugInfo: document.getElementById('gallery-debug-info'),
+            debugContent: document.getElementById('debug-content'),
+            noGalleryMessage: document.getElementById('no-gallery-message')
         };
 
         // Toast notification function
@@ -1016,13 +1127,226 @@
             }
         });
 
-        // ============ نظام الموافقة على الصور ============
+        // ============ دوال إدارة الأجندة ============
+
+        window.quickAddAgendaItem = () => {
+            const timeInput = document.getElementById('quick-add-time');
+            const titleInput = document.getElementById('quick-add-title');
+            
+            const time = timeInput.value;
+            const title = titleInput.value.trim();
+            
+            if (!time) {
+                showToast('الرجاء إدخال الوقت', 'error');
+                return;
+            }
+            
+            if (!title) {
+                showToast('الرجاء إدخال عنوان الفقرة', 'error');
+                return;
+            }
+            
+            if (!state.cloudData.agenda) {
+                state.cloudData.agenda = [];
+            }
+            
+            state.cloudData.agenda.push({
+                time: time,
+                title: title
+            });
+            
+            state.cloudData.agenda.sort((a, b) => a.time.localeCompare(b.time));
+            
+            renderAdminAgendaInputs();
+            renderLandingContent();
+            renderUserUI();
+            
+            updateAgendaStats();
+            
+            timeInput.value = '';
+            titleInput.value = '';
+            
+            showToast('تم إضافة الفقرة بنجاح');
+        };
+
+        window.sortAgendaByTime = () => {
+            if (state.cloudData.agenda && state.cloudData.agenda.length > 0) {
+                state.cloudData.agenda.sort((a, b) => a.time.localeCompare(b.time));
+                renderAdminAgendaInputs();
+                renderLandingContent();
+                renderUserUI();
+                showToast('تم ترتيب الأجندة حسب الوقت');
+            }
+        };
+
+        window.deleteAgendaItem = (index) => {
+            if (confirm('هل أنت متأكد من حذف هذه الفقرة؟')) {
+                state.cloudData.agenda.splice(index, 1);
+                renderAdminAgendaInputs();
+                renderLandingContent();
+                renderUserUI();
+                updateAgendaStats();
+                showToast('تم حذف الفقرة');
+            }
+        };
+
+        window.updateAgendaItem = (index, field, value) => {
+            if (state.cloudData.agenda && state.cloudData.agenda[index]) {
+                state.cloudData.agenda[index][field] = value;
+                updateAgendaStats();
+            }
+        };
+
+        const updateAgendaStats = () => {
+            if (elements.agendaCount) {
+                elements.agendaCount.textContent = state.cloudData.agenda?.length || 0;
+            }
+            if (elements.statsAgenda) {
+                elements.statsAgenda.textContent = state.cloudData.agenda?.length || 0;
+            }
+            if (elements.agendaLastUpdated) {
+                const now = new Date();
+                elements.agendaLastUpdated.textContent = now.toLocaleTimeString('ar-EG');
+            }
+        };
+
+        const renderAdminAgendaInputs = () => {
+            if (!elements.adminAgendaInputs) return;
+            
+            const agenda = state.cloudData.agenda || [];
+            
+            if (agenda.length === 0) {
+                elements.adminAgendaInputs.innerHTML = '<div class="text-gray-500 text-center p-8 border border-dashed border-white/10 rounded-xl">لا توجد فقرات في الأجندة. أضف فقرة جديدة باستخدام النموذج أعلاه.</div>';
+                return;
+            }
+            
+            elements.adminAgendaInputs.innerHTML = agenda
+                .sort((a, b) => a.time?.localeCompare(b.time))
+                .map((item, index) => `
+                    <div class="bg-white/5 p-4 rounded-xl border border-white/10 hover:border-blue-500/50 transition-all agenda-item" data-agenda-index="${index}">
+                        <div class="flex gap-3 items-center">
+                            <div class="flex-1 flex gap-3 items-center">
+                                <div class="relative">
+                                    <input type="time" value="${item.time || ''}" 
+                                           class="agenda-time-input time-picker bg-slate-900 p-3 rounded-lg text-blue-400 font-bold w-28 text-sm border border-white/10 focus:border-blue-500 outline-none"
+                                           onchange="updateAgendaItem(${index}, 'time', this.value)">
+                                    <span class="absolute -top-2 -right-2 text-[10px] bg-blue-500 text-white px-1 rounded">${index + 1}</span>
+                                </div>
+                                <input type="text" value="${item.title || ''}" 
+                                       class="agenda-title-input bg-slate-900 p-3 rounded-lg text-white flex-1 text-sm border border-white/10 focus:border-blue-500 outline-none" 
+                                       placeholder="عنوان الفقرة"
+                                       onchange="updateAgendaItem(${index}, 'title', this.value)">
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="moveAgendaItem(${index}, 'up')" 
+                                        class="text-blue-400 hover:text-blue-300 px-2 transition-colors ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}"
+                                        ${index === 0 ? 'disabled' : ''}>
+                                    ⬆️
+                                </button>
+                                <button onclick="moveAgendaItem(${index}, 'down')" 
+                                        class="text-blue-400 hover:text-blue-300 px-2 transition-colors ${index === agenda.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}"
+                                        ${index === agenda.length - 1 ? 'disabled' : ''}>
+                                    ⬇️
+                                </button>
+                                <button onclick="deleteAgendaItem(${index})" 
+                                        class="text-red-500 hover:text-red-400 font-bold px-2 transition-colors" 
+                                        aria-label="حذف">✕</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+            updateAgendaStats();
+        };
+
+        window.moveAgendaItem = (index, direction) => {
+            const agenda = state.cloudData.agenda;
+            
+            if (direction === 'up' && index > 0) {
+                [agenda[index], agenda[index - 1]] = [agenda[index - 1], agenda[index]];
+            } else if (direction === 'down' && index < agenda.length - 1) {
+                [agenda[index], agenda[index + 1]] = [agenda[index + 1], agenda[index]];
+            } else {
+                return;
+            }
+            
+            renderAdminAgendaInputs();
+            renderLandingContent();
+            renderUserUI();
+            showToast('تم تغيير ترتيب الفقرة');
+        };
+
+        window.addNewAgendaRow = () => {
+            document.getElementById('quick-add-time').focus();
+        };
+
+        // ============ نظام الموافقة على الصور - معدل بالكامل ============
+
+        // دالة جديدة لعرض معلومات التصحيح
+        window.showDebugInfo = () => {
+            if (!elements.debugInfo || !elements.debugContent) return;
+            
+            const pending = state.cloudData.pendingImages || [];
+            const approved = state.cloudData.approvedImages || [];
+            const gallery = state.cloudData.gallery || [];
+            
+            const debugHtml = `
+                <div class="space-y-1">
+                    <p><span class="text-yellow-400">Pending:</span> ${pending.length} صورة</p>
+                    <p><span class="text-green-400">Approved:</span> ${approved.length} صورة</p>
+                    <p><span class="text-blue-400">Gallery:</span> ${gallery.length} صورة</p>
+                    ${approved.length > 0 ? `
+                        <p class="text-xs mt-2">أول صورة معتمدة: ${approved[0]?.url}</p>
+                    ` : ''}
+                    ${pending.length > 0 ? `
+                        <p class="text-xs mt-2">أول صورة بانتظار: ${pending[0]?.url}</p>
+                    ` : ''}
+                </div>
+            `;
+            
+            elements.debugContent.innerHTML = debugHtml;
+            elements.debugInfo.classList.remove('hidden');
+            
+            showToast('تم عرض معلومات التصحيح');
+        };
+
+        // دالة جديدة لتحديث المعرض بالقوة
+        window.forceRefreshGallery = () => {
+            // تحديث gallery من approvedImages
+            state.cloudData.gallery = (state.cloudData.approvedImages || []).map(img => img.url);
+            
+            // تحديث العدادات
+            if (elements.galleryCount) {
+                elements.galleryCount.textContent = state.cloudData.gallery.length;
+            }
+            if (elements.statsGallery) {
+                elements.statsGallery.textContent = state.cloudData.gallery.length;
+            }
+            if (elements.pendingCount) {
+                elements.pendingCount.textContent = (state.cloudData.pendingImages || []).length;
+            }
+            if (elements.approvedCount) {
+                elements.approvedCount.textContent = (state.cloudData.approvedImages || []).length;
+            }
+            
+            // إعادة رسم المعارض
+            renderGallery();
+            renderPendingImages();
+            renderApprovedImages();
+            
+            showDebugInfo();
+            showToast(`تم تحديث المعرض. عدد الصور: ${state.cloudData.gallery.length}`);
+        };
 
         // عرض الصور قيد الانتظار
         const renderPendingImages = () => {
             if (!elements.pendingImagesList) return;
             
             const pending = state.cloudData.pendingImages || [];
+            
+            if (elements.pendingCount) {
+                elements.pendingCount.textContent = pending.length;
+            }
             
             if (pending.length === 0) {
                 elements.pendingImagesList.innerHTML = '<div class="text-gray-500 text-center col-span-4 p-4">لا توجد صور بانتظار الموافقة</div>';
@@ -1060,6 +1384,10 @@
             
             const approved = state.cloudData.approvedImages || [];
             
+            if (elements.approvedCount) {
+                elements.approvedCount.textContent = approved.length;
+            }
+            
             if (approved.length === 0) {
                 elements.approvedImagesList.innerHTML = '<div class="text-gray-500 text-center col-span-4 p-4">لا توجد صور موافق عليها</div>';
                 return;
@@ -1086,7 +1414,7 @@
             `).join('');
         };
 
-        // دوال الموافقة على الصور
+        // دوال الموافقة على الصور - معدلة
         window.approveImage = (imageUrl) => {
             const pending = state.cloudData.pendingImages || [];
             const approved = state.cloudData.approvedImages || [];
@@ -1106,14 +1434,13 @@
                 state.cloudData.pendingImages = pending;
                 state.cloudData.approvedImages = approved;
                 
-                // تحديث معرض المستخدمين ليصبح متطابقاً مع الصور المعتمدة
+                // تحديث معرض المستخدمين
                 state.cloudData.gallery = state.cloudData.approvedImages.map(img => img.url);
                 
                 renderPendingImages();
                 renderApprovedImages();
-                renderGallery(); // تحديث واجهة المستخدم
+                renderGallery();
                 
-                saveAllToCloud();
                 showToast('✅ تمت الموافقة على الصورة ونشرها في المعرض العام');
             }
         };
@@ -1129,7 +1456,6 @@
                 state.cloudData.pendingImages = pending;
                 
                 renderPendingImages();
-                saveAllToCloud();
                 showToast('❌ تم رفض الصورة');
             }
         };
@@ -1148,20 +1474,13 @@
                 dateApproved: new Date().toISOString()
             }));
             
-            // تحديث approvedImages
             state.cloudData.approvedImages = [...approved, ...newApproved];
-            
-            // تحديث gallery لتعكس الصور الجديدة
             state.cloudData.gallery = state.cloudData.approvedImages.map(img => img.url);
-            
-            // تفريغ pendingImages
             state.cloudData.pendingImages = [];
             
-            // إعادة الرسم (Rendering)
             renderPendingImages();
             renderApprovedImages();
-            renderGallery(); // تأكد من استدعاء هذه الدالة لتحديث عرض المستخدمين
-            saveAllToCloud();
+            renderGallery();
             
             showToast(`✅ تمت الموافقة على ${newApproved.length} صورة ونشرها في المعرض العام`);
         };
@@ -1177,7 +1496,6 @@
             state.cloudData.pendingImages = [];
             
             renderPendingImages();
-            saveAllToCloud();
             
             showToast(`❌ تم رفض ${pending.length} صورة`);
         };
@@ -1191,18 +1509,16 @@
                 approved.splice(imageIndex, 1);
                 
                 state.cloudData.approvedImages = approved;
-                
-                // تحديث المعرض العام ليطابق الصور المعتمدة الجديدة
                 state.cloudData.gallery = state.cloudData.approvedImages.map(img => img.url);
                 
                 renderApprovedImages();
-                renderGallery(); // تحديث واجهة المستخدم
-                saveAllToCloud();
+                renderGallery();
+                
                 showToast('تم إزالة الصورة من المعرض');
             }
         };
 
-        // تحديث المعرض العام للجميع (يظهر فقط approved images)
+        // تحديث المعرض العام
         const updatePublicGallery = () => {
             const approved = state.cloudData.approvedImages || [];
             state.cloudData.gallery = approved.map(img => img.url);
@@ -1226,7 +1542,6 @@
             const foundImages = [];
             const maxAttempts = 100;
             
-            // البحث عن الصور بأرقام
             for (let i = 1; i <= maxAttempts; i++) {
                 for (const ext of extensions) {
                     const imgPath = `images/${i}.${ext}`;
@@ -1237,7 +1552,6 @@
                 }
             }
             
-            // البحث عن الصور بأحرف
             const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
             for (const letter of letters) {
                 for (let j = 1; j <= 5; j++) {
@@ -1263,7 +1577,6 @@
                 }
             }
             
-            // البحث عن الصور ذات الأرقام الطويلة
             for (let num = 1000; num <= 9999; num++) {
                 for (const ext of extensions) {
                     const patterns = [
@@ -1309,7 +1622,6 @@
                 state.cloudData.pendingImages = [...existingPending, ...newPending];
                 
                 renderPendingImages();
-                saveAllToCloud();
                 
                 showToast(`🎉 تمت إضافة ${newPending.length} صورة جديدة بانتظار الموافقة`);
             } else {
@@ -1387,7 +1699,6 @@
                 state.cloudData.pendingImages = [...existingPending, ...newPending];
                 
                 renderPendingImages();
-                saveAllToCloud();
                 
                 showToast(`🎉 تمت إضافة ${newPending.length} صورة جديدة بانتظار الموافقة`);
             } else {
@@ -1462,7 +1773,6 @@
                 state.cloudData.pendingImages = [...existingPending, ...newPending];
                 
                 renderPendingImages();
-                saveAllToCloud();
                 
                 showToast(`🎉 تمت إضافة ${newPending.length} صورة جديدة بانتظار الموافقة`);
             } else {
@@ -1470,7 +1780,6 @@
             }
         };
 
-        // إضافة صورة من رابط
         window.addImageFromUrl = () => {
             const urlInput = document.getElementById('image-url-input');
             let url = urlInput.value.trim();
@@ -1495,22 +1804,18 @@
             showToast('تم إضافة الصورة بانتظار الموافقة');
         };
 
-        // Remove gallery image (من معرض المسؤول)
         window.removeGalleryImage = (index) => {
             if (state.cloudData.gallery && state.cloudData.gallery[index]) {
                 if (confirm('هل أنت متأكد من حذف هذه الصورة؟')) {
                     const url = state.cloudData.gallery[index];
                     
-                    // إزالة من approved images أيضاً
                     const approved = state.cloudData.approvedImages || [];
                     state.cloudData.approvedImages = approved.filter(img => img.url !== url);
-                    
-                    // تحديث gallery
                     state.cloudData.gallery = state.cloudData.approvedImages.map(img => img.url);
                     
                     renderGallery();
                     renderApprovedImages();
-                    saveAllToCloud();
+                    
                     showToast('تم حذف الصورة');
                 }
             }
@@ -2033,9 +2338,12 @@
                     // التأكد من وجود المصفوفات الأساسية
                     if (!state.cloudData.pendingImages) state.cloudData.pendingImages = [];
                     if (!state.cloudData.approvedImages) state.cloudData.approvedImages = [];
+                    if (!state.cloudData.agenda) state.cloudData.agenda = [];
                     
                     // تحديث gallery لتكون متطابقة مع approvedImages
-                    state.cloudData.gallery = state.cloudData.approvedImages.map(img => img.url);
+                    state.cloudData.gallery = (state.cloudData.approvedImages || []).map(img => img.url);
+                    
+                    state.lastUpdated = new Date();
                 } else {
                     state.cloudData = { 
                         agenda: [], 
@@ -2100,6 +2408,19 @@
                     elements.adminName.placeholder = state.currentUser.name || '';
                 }
             }
+            
+            updateAgendaStats();
+            
+            // تحديث العدادات
+            if (elements.galleryCount) {
+                elements.galleryCount.textContent = state.cloudData.gallery?.length || 0;
+            }
+            if (elements.pendingCount) {
+                elements.pendingCount.textContent = state.cloudData.pendingImages?.length || 0;
+            }
+            if (elements.approvedCount) {
+                elements.approvedCount.textContent = state.cloudData.approvedImages?.length || 0;
+            }
         };
 
         // Render gallery in all places
@@ -2110,30 +2431,46 @@
                 elements.galleryCount.textContent = galleryImages.length;
             }
             
+            // الصفحة الرئيسية
             const landingGallery = document.getElementById('landing-gallery-list');
             if (landingGallery) {
-                landingGallery.innerHTML = galleryImages.slice(0, 4).map((url, index) => `
-                    <div class="thumbnail aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors" onclick="openImagePreview('${url}', ${index})">
-                        <img src="${url}" 
-                             loading="lazy" 
-                             class="w-full h-full object-cover" 
-                             alt="Gallery" 
-                             onerror="this.onerror=null; this.src='https://via.placeholder.com/400?text=Image+Not+Found'; this.classList.add('opacity-50');">
-                    </div>
-                `).join('');
+                if (galleryImages.length === 0) {
+                    landingGallery.innerHTML = '';
+                    if (elements.noGalleryMessage) {
+                        elements.noGalleryMessage.classList.remove('hidden');
+                    }
+                } else {
+                    if (elements.noGalleryMessage) {
+                        elements.noGalleryMessage.classList.add('hidden');
+                    }
+                    landingGallery.innerHTML = galleryImages.slice(0, 4).map((url, index) => `
+                        <div class="thumbnail aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors" onclick="openImagePreview('${url}', ${index})">
+                            <img src="${url}" 
+                                 loading="lazy" 
+                                 class="w-full h-full object-cover" 
+                                 alt="Gallery" 
+                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/400?text=Image+Not+Found'; this.classList.add('opacity-50');">
+                        </div>
+                    `).join('');
+                }
             }
             
+            // لوحة المستخدم
             const userGallery = document.getElementById('user-gallery-list');
             if (userGallery) {
-                userGallery.innerHTML = galleryImages.map((url, index) => `
-                    <div class="thumbnail aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors" onclick="openImagePreview('${url}', ${index})">
-                        <img src="${url}" 
-                             loading="lazy" 
-                             class="w-full h-full object-cover" 
-                             alt="Gallery" 
-                             onerror="this.onerror=null; this.src='https://via.placeholder.com/400?text=No+Image';">
-                    </div>
-                `).join('');
+                if (galleryImages.length === 0) {
+                    userGallery.innerHTML = '<div class="text-gray-500 text-center col-span-4 p-8 border border-dashed border-white/10 rounded-xl">لا توجد صور في المعرض حالياً</div>';
+                } else {
+                    userGallery.innerHTML = galleryImages.map((url, index) => `
+                        <div class="thumbnail aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors" onclick="openImagePreview('${url}', ${index})">
+                            <img src="${url}" 
+                                 loading="lazy" 
+                                 class="w-full h-full object-cover" 
+                                 alt="Gallery" 
+                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/400?text=No+Image';">
+                        </div>
+                    `).join('');
+                }
             }
         };
 
@@ -2141,16 +2478,22 @@
         const renderLandingContent = () => {
             const agendaList = document.getElementById('landing-agenda-list');
             if (agendaList) {
-                agendaList.innerHTML = (state.cloudData.agenda || [])
-                    .sort((a, b) => a.time?.localeCompare(b.time))
-                    .map(item => `
-                        <div class="glass-card p-4 rounded-xl flex items-center justify-between hover:border-blue-500/30 transition-colors">
-                            <div class="flex gap-3 items-center">
-                                <span class="text-blue-500 font-bold font-mono text-sm bg-blue-500/10 px-2 py-1 rounded">${item.time || '--:--'}</span>
-                                <span class="font-bold text-white">${item.title || 'بدون عنوان'}</span>
+                const agenda = state.cloudData.agenda || [];
+                
+                if (agenda.length === 0) {
+                    agendaList.innerHTML = '<div class="text-gray-500 text-center p-4">لا توجد فعاليات حالياً</div>';
+                } else {
+                    agendaList.innerHTML = agenda
+                        .sort((a, b) => a.time?.localeCompare(b.time))
+                        .map(item => `
+                            <div class="glass-card p-4 rounded-xl flex items-center justify-between hover:border-blue-500/30 transition-colors">
+                                <div class="flex gap-3 items-center">
+                                    <span class="text-blue-500 font-bold font-mono text-sm bg-blue-500/10 px-2 py-1 rounded">${item.time || '--:--'}</span>
+                                    <span class="font-bold text-white">${item.title || 'بدون عنوان'}</span>
+                                </div>
                             </div>
-                        </div>
-                    `).join('');
+                        `).join('');
+                }
             }
         };
 
@@ -2158,48 +2501,23 @@
         const renderUserUI = () => {
             const agendaList = document.getElementById('user-agenda-list');
             if (agendaList) {
-                agendaList.innerHTML = (state.cloudData.agenda || [])
-                    .map(item => `
-                        <div class="glass-card p-4 rounded-xl flex items-center justify-between">
-                            <div class="flex gap-3 items-center">
-                                <span class="text-blue-500 font-bold font-mono">${item.time}</span>
-                                <span class="font-bold text-white">${item.title}</span>
+                const agenda = state.cloudData.agenda || [];
+                
+                if (agenda.length === 0) {
+                    agendaList.innerHTML = '<div class="text-gray-500 text-center p-4">لا توجد فعاليات حالياً</div>';
+                } else {
+                    agendaList.innerHTML = agenda
+                        .sort((a, b) => a.time?.localeCompare(b.time))
+                        .map(item => `
+                            <div class="glass-card p-4 rounded-xl flex items-center justify-between">
+                                <div class="flex gap-3 items-center">
+                                    <span class="text-blue-500 font-bold font-mono">${item.time}</span>
+                                    <span class="font-bold text-white">${item.title}</span>
+                                </div>
                             </div>
-                        </div>
-                    `).join('');
+                        `).join('');
+                }
             }
-        };
-
-        // Render admin agenda inputs
-        const renderAdminAgendaInputs = () => {
-            if (!elements.adminAgendaInputs) return;
-            
-            elements.adminAgendaInputs.innerHTML = (state.cloudData.agenda || [])
-                .sort((a, b) => a.time?.localeCompare(b.time))
-                .map((item, index) => `
-                    <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex gap-2 items-center animate-fade-in" data-agenda-index="${index}">
-                        <input type="time" value="${item.time || ''}" 
-                               class="agenda-time-input bg-slate-900 p-2 rounded-lg text-blue-400 font-bold w-24 text-sm border border-white/10 focus:border-blue-500 outline-none">
-                        <input type="text" value="${item.title || ''}" 
-                               class="agenda-title-input bg-slate-900 p-2 rounded-lg text-white flex-1 text-sm border border-white/10 focus:border-blue-500 outline-none" 
-                               placeholder="عنوان الفقرة">
-                        <button onclick="this.closest('div').remove()" 
-                                class="text-red-500 hover:text-red-400 font-bold px-2 transition-colors" 
-                                aria-label="حذف">✕</button>
-                    </div>
-                `).join('');
-        };
-
-        // Add new agenda row
-        window.addNewAgendaRow = () => {
-            const div = document.createElement('div');
-            div.className = "bg-white/5 p-3 rounded-xl border border-white/5 flex gap-2 items-center animate-fade-in";
-            div.innerHTML = `
-                <input type="time" class="agenda-time-input bg-slate-900 p-2 rounded-lg text-blue-400 font-bold w-24 text-sm border border-white/10">
-                <input type="text" class="agenda-title-input bg-slate-900 p-2 rounded-lg text-white flex-1 text-sm border border-white/10" placeholder="عنوان الفقرة">
-                <button onclick="this.closest('div').remove()" class="text-red-500 hover:text-red-400 font-bold px-2">✕</button>
-            `;
-            elements.adminAgendaInputs.prepend(div);
         };
 
         // Save all to Firestore
@@ -2213,13 +2531,13 @@
             showToast('جاري حفظ التغييرات...', 'success');
 
             try {
-                const times = document.querySelectorAll('.agenda-time-input');
-                const titles = document.querySelectorAll('.agenda-title-input');
+                const timeInputs = document.querySelectorAll('.agenda-time-input');
+                const titleInputs = document.querySelectorAll('.agenda-title-input');
                 
-                const newAgenda = Array.from(times)
+                const newAgenda = Array.from(timeInputs)
                     .map((t, i) => ({
                         time: t.value,
-                        title: titles[i]?.value || ''
+                        title: titleInputs[i]?.value || ''
                     }))
                     .filter(a => a.time && a.title.trim())
                     .sort((a, b) => a.time.localeCompare(b.time));
@@ -2230,7 +2548,7 @@
                 };
 
                 // تحديث gallery لتكون متطابقة مع approvedImages قبل الحفظ
-                state.cloudData.gallery = state.cloudData.approvedImages.map(img => img.url);
+                state.cloudData.gallery = (state.cloudData.approvedImages || []).map(img => img.url);
 
                 await setDoc(doc(db, "conference", "data"), {
                     agenda: newAgenda,
