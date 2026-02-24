@@ -508,7 +508,7 @@
                     
                     <div class="flex items-center gap-2">
                         <input type="checkbox" id="reg-is-judge" class="w-5 h-5">
-                        <label for="reg-is-judge" class="text-sm text-gray-300">تسجيل كحكم (للمسؤول فقط)</label>
+                        <label for="reg-is-judge" class="text-sm text-gray-300">تسجيل كحكم</label>
                     </div>
                     
                     <button type="submit" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900">
@@ -712,7 +712,8 @@
                                 <span class="text-blue-400 font-bold">مجلد images</span> في GitHub
                             </p>
                             <p class="text-xs text-gray-500">
-                                الصور المفترض تكون في: <span class="font-mono text-green-400">images/</span>
+                                الصور الموجودة حالياً: 
+                                <span class="font-mono text-green-400">IMG_7997.JPG, IMG_8000.JPG, IMG_8008.JPG, images1.JPG, photo1.JPG</span>
                             </p>
                         </div>
 
@@ -730,31 +731,26 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="scanLocalImages()" 
+                            <button onclick="loadSpecificImages()" 
                                     class="bg-purple-600/20 hover:bg-purple-600 text-purple-400 hover:text-white py-2 rounded-xl text-sm font-bold transition-colors">
-                                🔍 فحص الصور المحلية
+                                🔍 تحميل الصور المحددة
                             </button>
-                            <button onclick="showImageUploadGuide()" 
-                                    class="bg-orange-600/20 hover:bg-orange-600 text-orange-400 hover:text-white py-2 rounded-xl text-sm font-bold transition-colors">
-                                📖 دليل الرفع
+                            <button onclick="scanLocalImages()" 
+                                    class="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white py-2 rounded-xl text-sm font-bold transition-colors">
+                                🔎 فحص جميع الصور
                             </button>
                         </div>
 
-                        <!-- Image Upload Guide Modal (Hidden by default) -->
-                        <div id="upload-guide" class="hidden mt-4 p-4 bg-blue-600/20 rounded-xl border border-blue-500/30">
-                            <h5 class="font-bold text-blue-400 mb-2">📌 خطوات رفع الصور:</h5>
-                            <ol class="text-sm text-gray-300 space-y-2 list-decimal pr-4">
-                                <li>افتح مجلد <span class="font-mono text-green-400">images</span> في مشروع GitHub</li>
-                                <li>اضغط على "Add file" ← "Upload files"</li>
-                                <li>اسحب الصور التي تريد رفعها</li>
-                                <li>أضف تعليق و اضغط "Commit changes"</li>
-                                <li>بعد الرفع، أسماء الصور ستكون:</li>
-                                <ul class="pr-4 mt-1 space-y-1">
-                                    <li>• <span class="font-mono">images/photo1.jpg</span></li>
-                                    <li>• <span class="font-mono">images/event.jpg</span></li>
-                                    <li>• <span class="font-mono">images/gallery.png</span></li>
-                                </ul>
-                            </ol>
+                        <!-- Image Upload Guide -->
+                        <div id="upload-guide" class="mt-4 p-4 bg-blue-600/20 rounded-xl border border-blue-500/30">
+                            <h5 class="font-bold text-blue-400 mb-2">📌 الصور المتاحة:</h5>
+                            <ul class="text-sm text-gray-300 space-y-1">
+                                <li>• <span class="font-mono">images/IMG_7997.JPG</span></li>
+                                <li>• <span class="font-mono">images/IMG_8000.JPG</span></li>
+                                <li>• <span class="font-mono">images/IMG_8008.JPG</span></li>
+                                <li>• <span class="font-mono">images/images1.JPG</span></li>
+                                <li>• <span class="font-mono">images/photo1.JPG</span></li>
+                            </ul>
                         </div>
 
                         <div class="mt-4 p-4 bg-white/5 rounded-xl">
@@ -968,39 +964,64 @@
             }
         });
 
-        // دالة لفحص الصور المحلية
-        window.scanLocalImages = async () => {
-            showToast('جاري البحث عن الصور في مجلد images...', 'success');
+        // تحميل الصور المحددة من مجلد images
+        window.loadSpecificImages = async () => {
+            showToast('جاري تحميل الصور المحددة...', 'success');
+            
+            const imageList = [
+                'images/IMG_7997.JPG',
+                'images/IMG_8000.JPG',
+                'images/IMG_8008.JPG',
+                'images/images1.JPG',
+                'images/photo1.JPG'
+            ];
             
             const foundImages = [];
-            const extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
             
-            // البحث عن الصور المرقمة
-            for (let i = 1; i <= 30; i++) {
-                for (const ext of extensions) {
-                    const imgPath = `images/${i}.${ext}`;
-                    const exists = await checkImageExists(imgPath);
-                    if (exists) {
-                        foundImages.push(imgPath);
-                    }
+            for (const imgPath of imageList) {
+                const exists = await checkImageExists(imgPath);
+                if (exists) {
+                    foundImages.push(imgPath);
+                    console.log('✅ تم العثور على:', imgPath);
+                } else {
+                    console.log('❌ غير موجود:', imgPath);
                 }
             }
             
-            // البحث عن الصور بأسماء شائعة
-            const commonNames = [
-                'photo', 'image', 'pic', 'gallery', 'event',
-                'team', 'sponsor', 'speaker', 'workshop',
-                'background', 'banner', 'logo', 'icon',
-                'slide', 'presentation', 'main', 'home',
-                'صورة', 'حدث', 'معرض', 'مؤتمر'
+            if (foundImages.length > 0) {
+                // إضافة الصور الموجودة إلى المعرض
+                state.cloudData.gallery = [...(state.cloudData.gallery || []), ...foundImages];
+                // إزالة التكرارات
+                state.cloudData.gallery = [...new Set(state.cloudData.gallery)];
+                renderGallery();
+                showToast(`🎉 تم تحميل ${foundImages.length} صورة بنجاح`);
+            } else {
+                showToast('⚠️ لم يتم العثور على الصور', 'error');
+            }
+        };
+
+        // دالة لفحص الصور المحلية (بشكل أوسع)
+        window.scanLocalImages = async () => {
+            showToast('جاري البحث عن جميع الصور في مجلد images...', 'success');
+            
+            const extensions = ['jpg', 'jpeg', 'JPG', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'webp', 'svg'];
+            const foundImages = [];
+            
+            // قائمة بأسماء الصور المحتملة (بناء على ما موجود)
+            const possibleNames = [
+                'IMG_7997', 'IMG_8000', 'IMG_8008', 'images1', 'photo1',
+                'photo', 'image', 'img', 'pic', 'picture',
+                'gallery', 'event', 'conference', 'team',
+                '1', '2', '3', '4', '5'
             ];
             
-            for (const name of commonNames) {
+            for (const name of possibleNames) {
                 for (const ext of extensions) {
                     const imgPath = `images/${name}.${ext}`;
                     const exists = await checkImageExists(imgPath);
                     if (exists) {
                         foundImages.push(imgPath);
+                        console.log('✅ تم العثور على:', imgPath);
                     }
                 }
             }
@@ -1014,14 +1035,6 @@
                 showToast(`🎉 تم العثور على ${uniqueImages.length} صورة`);
             } else {
                 showToast('⚠️ لم يتم العثور على صور', 'error');
-            }
-        };
-
-        // Show upload guide
-        window.showImageUploadGuide = () => {
-            const guide = document.getElementById('upload-guide');
-            if (guide) {
-                guide.classList.toggle('hidden');
             }
         };
 
@@ -2008,7 +2021,7 @@
             // محاولة تحميل الصور تلقائياً عند فتح الصفحة
             setTimeout(() => {
                 if (state.cloudData.gallery.length === 0) {
-                    scanLocalImages();
+                    loadSpecificImages();
                 }
             }, 1000);
         });
