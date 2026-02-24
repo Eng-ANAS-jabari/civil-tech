@@ -755,6 +755,12 @@
                             ⚡ بحث متقدم (الأقوى)
                         </button>
 
+                        <!-- Manual URL Input -->
+                        <div class="flex gap-2 mt-2">
+                            <input type="text" id="image-url-input" placeholder="أو أدخل رابط الصورة مباشرة" class="flex-1 p-3 bg-white/5 rounded-xl border border-white/10 text-sm">
+                            <button onclick="addImageFromUrl()" class="bg-blue-600 hover:bg-blue-500 px-4 py-3 rounded-xl text-sm font-bold">إضافة</button>
+                        </div>
+
                         <!-- Pending Images -->
                         <div class="mt-6">
                             <h5 class="font-bold text-lg mb-3 flex items-center gap-2">
@@ -845,8 +851,8 @@
             cloudData: { 
                 agenda: [], 
                 gallery: [], 
-                pendingImages: [], // صور بانتظار الموافقة
-                approvedImages: [], // صور موافق عليها
+                pendingImages: [],
+                approvedImages: [],
                 config: { logo: 'images/logo.png', eventDate: '' },
                 groups: [],
                 evaluations: {},
@@ -1100,12 +1106,15 @@
                 state.cloudData.pendingImages = pending;
                 state.cloudData.approvedImages = approved;
                 
+                // تحديث معرض المستخدمين ليصبح متطابقاً مع الصور المعتمدة
+                state.cloudData.gallery = state.cloudData.approvedImages.map(img => img.url);
+                
                 renderPendingImages();
                 renderApprovedImages();
-                updatePublicGallery();
+                renderGallery(); // تحديث واجهة المستخدم
                 
                 saveAllToCloud();
-                showToast('✅ تمت الموافقة على الصورة');
+                showToast('✅ تمت الموافقة على الصورة ونشرها في المعرض العام');
             }
         };
 
@@ -1139,15 +1148,22 @@
                 dateApproved: new Date().toISOString()
             }));
             
+            // تحديث approvedImages
             state.cloudData.approvedImages = [...approved, ...newApproved];
+            
+            // تحديث gallery لتعكس الصور الجديدة
+            state.cloudData.gallery = state.cloudData.approvedImages.map(img => img.url);
+            
+            // تفريغ pendingImages
             state.cloudData.pendingImages = [];
             
+            // إعادة الرسم (Rendering)
             renderPendingImages();
             renderApprovedImages();
-            updatePublicGallery();
+            renderGallery(); // تأكد من استدعاء هذه الدالة لتحديث عرض المستخدمين
             saveAllToCloud();
             
-            showToast(`✅ تمت الموافقة على ${newApproved.length} صورة`);
+            showToast(`✅ تمت الموافقة على ${newApproved.length} صورة ونشرها في المعرض العام`);
         };
 
         window.rejectAllPending = () => {
@@ -1176,8 +1192,11 @@
                 
                 state.cloudData.approvedImages = approved;
                 
+                // تحديث المعرض العام ليطابق الصور المعتمدة الجديدة
+                state.cloudData.gallery = state.cloudData.approvedImages.map(img => img.url);
+                
                 renderApprovedImages();
-                updatePublicGallery();
+                renderGallery(); // تحديث واجهة المستخدم
                 saveAllToCloud();
                 showToast('تم إزالة الصورة من المعرض');
             }
@@ -1486,7 +1505,8 @@
                     const approved = state.cloudData.approvedImages || [];
                     state.cloudData.approvedImages = approved.filter(img => img.url !== url);
                     
-                    state.cloudData.gallery.splice(index, 1);
+                    // تحديث gallery
+                    state.cloudData.gallery = state.cloudData.approvedImages.map(img => img.url);
                     
                     renderGallery();
                     renderApprovedImages();
@@ -2009,6 +2029,13 @@
             (snap) => {
                 if (snap.exists()) {
                     state.cloudData = snap.data();
+                    
+                    // التأكد من وجود المصفوفات الأساسية
+                    if (!state.cloudData.pendingImages) state.cloudData.pendingImages = [];
+                    if (!state.cloudData.approvedImages) state.cloudData.approvedImages = [];
+                    
+                    // تحديث gallery لتكون متطابقة مع approvedImages
+                    state.cloudData.gallery = state.cloudData.approvedImages.map(img => img.url);
                 } else {
                     state.cloudData = { 
                         agenda: [], 
@@ -2201,6 +2228,9 @@
                     logo: state.cloudData.config?.logo || 'images/logo.png',
                     eventDate: elements.confDate?.value || ''
                 };
+
+                // تحديث gallery لتكون متطابقة مع approvedImages قبل الحفظ
+                state.cloudData.gallery = state.cloudData.approvedImages.map(img => img.url);
 
                 await setDoc(doc(db, "conference", "data"), {
                     agenda: newAgenda,
