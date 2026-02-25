@@ -271,6 +271,84 @@
             height: 100%;
             object-fit: cover;
         }
+
+        /* أنماط رفع الملفات */
+        .upload-area {
+            border: 2px dashed #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #f59e0b;
+        }
+        
+        .upload-area.dragover {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: #f59e0b;
+            transform: scale(1.02);
+        }
+
+        .upload-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .upload-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #f59e0b);
+            transition: width 0.3s ease;
+        }
+
+        .image-preview {
+            position: relative;
+            display: inline-block;
+            margin: 5px;
+        }
+        
+        .image-preview img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #3b82f6;
+        }
+        
+        .image-preview .remove-preview {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* أنماط الصور التجريبية */
+        .demo-image {
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-image:hover {
+            transform: scale(1.05);
+            border-color: #f59e0b;
+        }
     </style>
 </head>
 <body class="hero-pattern min-h-screen flex flex-col">
@@ -342,7 +420,7 @@
                         <div class="text-sm text-gray-400">فعالية</div>
                     </div>
                     <div class="glass-card px-6 py-4 rounded-xl text-center">
-                        <div class="text-3xl font-black text-blue-500" id="stats-gallery">8</div>
+                        <div class="text-3xl font-black text-blue-500" id="stats-gallery">0</div>
                         <div class="text-sm text-gray-400">صورة</div>
                     </div>
                     <div class="glass-card px-6 py-4 rounded-xl text-center">
@@ -383,7 +461,7 @@
                     <div id="landing-agenda-list" class="space-y-3"></div>
                 </div>
                 
-                <!-- المعرض التقني - الصور من مجلد images على GitHub -->
+                <!-- المعرض التقني -->
                 <div class="lg:col-span-5 space-y-6">
                     <h3 class="text-2xl md:text-3xl font-black flex items-center gap-2">
                         <span class="text-blue-500">#</span> المعرض التقني
@@ -710,38 +788,67 @@
                         </button>
                     </div>
 
-                    <!-- معرض الصور - عرض الصور من GitHub -->
+                    <!-- معرض الصور - رفع إلى Firebase Storage -->
                     <div class="glass p-6 rounded-2xl space-y-4">
-                        <h4 class="text-lg font-black">📷 معرض الصور (من GitHub)</h4>
+                        <h4 class="text-lg font-black">📷 إدارة المعرض التقني (Firebase)</h4>
                         
-                        <div class="flex gap-2">
-                            <input type="url" id="gallery-url-input" placeholder="رابط صورة جديدة" 
+                        <!-- صور تجريبية للاختبار -->
+                        <div class="mb-4">
+                            <h5 class="text-sm font-bold text-blue-400 mb-2">🖼️ صور تجريبية للاختبار:</h5>
+                            <div class="grid grid-cols-4 gap-2">
+                                <div class="demo-image" onclick="addDemoImage('https://picsum.photos/400/300?random=1')">
+                                    <img src="https://picsum.photos/200/150?random=1" class="w-full h-full object-cover" alt="Demo 1">
+                                </div>
+                                <div class="demo-image" onclick="addDemoImage('https://picsum.photos/400/300?random=2')">
+                                    <img src="https://picsum.photos/200/150?random=2" class="w-full h-full object-cover" alt="Demo 2">
+                                </div>
+                                <div class="demo-image" onclick="addDemoImage('https://picsum.photos/400/300?random=3')">
+                                    <img src="https://picsum.photos/200/150?random=3" class="w-full h-full object-cover" alt="Demo 3">
+                                </div>
+                                <div class="demo-image" onclick="addDemoImage('https://picsum.photos/400/300?random=4')">
+                                    <img src="https://picsum.photos/200/150?random=4" class="w-full h-full object-cover" alt="Demo 4">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- منطقة رفع الصور -->
+                        <div id="upload-area" class="upload-area p-6 rounded-xl text-center">
+                            <input type="file" id="file-input" multiple accept="image/*" class="hidden">
+                            <div class="space-y-2">
+                                <div class="text-4xl">📸</div>
+                                <p class="text-blue-400 font-bold">اسحب وأفلت الصور هنا أو اضغط للاختيار</p>
+                                <p class="text-xs text-gray-500">يدعم JPG, PNG, GIF - سيتم رفعها إلى Firebase</p>
+                            </div>
+                        </div>
+
+                        <!-- شريط التقدم -->
+                        <div id="upload-progress-container" class="hidden space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span>جاري الرفع...</span>
+                                <span id="upload-progress-percent">0%</span>
+                            </div>
+                            <div class="upload-progress">
+                                <div id="upload-progress-bar" class="upload-progress-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- معاينات الصور قبل الرفع -->
+                        <div id="image-previews" class="flex flex-wrap gap-2 mt-2"></div>
+
+                        <!-- زر الرفع -->
+                        <button id="upload-button" onclick="uploadSelectedImages()" 
+                                class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            ⬆️ رفع الصور المحددة
+                        </button>
+
+                        <!-- إضافة صورة عبر رابط -->
+                        <div class="flex gap-2 mt-4">
+                            <input type="url" id="gallery-url-input" placeholder="رابط صورة من الإنترنت" 
                                    class="flex-1 bg-slate-900 border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 transition text-sm">
                             <button onclick="addSingleImageFromUrl()" 
                                     class="bg-blue-600 hover:bg-blue-500 px-4 rounded-xl text-sm font-bold transition-colors whitespace-nowrap">
                                 إضافة
                             </button>
-                        </div>
-                        
-                        <!-- زر تحديث المعرض من GitHub -->
-                        <button onclick="loadGalleryFromGithub()" 
-                                class="w-full py-3 bg-green-600 hover:bg-green-500 rounded-xl text-sm font-bold transition-colors">
-                            🔄 تحديث المعرض من GitHub
-                        </button>
-
-                        <!-- إضافة صورة عبر الرابط المباشر -->
-                        <div class="mt-2 p-3 bg-blue-600/20 rounded-lg">
-                            <p class="text-xs text-blue-400 mb-2">روابط الصور المتوفرة في مجلد images:</p>
-                            <div class="text-xs text-gray-400 space-y-1">
-                                <div>• 8ee3850dc5ac65749712c3a212dc6218.jpg</div>
-                                <div>• IMG_7997.JPG</div>
-                                <div>• IMG_8000.JPG</div>
-                                <div>• IMG_8008.JPG</div>
-                                <div>• b5e6982aa744a4c5c2219c2ca04c7f06.jpg</div>
-                                <div>• e333b0fec9ab128422db16dab3633200.jpg</div>
-                                <div>• images1.JPG</div>
-                                <div>• photo1.JPG</div>
-                            </div>
                         </div>
                         
                         <!-- معاينة الصور مع إمكانية الحذف -->
@@ -786,39 +893,18 @@
             { email: "admin5@civil.com", password: "admin123", name: "المدير الخامس" }
         ];
 
-        // إعدادات GitHub
-        const GITHUB_CONFIG = {
-            owner: "abdalelah1",
-            repo: "abdalelah1",
-            branch: "main",
-            folder: "images"
-        };
-
-        // قائمة الصور المتوفرة في مجلد images
-        const AVAILABLE_IMAGES = [
-            "8ee3850dc5ac65749712c3a212dc6218.jpg",
-            "IMG_7997.JPG",
-            "IMG_8000.JPG",
-            "IMG_8008.JPG",
-            "b5e6982aa744a4c5c2219c2ca04c7f06.jpg",
-            "e333b0fec9ab128422db16dab3633200.jpg",
-            "images1.JPG",
-            "photo1.JPG"
-        ];
-
-        // إنشاء روابط الصور من GitHub
-        const getImageUrlsFromGithub = () => {
-            return AVAILABLE_IMAGES.map(filename => 
-                `https://raw.githubusercontent.com/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/${GITHUB_CONFIG.branch}/${GITHUB_CONFIG.folder}/${filename}`
-            );
-        };
-
         // حالة التطبيق
         let state = {
             currentUser: null,
             cloudData: { 
                 agenda: [], 
-                gallery: getImageUrlsFromGithub(), // تحميل الصور مباشرة من GitHub
+                gallery: [
+                    // صور تجريبية للبدء
+                    'https://picsum.photos/400/300?random=1',
+                    'https://picsum.photos/400/300?random=2',
+                    'https://picsum.photos/400/300?random=3',
+                    'https://picsum.photos/400/300?random=4'
+                ], 
                 config: { 
                     logo: '', 
                     eventDate: '',
@@ -833,7 +919,8 @@
             groups: [],
             isSyncing: false,
             currentImageIndex: 0,
-            resultsChart: null
+            resultsChart: null,
+            selectedFiles: []
         };
 
         // عناصر DOM
@@ -877,7 +964,24 @@
             modalImage: document.getElementById('modalImage'),
             imageCounter: document.getElementById('imageCounter'),
             agendaCount: document.getElementById('agenda-count'),
-            agendaLastUpdated: document.getElementById('agenda-last-updated')
+            agendaLastUpdated: document.getElementById('agenda-last-updated'),
+            uploadArea: document.getElementById('upload-area'),
+            fileInput: document.getElementById('file-input'),
+            imagePreviews: document.getElementById('image-previews'),
+            uploadButton: document.getElementById('upload-button'),
+            uploadProgressContainer: document.getElementById('upload-progress-container'),
+            uploadProgressBar: document.getElementById('upload-progress-bar'),
+            uploadProgressPercent: document.getElementById('upload-progress-percent')
+        };
+
+        // دالة لإضافة صورة تجريبية
+        window.addDemoImage = (url) => {
+            if (!state.cloudData.gallery) {
+                state.cloudData.gallery = [];
+            }
+            state.cloudData.gallery.push(url);
+            renderAllGalleries();
+            showToast('✅ تم إضافة صورة تجريبية');
         };
 
         // عرض الإشعارات
@@ -960,13 +1064,6 @@
             }
         };
 
-        // تحميل الصور من GitHub
-        window.loadGalleryFromGithub = () => {
-            state.cloudData.gallery = getImageUrlsFromGithub();
-            renderAllGalleries();
-            showToast(`✅ تم تحميل ${state.cloudData.gallery.length} صورة من GitHub`);
-        };
-
         // معالجة أزرار لوحة المفاتيح
         document.addEventListener('keydown', (e) => {
             if (elements.imageModal?.classList.contains('show')) {
@@ -979,6 +1076,188 @@
                 }
             }
         });
+
+        // ============ نظام رفع الصور إلى Firebase Storage ============
+
+        // تهيئة منطقة السحب والإفلات
+        if (elements.uploadArea && elements.fileInput) {
+            elements.uploadArea.addEventListener('click', () => {
+                elements.fileInput.click();
+            });
+
+            elements.uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                elements.uploadArea.classList.add('dragover');
+            });
+
+            elements.uploadArea.addEventListener('dragleave', () => {
+                elements.uploadArea.classList.remove('dragover');
+            });
+
+            elements.uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                elements.uploadArea.classList.remove('dragover');
+                
+                const files = Array.from(e.dataTransfer.files).filter(file => 
+                    file.type.startsWith('image/')
+                );
+                
+                handleFilesSelected(files);
+            });
+
+            elements.fileInput.addEventListener('change', (e) => {
+                const files = Array.from(e.target.files);
+                handleFilesSelected(files);
+            });
+        }
+
+        // معالجة الملفات المختارة
+        const handleFilesSelected = (files) => {
+            if (files.length === 0) return;
+            
+            state.selectedFiles = files;
+            
+            // عرض معاينات الصور
+            elements.imagePreviews.innerHTML = '';
+            
+            files.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.createElement('div');
+                    preview.className = 'image-preview';
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <button class="remove-preview" onclick="removeFile(${index})">✕</button>
+                    `;
+                    elements.imagePreviews.appendChild(preview);
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            // تفعيل زر الرفع
+            elements.uploadButton.disabled = false;
+        };
+
+        // إزالة ملف من القائمة
+        window.removeFile = (index) => {
+            state.selectedFiles = state.selectedFiles.filter((_, i) => i !== index);
+            
+            // إعادة عرض المعاينات
+            elements.imagePreviews.innerHTML = '';
+            state.selectedFiles.forEach((file, i) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.createElement('div');
+                    preview.className = 'image-preview';
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <button class="remove-preview" onclick="removeFile(${i})">✕</button>
+                    `;
+                    elements.imagePreviews.appendChild(preview);
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            if (state.selectedFiles.length === 0) {
+                elements.uploadButton.disabled = true;
+            }
+        };
+
+        // رفع الصور المحددة إلى Firebase Storage
+        window.uploadSelectedImages = async () => {
+            if (state.selectedFiles.length === 0) {
+                showToast('❌ الرجاء اختيار صور للرفع', 'error');
+                return;
+            }
+
+            // إظهار شريط التقدم
+            elements.uploadProgressContainer.classList.remove('hidden');
+            elements.uploadButton.disabled = true;
+
+            let uploadedCount = 0;
+            const totalFiles = state.selectedFiles.length;
+
+            for (let i = 0; i < state.selectedFiles.length; i++) {
+                const file = state.selectedFiles[i];
+                
+                try {
+                    // إنشاء اسم فريد للملف
+                    const timestamp = Date.now();
+                    const randomString = Math.random().toString(36).substring(2, 8);
+                    const extension = file.name.split('.').pop();
+                    const fileName = `gallery/IMG_${timestamp}_${randomString}.${extension}`;
+                    
+                    // رفع الملف إلى Firebase Storage
+                    const storageRef = ref(storage, fileName);
+                    const uploadTask = uploadBytesResumable(storageRef, file);
+
+                    await new Promise((resolve, reject) => {
+                        uploadTask.on(
+                            'state_changed',
+                            (snapshot) => {
+                                // تحديث التقدم
+                                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                const overallProgress = ((i + (progress / 100)) / totalFiles) * 100;
+                                elements.uploadProgressBar.style.width = `${overallProgress}%`;
+                                elements.uploadProgressPercent.textContent = `${Math.round(overallProgress)}%`;
+                            },
+                            (error) => {
+                                console.error('Upload error:', error);
+                                reject(error);
+                            },
+                            async () => {
+                                try {
+                                    // الحصول على رابط الصورة
+                                    const url = await getDownloadURL(uploadTask.snapshot.ref);
+                                    
+                                    // إضافة الصورة إلى المعرض
+                                    if (!state.cloudData.gallery) {
+                                        state.cloudData.gallery = [];
+                                    }
+                                    
+                                    if (!state.cloudData.gallery.includes(url)) {
+                                        state.cloudData.gallery.push(url);
+                                    }
+                                    
+                                    uploadedCount++;
+                                    resolve();
+                                } catch (error) {
+                                    reject(error);
+                                }
+                            }
+                        );
+                    });
+
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                    showToast(`❌ فشل رفع ${file.name}`, 'error');
+                }
+
+                // تحديث شريط التقدم
+                const progress = Math.round((i + 1) / totalFiles * 100);
+                elements.uploadProgressBar.style.width = `${progress}%`;
+                elements.uploadProgressPercent.textContent = `${progress}%`;
+            }
+
+            // إخفاء شريط التقدم بعد ثانيتين
+            setTimeout(() => {
+                elements.uploadProgressContainer.classList.add('hidden');
+                elements.uploadProgressBar.style.width = '0%';
+                elements.uploadProgressPercent.textContent = '0%';
+            }, 2000);
+
+            // تنظيف
+            state.selectedFiles = [];
+            elements.imagePreviews.innerHTML = '';
+            elements.fileInput.value = '';
+            elements.uploadButton.disabled = true;
+
+            if (uploadedCount > 0) {
+                showToast(`✅ تم رفع ${uploadedCount} صورة بنجاح`);
+                renderAllGalleries();
+                await saveAllToCloud();
+            }
+        };
 
         // ============ دوال إدارة الأجندة ============
 
@@ -1268,7 +1547,7 @@
                         <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10">
                             <img src="${url}" class="w-full h-full object-cover thumbnail" alt="Gallery ${index + 1}" 
                                  onclick="openImagePreview('${url}', ${originalIndex})"
-                                 onerror="this.src='https://via.placeholder.com/400?text=خطأ'">
+                                 onerror="this.onerror=null; this.src='https://picsum.photos/200/200?random=${index}'; this.classList.add('opacity-75');">
                             <button onclick="deleteGalleryImage('${url}')" 
                                     class="absolute top-1 right-1 bg-red-500/80 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity"
                                     aria-label="حذف">✕</button>
@@ -1282,6 +1561,14 @@
             renderAdminGalleryPreview();
             renderLandingContent();
             renderUserUI();
+            
+            // تحديث إحصائية الصور
+            if (elements.statsGallery) {
+                elements.statsGallery.textContent = state.cloudData.gallery?.length || 0;
+            }
+            if (elements.statGallery) {
+                elements.statGallery.textContent = state.cloudData.gallery?.length || 0;
+            }
         };
 
         // تحميل قائمة المستخدمين
@@ -1777,29 +2064,25 @@
             doc(db, "conference", "data"),
             (snap) => {
                 if (snap.exists()) {
-                    const data = snap.data();
-                    // دمج الصور من GitHub مع الصور المحفوظة
-                    const githubImages = getImageUrlsFromGithub();
-                    const savedImages = data.gallery || [];
-                    
-                    // دمج المصفوفتين مع إزالة التكرار
-                    const allImages = [...new Set([...githubImages, ...savedImages])];
-                    
-                    state.cloudData = {
-                        ...data,
-                        gallery: allImages
-                    };
+                    state.cloudData = snap.data();
                     
                     if (!state.cloudData.agenda) state.cloudData.agenda = [];
+                    if (!state.cloudData.gallery) state.cloudData.gallery = [];
                     if (!state.cloudData.groups) state.cloudData.groups = [];
                     if (!state.cloudData.evaluations) state.cloudData.evaluations = {};
                     if (!state.cloudData.publicVotes) state.cloudData.publicVotes = {};
                     
                     state.lastUpdated = new Date();
                 } else {
+                    // إذا لم توجد بيانات، نضيف صور تجريبية
                     state.cloudData = { 
                         agenda: [], 
-                        gallery: getImageUrlsFromGithub(), // تحميل الصور من GitHub
+                        gallery: [
+                            'https://picsum.photos/400/300?random=1',
+                            'https://picsum.photos/400/300?random=2',
+                            'https://picsum.photos/400/300?random=3',
+                            'https://picsum.photos/400/300?random=4'
+                        ], 
                         config: { 
                             logo: '', 
                             eventDate: '',
@@ -1915,7 +2198,7 @@
                             return `
                                 <div class="thumbnail aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors"
                                      onclick="openImagePreview('${url}', ${originalIndex})">
-                                    <img src="${url}" loading="lazy" class="w-full h-full object-cover" alt="Gallery" onerror="this.src='https://via.placeholder.com/400?text=صورة+غير+متوفرة'">
+                                    <img src="${url}" loading="lazy" class="w-full h-full object-cover" alt="Gallery" onerror="this.onerror=null; this.src='https://picsum.photos/200/200?random=${index}';">
                                 </div>
                             `;
                         }).join('');
@@ -1958,7 +2241,7 @@
                             return `
                                 <div class="thumbnail aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors"
                                      onclick="openImagePreview('${url}', ${originalIndex})">
-                                    <img src="${url}" loading="lazy" class="w-full h-full object-cover" alt="Gallery" onerror="this.src='https://via.placeholder.com/400?text=صورة+غير+متوفرة'">
+                                    <img src="${url}" loading="lazy" class="w-full h-full object-cover" alt="Gallery" onerror="this.onerror=null; this.src='https://picsum.photos/200/200?random=${index}';">
                                 </div>
                             `;
                         }).join('');
@@ -1996,7 +2279,7 @@
                     description: elements.landingDescriptionInput?.value || state.cloudData.config?.description || ''
                 };
 
-                // حفظ في Firebase (نحتفظ بالصور الموجودة فقط)
+                // حفظ في Firebase
                 await setDoc(doc(db, "conference", "data"), {
                     agenda: newAgenda,
                     gallery: state.cloudData.gallery || [],
@@ -2214,17 +2497,8 @@
         // التهيئة عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', () => {
             showSection('landing-section');
-            
-            // تحميل الصور من GitHub
-            state.cloudData.gallery = getImageUrlsFromGithub();
-            
-            updateUI();
+            renderAllGalleries();
             loadUsers();
-            
-            // تحديث إحصائية الصور
-            if (elements.statsGallery) {
-                elements.statsGallery.textContent = state.cloudData.gallery.length;
-            }
         });
 
         // جعل الدوال متاحة عالمياً
