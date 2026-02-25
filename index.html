@@ -86,7 +86,6 @@
             transform: scale(1.05);
         }
 
-        /* أنماط الحكام والتقييم */
         .judge-badge {
             background: linear-gradient(135deg, #f59e0b20, #f59e0b40);
             border: 1px solid #f59e0b;
@@ -108,14 +107,12 @@
             color: #f59e0b;
         }
 
-        /* أنماط الرسم البياني */
         .chart-container {
             position: relative;
             height: 300px;
             width: 100%;
         }
 
-        /* أنماط صندوق الصور */
         .modal {
             display: none;
             position: fixed;
@@ -225,7 +222,6 @@
             z-index: 1001;
         }
         
-        /* تأثير التصغير */
         .thumbnail {
             transition: all 0.3s ease;
             cursor: pointer;
@@ -272,7 +268,6 @@
             object-fit: cover;
         }
 
-        /* أنماط رفع الملفات */
         .upload-area {
             border: 2px dashed #3b82f6;
             background: rgba(59, 130, 246, 0.1);
@@ -336,7 +331,6 @@
             border: none;
         }
 
-        /* أنماط الصور التجريبية */
         .demo-image {
             border: 2px solid #3b82f6;
             border-radius: 8px;
@@ -350,15 +344,23 @@
             border-color: #f59e0b;
         }
 
-        /* زر رفع المجلد */
-        .folder-upload-btn {
-            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+        .imgbb-btn {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
             transition: all 0.3s ease;
         }
         
-        .folder-upload-btn:hover {
-            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+        .imgbb-btn:hover {
+            background: linear-gradient(135deg, #f97316, #f59e0b);
             transform: translateY(-2px);
+        }
+
+        .imgbb-preview-card {
+            transition: all 0.3s ease;
+        }
+        
+        .imgbb-preview-card:hover {
+            transform: scale(1.05);
+            border-color: #f59e0b;
         }
     </style>
 </head>
@@ -415,12 +417,10 @@
                     <br>يبدأ من هنا
                 </h1>
                 
-                <!-- النص الوصفي -->
                 <div id="landing-description-container">
                     <p id="landing-description-text" class="text-gray-400 max-w-2xl mx-auto mb-8 md:mb-12 text-base md:text-lg px-4"></p>
                 </div>
                 
-                <!-- إحصائيات سريعة -->
                 <div class="flex flex-wrap justify-center gap-6 mb-8">
                     <div class="glass-card px-6 py-4 rounded-xl text-center">
                         <div class="text-3xl font-black text-blue-500" id="stats-users">0</div>
@@ -452,7 +452,6 @@
                 </div>
             </div>
 
-            <!-- نتائج المسابقة المباشرة -->
             <div class="glass p-6 rounded-2xl">
                 <h3 class="text-2xl font-black mb-6 flex items-center gap-2">
                     <span class="text-amber-500">📊</span> النتائج المباشرة للمسابقة
@@ -462,9 +461,7 @@
                 </div>
             </div>
 
-            <!-- محتوى الصفحة الرئيسية -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 pt-12 md:pt-16 border-t border-white/5">
-                <!-- أجنحة المؤتمر -->
                 <div class="lg:col-span-7 space-y-6">
                     <h3 class="text-2xl md:text-3xl font-black flex items-center gap-2">
                         <span class="text-blue-500">#</span> أجنحة المؤتمر
@@ -472,7 +469,6 @@
                     <div id="landing-agenda-list" class="space-y-3"></div>
                 </div>
                 
-                <!-- المعرض التقني -->
                 <div class="lg:col-span-5 space-y-6">
                     <h3 class="text-2xl md:text-3xl font-black flex items-center gap-2">
                         <span class="text-blue-500">#</span> المعرض التقني
@@ -484,7 +480,6 @@
 
         <!-- نماذج التسجيل -->
         <section id="auth-forms" class="hidden animate-fade-in max-w-md mx-auto pt-4 md:pt-8">
-            <!-- تسجيل الدخول -->
             <div id="login-section" class="glass p-6 md:p-8 rounded-3xl space-y-6">
                 <div class="text-center">
                     <h3 class="text-2xl md:text-3xl font-black mb-2">تسجيل الدخول</h3>
@@ -518,7 +513,6 @@
                 </div>
             </div>
 
-            <!-- تسجيل جديد -->
             <div id="register-section" class="hidden glass p-6 md:p-8 rounded-3xl space-y-6">
                 <div class="text-center">
                     <h3 class="text-2xl md:text-3xl font-black mb-2">حساب جديد</h3>
@@ -608,7 +602,6 @@
                 <div id="user-gallery-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
             </div>
 
-            <!-- تصويت الجمهور -->
             <div class="glass p-6 rounded-2xl space-y-4">
                 <h3 class="text-xl font-black flex items-center gap-2">
                     <span class="text-amber-500">⭐</span> تصويت الجمهور (10%)
@@ -631,11 +624,9 @@
                 </div>
             </div>
 
-            <!-- معايير التقييم -->
             <div class="glass p-6 rounded-2xl space-y-6">
                 <h3 class="text-xl font-black">📝 تقييم المجموعات</h3>
                 
-                <!-- معلومات المعايير -->
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-center text-xs">
                     <div class="bg-blue-500/20 p-2 rounded-lg">الابتكار 20%</div>
                     <div class="bg-green-500/20 p-2 rounded-lg">التنفيذ 25%</div>
@@ -644,7 +635,6 @@
                     <div class="bg-red-500/20 p-2 rounded-lg">الالتزام 10%</div>
                 </div>
 
-                <!-- المجموعات للتقييم -->
                 <div id="judge-groups-list" class="space-y-4"></div>
                 
                 <button onclick="submitJudgeEvaluations()" class="w-full bg-amber-600 hover:bg-amber-500 py-4 rounded-xl font-bold text-lg transition-all">
@@ -752,7 +742,7 @@
                     </div>
                 </div>
 
-                <!-- إعدادات الشعار والموعد -->
+                <!-- إعدادات الشعار والموعد ومعرض ImgBB -->
                 <div class="space-y-6">
                     <!-- الشعار -->
                     <div class="glass p-6 rounded-2xl space-y-4">
@@ -805,56 +795,43 @@
                         </button>
                     </div>
 
-                    <!-- معرض الصور - رفع إلى Firebase Storage -->
+                    <!-- معرض الصور - ImgBB -->
                     <div class="glass p-6 rounded-2xl space-y-4">
-                        <h4 class="text-lg font-black">📷 إدارة المعرض التقني (Firebase)</h4>
+                        <h4 class="text-lg font-black">📷 معرض ImgBB</h4>
                         
-                        <!-- صور تجريبية للاختبار -->
-                        <div class="mb-4">
-                            <h5 class="text-sm font-bold text-blue-400 mb-2">🖼️ صور تجريبية للاختبار:</h5>
-                            <div class="grid grid-cols-4 gap-2">
-                                <div class="demo-image" onclick="addDemoImage('https://picsum.photos/400/300?random=1')">
-                                    <img src="https://picsum.photos/200/150?random=1" class="w-full h-full object-cover" alt="Demo 1">
-                                </div>
-                                <div class="demo-image" onclick="addDemoImage('https://picsum.photos/400/300?random=2')">
-                                    <img src="https://picsum.photos/200/150?random=2" class="w-full h-full object-cover" alt="Demo 2">
-                                </div>
-                                <div class="demo-image" onclick="addDemoImage('https://picsum.photos/400/300?random=3')">
-                                    <img src="https://picsum.photos/200/150?random=3" class="w-full h-full object-cover" alt="Demo 3">
-                                </div>
-                                <div class="demo-image" onclick="addDemoImage('https://picsum.photos/400/300?random=4')">
-                                    <img src="https://picsum.photos/200/150?random=4" class="w-full h-full object-cover" alt="Demo 4">
-                                </div>
-                            </div>
+                        <!-- معلومات الألبوم -->
+                        <div class="bg-blue-600/10 p-3 rounded-lg border border-blue-500/30">
+                            <p class="text-sm text-blue-400 mb-1">📁 رابط الألبوم:</p>
+                            <a href="https://ibb.co/album/KDjMNR" target="_blank" 
+                               class="text-xs text-gray-400 hover:text-blue-400 break-all">
+                                https://ibb.co/album/KDjMNR
+                            </a>
                         </div>
 
-                        <!-- منطقة رفع الصور -->
-                        <div id="upload-area" class="upload-area p-6 rounded-xl text-center">
-                            <input type="file" id="file-input" multiple accept="image/*" class="hidden">
-                            <div class="space-y-2">
-                                <div class="text-4xl">📸</div>
-                                <p class="text-blue-400 font-bold">اسحب وأفلت الصور هنا أو اضغط للاختيار</p>
-                                <p class="text-xs text-gray-500">يدعم JPG, PNG, GIF - سيتم رفعها إلى Firebase</p>
-                            </div>
-                        </div>
-
-                        <!-- أزرار رفع المجلد والصور التجريبية -->
-                        <div class="flex gap-2 mt-4">
-                            <button onclick="uploadImagesFromFolder()" 
-                                    class="flex-1 folder-upload-btn py-3 rounded-xl font-bold text-sm transition-colors text-white">
-                                📁 رفع صور من مجلد
+                        <!-- أزرار التحكم ImgBB -->
+                        <div class="flex gap-2 mt-2">
+                            <button onclick="loadImagesFromImgBB()" 
+                                    class="flex-1 imgbb-btn py-3 rounded-xl font-bold text-sm transition-colors text-white">
+                                🌐 تحميل من ألبوم ImgBB
                             </button>
                             
+                            <button onclick="showImgBBImages()" 
+                                    class="flex-1 bg-purple-600 hover:bg-purple-500 py-3 rounded-xl font-bold text-sm transition-colors">
+                                🖼️ عرض صور ImgBB
+                            </button>
+                        </div>
+
+                        <div class="flex gap-2">
                             <button onclick="addMultipleDemoImages()" 
                                     class="flex-1 bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-bold text-sm transition-colors">
-                                🖼️ إضافة 12 صورة تجريبية
+                                🖼️ إضافة صور تجريبية
                             </button>
                         </div>
 
                         <!-- شريط التقدم -->
                         <div id="upload-progress-container" class="hidden space-y-2">
                             <div class="flex justify-between text-sm">
-                                <span>جاري الرفع...</span>
+                                <span>جاري التحميل...</span>
                                 <span id="upload-progress-percent">0%</span>
                             </div>
                             <div class="upload-progress">
@@ -862,26 +839,16 @@
                             </div>
                         </div>
 
-                        <!-- معاينات الصور قبل الرفع -->
-                        <div id="image-previews" class="flex flex-wrap gap-2 mt-2"></div>
-
-                        <!-- زر الرفع -->
-                        <button id="upload-button" onclick="uploadSelectedImages()" 
-                                class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                            ⬆️ رفع الصور المحددة
-                        </button>
-
-                        <!-- إضافة صورة عبر رابط -->
-                        <div class="flex gap-2 mt-4">
-                            <input type="url" id="gallery-url-input" placeholder="رابط صورة من الإنترنت" 
-                                   class="flex-1 bg-slate-900 border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 transition text-sm">
-                            <button onclick="addSingleImageFromUrl()" 
-                                    class="bg-blue-600 hover:bg-blue-500 px-4 rounded-xl text-sm font-bold transition-colors whitespace-nowrap">
-                                إضافة
-                            </button>
+                        <!-- معلومات الصور -->
+                        <div id="folder-info" class="text-sm text-gray-400 bg-white/5 p-3 rounded-lg">
+                            <span>📸 عدد الصور: </span>
+                            <span id="images-count">0</span>
                         </div>
+
+                        <!-- منطقة عرض صور ImgBB -->
+                        <div id="imgbb-preview" class="hidden grid grid-cols-2 gap-2 mt-4"></div>
                         
-                        <!-- معاينة الصور مع إمكانية الحذف -->
+                        <!-- معاينة الصور الحالية -->
                         <div id="admin-gallery-preview" class="grid grid-cols-3 gap-2 mt-4"></div>
                     </div>
                 </div>
@@ -914,7 +881,7 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // بيانات المسؤولين (5 مسؤولين)
+        // بيانات المسؤولين
         let adminAccounts = JSON.parse(localStorage.getItem('adminAccounts')) || [
             { email: "admin1@civil.com", password: "admin123", name: "المدير الأول" },
             { email: "admin2@civil.com", password: "admin123", name: "المدير الثاني" },
@@ -928,13 +895,7 @@
             currentUser: null,
             cloudData: { 
                 agenda: [], 
-                gallery: [
-                    // صور تجريبية للبدء
-                    'https://picsum.photos/400/300?random=1',
-                    'https://picsum.photos/400/300?random=2',
-                    'https://picsum.photos/400/300?random=3',
-                    'https://picsum.photos/400/300?random=4'
-                ], 
+                gallery: [], 
                 config: { 
                     logo: '', 
                     eventDate: '',
@@ -950,7 +911,8 @@
             isSyncing: false,
             currentImageIndex: 0,
             resultsChart: null,
-            selectedFiles: []
+            selectedFiles: [],
+            imgbbImages: []
         };
 
         // عناصر DOM
@@ -973,7 +935,6 @@
             logoProgressBar: document.getElementById('logo-progress-bar'),
             confDate: document.getElementById('conf-date'),
             statTotal: document.getElementById('stat-total'),
-            statGallery: document.getElementById('stat-gallery'),
             adminAgendaInputs: document.getElementById('admin-agenda-inputs'),
             adminGalleryPreview: document.getElementById('admin-gallery-preview'),
             statsUsers: document.getElementById('stats-users'),
@@ -995,30 +956,164 @@
             imageCounter: document.getElementById('imageCounter'),
             agendaCount: document.getElementById('agenda-count'),
             agendaLastUpdated: document.getElementById('agenda-last-updated'),
-            uploadArea: document.getElementById('upload-area'),
-            fileInput: document.getElementById('file-input'),
-            imagePreviews: document.getElementById('image-previews'),
-            uploadButton: document.getElementById('upload-button'),
             uploadProgressContainer: document.getElementById('upload-progress-container'),
             uploadProgressBar: document.getElementById('upload-progress-bar'),
-            uploadProgressPercent: document.getElementById('upload-progress-percent')
+            uploadProgressPercent: document.getElementById('upload-progress-percent'),
+            imagesCount: document.getElementById('images-count'),
+            folderInfo: document.getElementById('folder-info'),
+            imgbbPreview: document.getElementById('imgbb-preview')
         };
 
-        // دالة لإضافة صورة تجريبية
-        window.addDemoImage = (url) => {
+        // ============ دوال ImgBB ============
+
+        // معرفات الصور من الألبوم
+        const IMGBB_IMAGES = [
+            '8ee3850dc5ac65749712c3a212dc6218'
+        ];
+
+        // دالة لتحميل الصور من ألبوم ImgBB
+        window.loadImagesFromImgBB = async () => {
+            showToast('🔄 جاري تحميل الصور من ImgBB...', 'info');
+            
+            elements.uploadProgressContainer.classList.remove('hidden');
+            elements.uploadProgressBar.style.width = '0%';
+            elements.uploadProgressPercent.textContent = '0%';
+            
+            try {
+                const imageUrls = [];
+                const totalImages = IMGBB_IMAGES.length;
+
+                for (let i = 0; i < IMGBB_IMAGES.length; i++) {
+                    const imageId = IMGBB_IMAGES[i];
+                    
+                    // تجربة تنسيقات مختلفة
+                    const formats = [
+                        `https://i.ibb.co/${imageId.substring(0, 2)}/${imageId}.jpg`,
+                        `https://i.ibb.co/${imageId.substring(0, 2)}/${imageId}.png`,
+                        `https://i.ibb.co.com/${imageId.substring(0, 2)}/${imageId}.jpg`,
+                        `https://i.ibb.co/${imageId}.jpg`,
+                        `https://i.ibb.co.com/${imageId}.jpg`
+                    ];
+
+                    for (const format of formats) {
+                        try {
+                            const response = await fetch(format, { method: 'HEAD' });
+                            if (response.ok) {
+                                imageUrls.push(format);
+                                console.log(`✅ تم العثور على الصورة: ${format}`);
+                                break;
+                            }
+                        } catch {
+                            // تجاهل الأخطاء
+                        }
+                    }
+
+                    const progress = Math.round((i + 1) / totalImages * 100);
+                    elements.uploadProgressBar.style.width = `${progress}%`;
+                    elements.uploadProgressPercent.textContent = `${progress}%`;
+                }
+
+                setTimeout(() => {
+                    elements.uploadProgressContainer.classList.add('hidden');
+                }, 1000);
+
+                if (imageUrls.length > 0) {
+                    state.imgbbImages = imageUrls;
+                    
+                    if (!state.cloudData.gallery) {
+                        state.cloudData.gallery = [];
+                    }
+
+                    imageUrls.forEach(url => {
+                        if (!state.cloudData.gallery.includes(url)) {
+                            state.cloudData.gallery.push(url);
+                        }
+                    });
+
+                    renderAllGalleries();
+
+                    if (elements.imagesCount) {
+                        elements.imagesCount.textContent = `${state.cloudData.gallery.length} صورة (من ImgBB)`;
+                    }
+
+                    showToast(`✅ تم تحميل ${imageUrls.length} صورة من ImgBB`, 'success');
+                    await saveAllToCloud();
+                } else {
+                    showToast('❌ لم يتم العثور على صور في الألبوم', 'error');
+                }
+
+            } catch (error) {
+                console.error('Error loading from ImgBB:', error);
+                showToast('❌ فشل تحميل الصور من ImgBB', 'error');
+                elements.uploadProgressContainer.classList.add('hidden');
+            }
+        };
+
+        // دالة لعرض صور ImgBB
+        window.showImgBBImages = () => {
+            if (!elements.imgbbPreview) return;
+
+            elements.imgbbPreview.classList.remove('hidden');
+
+            elements.imgbbPreview.innerHTML = IMGBB_IMAGES.map((imageId, index) => {
+                const imageUrl = `https://i.ibb.co/${imageId.substring(0, 2)}/${imageId}.jpg`;
+                return `
+                    <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10 cursor-pointer imgbb-preview-card"
+                         onclick="addImgBBImageToGallery('${imageId}')">
+                        <img src="${imageUrl}" 
+                             class="w-full h-full object-cover"
+                             alt="ImgBB Image ${index + 1}"
+                             onerror="this.src='https://via.placeholder.com/200?text=Image+Not+Found'; this.classList.add('opacity-50');">
+                        <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 text-center">
+                            <span class="text-white text-xs mb-1">➕ إضافة للمعرض</span>
+                            <span class="text-gray-300 text-[10px]">${imageId.substring(0, 10)}...</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        // دالة لإضافة صورة ImgBB للمعرض
+        window.addImgBBImageToGallery = (imageId) => {
+            const imageUrl = `https://i.ibb.co/${imageId.substring(0, 2)}/${imageId}.jpg`;
+
             if (!state.cloudData.gallery) {
                 state.cloudData.gallery = [];
             }
-            state.cloudData.gallery.push(url);
-            renderAllGalleries();
-            showToast('✅ تم إضافة صورة تجريبية');
+
+            if (!state.cloudData.gallery.includes(imageUrl)) {
+                state.cloudData.gallery.push(imageUrl);
+                renderAllGalleries();
+
+                if (elements.imagesCount) {
+                    elements.imagesCount.textContent = `${state.cloudData.gallery.length} صورة`;
+                }
+
+                showToast('✅ تم إضافة الصورة للمعرض');
+                saveAllToCloud();
+            } else {
+                showToast('⚠️ الصورة موجودة مسبقاً', 'info');
+            }
         };
 
-        // دالة لإضافة صور تجريبية متعددة
+        // دالة للحصول على رابط صورة ImgBB بمقاس محدد
+        window.getImgBBImageUrl = (imageId, size = 'original') => {
+            const sizes = {
+                'thumbnail': 'thumb',
+                'small': '350x350',
+                'medium': 'medium',
+                'large': 'large',
+                'original': ''
+            };
+            
+            const sizeSuffix = sizes[size] ? `-${sizes[size]}` : '';
+            return `https://i.ibb.co/${imageId.substring(0, 2)}/${imageId}${sizeSuffix}.jpg`;
+        };
+
+        // دالة لإضافة صور تجريبية
         window.addMultipleDemoImages = () => {
             const demoImages = [];
             
-            // إضافة 12 صورة تجريبية مختلفة
             for (let i = 1; i <= 12; i++) {
                 demoImages.push(`https://picsum.photos/400/300?random=${i}`);
             }
@@ -1027,174 +1122,15 @@
                 state.cloudData.gallery = [];
             }
             
-            demoImages.forEach(url => {
-                if (!state.cloudData.gallery.includes(url)) {
-                    state.cloudData.gallery.push(url);
-                }
-            });
-            
+            state.cloudData.gallery = [...state.cloudData.gallery, ...demoImages];
             renderAllGalleries();
+            
+            if (elements.imagesCount) {
+                elements.imagesCount.textContent = `${state.cloudData.gallery.length} صورة`;
+            }
+            
             showToast(`✅ تم إضافة ${demoImages.length} صورة تجريبية`);
             saveAllToCloud();
-        };
-
-        // دالة لرفع جميع الصور من مجلد
-        window.uploadImagesFromFolder = async () => {
-            try {
-                showToast('جاري تحميل الصور من المجلد...', 'info');
-                
-                // إنشاء عنصر input لاختيار مجلد
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.webkitdirectory = true; // خاصية اختيار مجلد كامل
-                input.multiple = true;
-                input.accept = 'image/*';
-                
-                input.onchange = async (e) => {
-                    const files = Array.from(e.target.files).filter(file => 
-                        file.type.startsWith('image/')
-                    );
-                    
-                    if (files.length === 0) {
-                        showToast('لم يتم العثور على صور في المجلد', 'error');
-                        return;
-                    }
-                    
-                    showToast(`تم العثور على ${files.length} صورة، جاري الرفع...`, 'info');
-                    
-                    // إظهار شريط التقدم
-                    elements.uploadProgressContainer.classList.remove('hidden');
-                    elements.uploadButton.disabled = true;
-                    
-                    let uploadedCount = 0;
-                    const totalFiles = files.length;
-                    
-                    for (let i = 0; i < files.length; i++) {
-                        const file = files[i];
-                        
-                        try {
-                            // إنشاء اسم فريد للملف
-                            const timestamp = Date.now();
-                            const randomString = Math.random().toString(36).substring(2, 8);
-                            const extension = file.name.split('.').pop();
-                            const fileName = `gallery/IMG_${timestamp}_${randomString}.${extension}`;
-                            
-                            // رفع الملف إلى Firebase Storage
-                            const storageRef = ref(storage, fileName);
-                            const uploadTask = uploadBytesResumable(storageRef, file);
-
-                            await new Promise((resolve, reject) => {
-                                uploadTask.on(
-                                    'state_changed',
-                                    (snapshot) => {
-                                        // تحديث التقدم
-                                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                                        const overallProgress = ((i + (progress / 100)) / totalFiles) * 100;
-                                        elements.uploadProgressBar.style.width = `${overallProgress}%`;
-                                        elements.uploadProgressPercent.textContent = `${Math.round(overallProgress)}%`;
-                                    },
-                                    (error) => {
-                                        console.error('Upload error:', error);
-                                        reject(error);
-                                    },
-                                    async () => {
-                                        try {
-                                            // الحصول على رابط الصورة
-                                            const url = await getDownloadURL(uploadTask.snapshot.ref);
-                                            
-                                            // إضافة الصورة إلى المعرض
-                                            if (!state.cloudData.gallery) {
-                                                state.cloudData.gallery = [];
-                                            }
-                                            
-                                            if (!state.cloudData.gallery.includes(url)) {
-                                                state.cloudData.gallery.push(url);
-                                            }
-                                            
-                                            uploadedCount++;
-                                            resolve();
-                                        } catch (error) {
-                                            reject(error);
-                                        }
-                                    }
-                                );
-                            });
-
-                        } catch (error) {
-                            console.error('Error uploading file:', error);
-                        }
-
-                        // تحديث شريط التقدم
-                        const progress = Math.round((i + 1) / totalFiles * 100);
-                        elements.uploadProgressBar.style.width = `${progress}%`;
-                        elements.uploadProgressPercent.textContent = `${progress}%`;
-                    }
-                    
-                    // إخفاء شريط التقدم بعد ثانيتين
-                    setTimeout(() => {
-                        elements.uploadProgressContainer.classList.add('hidden');
-                        elements.uploadProgressBar.style.width = '0%';
-                        elements.uploadProgressPercent.textContent = '0%';
-                    }, 2000);
-                    
-                    if (uploadedCount > 0) {
-                        showToast(`✅ تم رفع ${uploadedCount} صورة بنجاح من المجلد`);
-                        renderAllGalleries();
-                        await saveAllToCloud();
-                    }
-                    
-                    elements.uploadButton.disabled = false;
-                };
-                
-                input.click();
-                
-            } catch (error) {
-                console.error('Error selecting folder:', error);
-                showToast('حدث خطأ في اختيار المجلد', 'error');
-            }
-        };
-
-        // دالة بديلة لرفع الصور من مسار محدد (للاستخدام مع خادم محلي)
-        window.uploadImagesFromLocalPath = async (path = 'images/') => {
-            showToast('هذه الخاصية تتطلب خادم ويب محلي', 'info');
-            
-            // محاولة جلب الصور من المسار المحلي
-            try {
-                // هذه الطريقة تعمل فقط إذا كان لديك خادم ويب محلي
-                // وهي للتوضيح فقط - قد لا تعمل في المتصفح مباشرة
-                
-                const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-                const promises = imageExtensions.map(async (ext) => {
-                    try {
-                        const response = await fetch(`${path}test.${ext}`);
-                        if (response.ok) {
-                            return `${path}test.${ext}`;
-                        }
-                        return null;
-                    } catch {
-                        return null;
-                    }
-                });
-                
-                const results = await Promise.all(promises);
-                const images = results.filter(url => url !== null);
-                
-                if (images.length > 0) {
-                    images.forEach(url => {
-                        if (!state.cloudData.gallery) state.cloudData.gallery = [];
-                        if (!state.cloudData.gallery.includes(url)) {
-                            state.cloudData.gallery.push(url);
-                        }
-                    });
-                    renderAllGalleries();
-                    showToast(`تم إضافة ${images.length} صورة من المسار المحلي`);
-                } else {
-                    showToast('لم يتم العثور على صور في المسار المحدد', 'error');
-                }
-            } catch (error) {
-                console.error('Error loading local images:', error);
-                showToast('حدث خطأ في تحميل الصور المحلية', 'error');
-            }
         };
 
         // عرض الإشعارات
@@ -1229,9 +1165,7 @@
             }
         };
 
-        // ============ دوال عرض الصور ============
-
-        // فتح معاينة الصورة
+        // دوال عرض الصور
         window.openImagePreview = (imageUrl, index) => {
             const gallery = state.cloudData.gallery || [];
             state.currentImageIndex = index;
@@ -1243,19 +1177,16 @@
             }
         };
 
-        // إغلاق المعاينة
         window.closeModal = () => {
             elements.imageModal.classList.remove('show');
         };
 
-        // إغلاق عند النقر خارج الصورة
         window.closeModalOnClickOutside = (event) => {
             if (event.target === elements.imageModal) {
                 closeModal();
             }
         };
 
-        // تغيير الصورة
         window.changeImage = (direction) => {
             const gallery = state.cloudData.gallery || [];
             if (gallery.length === 0) return;
@@ -1269,7 +1200,6 @@
             }
         };
 
-        // تحديث عداد الصور
         const updateImageCounter = () => {
             const gallery = state.cloudData.gallery || [];
             if (elements.imageCounter) {
@@ -1277,7 +1207,6 @@
             }
         };
 
-        // معالجة أزرار لوحة المفاتيح
         document.addEventListener('keydown', (e) => {
             if (elements.imageModal?.classList.contains('show')) {
                 if (e.key === 'Escape') {
@@ -1290,190 +1219,7 @@
             }
         });
 
-        // ============ نظام رفع الصور إلى Firebase Storage ============
-
-        // تهيئة منطقة السحب والإفلات
-        if (elements.uploadArea && elements.fileInput) {
-            elements.uploadArea.addEventListener('click', () => {
-                elements.fileInput.click();
-            });
-
-            elements.uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                elements.uploadArea.classList.add('dragover');
-            });
-
-            elements.uploadArea.addEventListener('dragleave', () => {
-                elements.uploadArea.classList.remove('dragover');
-            });
-
-            elements.uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                elements.uploadArea.classList.remove('dragover');
-                
-                const files = Array.from(e.dataTransfer.files).filter(file => 
-                    file.type.startsWith('image/')
-                );
-                
-                handleFilesSelected(files);
-            });
-
-            elements.fileInput.addEventListener('change', (e) => {
-                const files = Array.from(e.target.files);
-                handleFilesSelected(files);
-            });
-        }
-
-        // معالجة الملفات المختارة
-        const handleFilesSelected = (files) => {
-            if (files.length === 0) return;
-            
-            state.selectedFiles = files;
-            
-            // عرض معاينات الصور
-            elements.imagePreviews.innerHTML = '';
-            
-            files.forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const preview = document.createElement('div');
-                    preview.className = 'image-preview';
-                    preview.innerHTML = `
-                        <img src="${e.target.result}" alt="Preview">
-                        <button class="remove-preview" onclick="removeFile(${index})">✕</button>
-                    `;
-                    elements.imagePreviews.appendChild(preview);
-                };
-                reader.readAsDataURL(file);
-            });
-            
-            // تفعيل زر الرفع
-            elements.uploadButton.disabled = false;
-        };
-
-        // إزالة ملف من القائمة
-        window.removeFile = (index) => {
-            state.selectedFiles = state.selectedFiles.filter((_, i) => i !== index);
-            
-            // إعادة عرض المعاينات
-            elements.imagePreviews.innerHTML = '';
-            state.selectedFiles.forEach((file, i) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const preview = document.createElement('div');
-                    preview.className = 'image-preview';
-                    preview.innerHTML = `
-                        <img src="${e.target.result}" alt="Preview">
-                        <button class="remove-preview" onclick="removeFile(${i})">✕</button>
-                    `;
-                    elements.imagePreviews.appendChild(preview);
-                };
-                reader.readAsDataURL(file);
-            });
-            
-            if (state.selectedFiles.length === 0) {
-                elements.uploadButton.disabled = true;
-            }
-        };
-
-        // رفع الصور المحددة إلى Firebase Storage
-        window.uploadSelectedImages = async () => {
-            if (state.selectedFiles.length === 0) {
-                showToast('❌ الرجاء اختيار صور للرفع', 'error');
-                return;
-            }
-
-            // إظهار شريط التقدم
-            elements.uploadProgressContainer.classList.remove('hidden');
-            elements.uploadButton.disabled = true;
-
-            let uploadedCount = 0;
-            const totalFiles = state.selectedFiles.length;
-
-            for (let i = 0; i < state.selectedFiles.length; i++) {
-                const file = state.selectedFiles[i];
-                
-                try {
-                    // إنشاء اسم فريد للملف
-                    const timestamp = Date.now();
-                    const randomString = Math.random().toString(36).substring(2, 8);
-                    const extension = file.name.split('.').pop();
-                    const fileName = `gallery/IMG_${timestamp}_${randomString}.${extension}`;
-                    
-                    // رفع الملف إلى Firebase Storage
-                    const storageRef = ref(storage, fileName);
-                    const uploadTask = uploadBytesResumable(storageRef, file);
-
-                    await new Promise((resolve, reject) => {
-                        uploadTask.on(
-                            'state_changed',
-                            (snapshot) => {
-                                // تحديث التقدم
-                                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                                const overallProgress = ((i + (progress / 100)) / totalFiles) * 100;
-                                elements.uploadProgressBar.style.width = `${overallProgress}%`;
-                                elements.uploadProgressPercent.textContent = `${Math.round(overallProgress)}%`;
-                            },
-                            (error) => {
-                                console.error('Upload error:', error);
-                                reject(error);
-                            },
-                            async () => {
-                                try {
-                                    // الحصول على رابط الصورة
-                                    const url = await getDownloadURL(uploadTask.snapshot.ref);
-                                    
-                                    // إضافة الصورة إلى المعرض
-                                    if (!state.cloudData.gallery) {
-                                        state.cloudData.gallery = [];
-                                    }
-                                    
-                                    if (!state.cloudData.gallery.includes(url)) {
-                                        state.cloudData.gallery.push(url);
-                                    }
-                                    
-                                    uploadedCount++;
-                                    resolve();
-                                } catch (error) {
-                                    reject(error);
-                                }
-                            }
-                        );
-                    });
-
-                } catch (error) {
-                    console.error('Error uploading file:', error);
-                    showToast(`❌ فشل رفع ${file.name}`, 'error');
-                }
-
-                // تحديث شريط التقدم
-                const progress = Math.round((i + 1) / totalFiles * 100);
-                elements.uploadProgressBar.style.width = `${progress}%`;
-                elements.uploadProgressPercent.textContent = `${progress}%`;
-            }
-
-            // إخفاء شريط التقدم بعد ثانيتين
-            setTimeout(() => {
-                elements.uploadProgressContainer.classList.add('hidden');
-                elements.uploadProgressBar.style.width = '0%';
-                elements.uploadProgressPercent.textContent = '0%';
-            }, 2000);
-
-            // تنظيف
-            state.selectedFiles = [];
-            elements.imagePreviews.innerHTML = '';
-            elements.fileInput.value = '';
-            elements.uploadButton.disabled = true;
-
-            if (uploadedCount > 0) {
-                showToast(`✅ تم رفع ${uploadedCount} صورة بنجاح`);
-                renderAllGalleries();
-                await saveAllToCloud();
-            }
-        };
-
-        // ============ دوال إدارة الأجندة ============
-
+        // دوال إدارة الأجندة
         window.quickAddAgendaItem = () => {
             const timeInput = document.getElementById('quick-add-time');
             const titleInput = document.getElementById('quick-add-title');
@@ -1572,7 +1318,6 @@
             }
         };
 
-        // تحديث عرض الشعار
         const updateLogoDisplay = (url) => {
             if (url) {
                 elements.siteLogoImg.src = url;
@@ -1594,7 +1339,6 @@
             }
         };
 
-        // حفظ النص الوصفي
         window.saveDescription = () => {
             const newDescription = elements.landingDescriptionInput.value;
             state.cloudData.config.description = newDescription;
@@ -1602,7 +1346,6 @@
             showToast('تم حفظ النص الوصفي');
         };
 
-        // تطبيق رابط الشعار
         window.setLogoFromUrl = () => {
             const url = document.getElementById('logo-url-input').value;
             if (url) {
@@ -1612,23 +1355,6 @@
             }
         };
 
-        // إضافة صورة واحدة من رابط
-        window.addSingleImageFromUrl = () => {
-            const url = document.getElementById('gallery-url-input').value;
-            if (url) {
-                if (!state.cloudData.gallery) state.cloudData.gallery = [];
-                if (!state.cloudData.gallery.includes(url)) {
-                    state.cloudData.gallery.push(url);
-                    renderAdminGalleryPreview();
-                    document.getElementById('gallery-url-input').value = '';
-                    showToast('تم إضافة الصورة');
-                } else {
-                    showToast('الصورة موجودة مسبقاً', 'info');
-                }
-            }
-        };
-
-        // رفع الشعار من الجهاز
         document.getElementById('logo-upload-input').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -1676,21 +1402,24 @@
             );
         });
 
-        // حذف صورة من المعرض
         window.deleteGalleryImage = (urlToDelete) => {
             if (state.cloudData.gallery) {
                 state.cloudData.gallery = state.cloudData.gallery.filter(url => url !== urlToDelete);
                 renderAdminGalleryPreview();
+                
+                if (elements.imagesCount) {
+                    elements.imagesCount.textContent = `${state.cloudData.gallery.length} صورة`;
+                }
+                
                 showToast('تم حذف الصورة');
+                saveAllToCloud();
             }
         };
 
-        // إضافة صف جديد للأجندة
         window.addNewAgendaRow = () => {
             document.getElementById('quick-add-time').focus();
         };
 
-        // عرض حقول إدارة الأجندة
         const renderAdminAgendaInputs = () => {
             if (!elements.adminAgendaInputs) return;
             
@@ -1740,7 +1469,6 @@
             updateAgendaStats();
         };
 
-        // عرض معاينة المعرض في لوحة المسؤول
         const renderAdminGalleryPreview = () => {
             if (!elements.adminGalleryPreview || !state.cloudData.gallery) return;
             
@@ -1749,12 +1477,10 @@
                 return;
             }
             
-            // إزالة التكرار للعرض
             const uniqueGallery = [...new Set(state.cloudData.gallery)];
             
             elements.adminGalleryPreview.innerHTML = uniqueGallery
                 .map((url, index) => {
-                    // البحث عن المؤشر الأصلي في المصفوفة الأصلية
                     const originalIndex = state.cloudData.gallery.findIndex(img => img === url);
                     return `
                         <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10">
@@ -1769,22 +1495,16 @@
                 }).join('');
         };
 
-        // عرض جميع المعارض
         const renderAllGalleries = () => {
             renderAdminGalleryPreview();
             renderLandingContent();
             renderUserUI();
             
-            // تحديث إحصائية الصور
             if (elements.statsGallery) {
                 elements.statsGallery.textContent = state.cloudData.gallery?.length || 0;
             }
-            if (elements.statGallery) {
-                elements.statGallery.textContent = state.cloudData.gallery?.length || 0;
-            }
         };
 
-        // تحميل قائمة المستخدمين
         const loadUsers = async () => {
             try {
                 const querySnapshot = await getDocs(collection(db, "users"));
@@ -1813,7 +1533,6 @@
             }
         };
 
-        // تحديث قائمة المستخدمين
         const renderUsersList = () => {
             if (!elements.usersList) return;
 
@@ -1848,7 +1567,6 @@
             `).join('');
         };
 
-        // عرض قائمة الحكام
         const renderJudgesList = () => {
             if (!elements.judgesList) return;
             
@@ -1869,7 +1587,6 @@
             }
         };
 
-        // تبديل صلاحية الحكم
         window.toggleJudge = async (userId) => {
             try {
                 const userRef = doc(db, "users", userId);
@@ -1887,7 +1604,6 @@
             }
         };
 
-        // حذف مستخدم
         window.deleteUser = async (userId) => {
             if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
                 try {
@@ -1901,7 +1617,6 @@
             }
         };
 
-        // إدارة المجموعات
         window.addNewGroup = () => {
             const nameInput = document.getElementById('new-group-name');
             const memberInput = document.getElementById('new-group-member');
@@ -1963,7 +1678,6 @@
             }
         };
 
-        // عرض واجهة تقييم الحكام
         const renderJudgeEvaluation = () => {
             if (!elements.judgeGroupsList) return;
             
@@ -2034,7 +1748,6 @@
             }).join('');
         };
 
-        // تحديث تقييم الحكم
         window.updateJudgeEval = (groupId, criteria, value) => {
             const numValue = Math.min(parseInt(value) || 0, getMaxForCriteria(criteria));
             
@@ -2073,14 +1786,12 @@
             return maxValues[criteria] || 0;
         };
 
-        // تأكيد تقييمات الحكام
         window.submitJudgeEvaluations = async () => {
             showToast('جاري حفظ التقييمات...');
             await saveAllToCloud();
             showToast('تم حفظ التقييمات بنجاح');
         };
 
-        // عرض تصويت الجمهور
         const renderPublicVoting = () => {
             if (!elements.publicVotingGroups) return;
             
@@ -2117,7 +1828,6 @@
             }).join('');
         };
 
-        // التصويت لمجموعة
         window.voteForGroup = (groupId, stars) => {
             const userId = state.currentUser?.id;
             if (!userId) return;
@@ -2146,7 +1856,6 @@
             return avg.toFixed(1);
         };
 
-        // تحديث الرسم البياني للنتائج
         const updateResultsChart = () => {
             const ctx = document.getElementById('results-chart')?.getContext('2d');
             if (!ctx) return;
@@ -2175,7 +1884,7 @@
                     publicAvg = voteValues.reduce((a, b) => a + b, 0) / voteValues.length;
                 }
                 
-                const finalScore = (judgeAvg * 0.9) + (publicAvg * 1); // 90% حكام + 10% جمهور
+                const finalScore = (judgeAvg * 0.9) + (publicAvg * 1);
                 
                 return Math.min(finalScore, 100).toFixed(1);
             });
@@ -2220,7 +1929,6 @@
             });
         };
 
-        // تصدير إلى Excel
         window.exportToExcel = () => {
             const data = state.users.map(user => ({
                 'الاسم': user.name || '',
@@ -2239,7 +1947,6 @@
             showToast('تم تصدير الملف بنجاح');
         };
 
-        // تحديث ملف المسؤول
         window.updateAdminProfile = () => {
             if (!state.currentUser || state.currentUser.type !== 'admin') return;
             
@@ -2272,7 +1979,7 @@
             }
         };
 
-        // الاستماع للتحديثات المباشرة
+        // الاستماع للتحديثات المباشرة من Firebase
         const unsubscribe = onSnapshot(
             doc(db, "conference", "data"),
             (snap) => {
@@ -2286,25 +1993,6 @@
                     if (!state.cloudData.publicVotes) state.cloudData.publicVotes = {};
                     
                     state.lastUpdated = new Date();
-                } else {
-                    // إذا لم توجد بيانات، نضيف صور تجريبية
-                    state.cloudData = { 
-                        agenda: [], 
-                        gallery: [
-                            'https://picsum.photos/400/300?random=1',
-                            'https://picsum.photos/400/300?random=2',
-                            'https://picsum.photos/400/300?random=3',
-                            'https://picsum.photos/400/300?random=4'
-                        ], 
-                        config: { 
-                            logo: '', 
-                            eventDate: '',
-                            description: 'انضم إلى أكبر تجمع تقني للمهندسين في عام 2025. ورش عمل، مسابقات، ومحاضرات يقدمها نخبة من الخبراء العالميين.'
-                        },
-                        groups: [],
-                        evaluations: {},
-                        publicVotes: {}
-                    };
                 }
                 updateUI();
                 loadUsers();
@@ -2317,11 +2005,9 @@
             }
         );
 
-        // تحديث واجهة المستخدم
         const updateUI = () => {
             updateLogoDisplay(state.cloudData.config?.logo);
             
-            // تحديث النص الوصفي
             if (elements.landingDescriptionText && state.cloudData.config?.description) {
                 elements.landingDescriptionText.textContent = state.cloudData.config.description;
             }
@@ -2331,15 +2017,11 @@
             
             renderLandingContent();
             
-            // تحديث الإحصائيات
             if (elements.statsAgenda) {
                 elements.statsAgenda.textContent = state.cloudData.agenda?.length || 0;
             }
             if (elements.statsGallery) {
                 elements.statsGallery.textContent = state.cloudData.gallery?.length || 0;
-            }
-            if (elements.statGallery) {
-                elements.statGallery.textContent = state.cloudData.gallery?.length || 0;
             }
             if (elements.statsGroups) {
                 elements.statsGroups.textContent = state.cloudData.groups?.length || 0;
@@ -2371,9 +2053,7 @@
             updateResultsChart();
         };
 
-        // عرض محتوى الصفحة الرئيسية
         const renderLandingContent = () => {
-            // عرض أجنحة المؤتمر
             const agendaList = document.getElementById('landing-agenda-list');
             if (agendaList) {
                 const agenda = state.cloudData.agenda || [];
@@ -2394,19 +2074,16 @@
                 }
             }
 
-            // عرض المعرض التقني
             const galleryList = document.getElementById('landing-gallery-list');
             if (galleryList && state.cloudData.gallery) {
-                // إزالة التكرار من المصفوفة
                 const uniqueGallery = [...new Set(state.cloudData.gallery)];
                 
                 if (uniqueGallery.length === 0) {
                     galleryList.innerHTML = '';
                 } else {
                     galleryList.innerHTML = uniqueGallery
-                        .slice(0, 4) // عرض أول 4 صور فقط
+                        .slice(0, 4)
                         .map((url, index) => {
-                            // البحث عن المؤشر الأصلي في المصفوفة الأصلية
                             const originalIndex = state.cloudData.gallery.findIndex(img => img === url);
                             return `
                                 <div class="thumbnail aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors"
@@ -2419,7 +2096,6 @@
             }
         };
 
-        // عرض محتوى لوحة المستخدم
         const renderUserUI = () => {
             const agendaList = document.getElementById('user-agenda-list');
             if (agendaList) {
@@ -2462,7 +2138,6 @@
             }
         };
 
-        // حفظ جميع التغييرات
         window.saveAllToCloud = async () => {
             if (state.isSyncing) {
                 showToast('جاري المزامنة بالفعل...', 'error');
@@ -2473,7 +2148,6 @@
             showToast('جاري حفظ التغييرات...', 'info');
 
             try {
-                // جمع بيانات الأجندة
                 const times = document.querySelectorAll('.agenda-time-input');
                 const titles = document.querySelectorAll('.agenda-title-input');
                 
@@ -2485,14 +2159,12 @@
                     .filter(a => a.time && a.title.trim())
                     .sort((a, b) => a.time.localeCompare(b.time));
 
-                // إعدادات المؤتمر
                 const config = {
                     logo: state.cloudData.config?.logo || '',
                     eventDate: elements.confDate?.value || '',
                     description: elements.landingDescriptionInput?.value || state.cloudData.config?.description || ''
                 };
 
-                // حفظ في Firebase
                 await setDoc(doc(db, "conference", "data"), {
                     agenda: newAgenda,
                     gallery: state.cloudData.gallery || [],
@@ -2519,7 +2191,6 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-pass').value;
 
-            // التحقق من بيانات المسؤولين
             const admin = adminAccounts.find(a => a.email === email && a.password === password);
             
             if (admin) {
@@ -2545,7 +2216,6 @@
                 return;
             }
 
-            // تسجيل دخول المستخدمين العاديين
             try {
                 const q = query(
                     collection(db, "users"), 
@@ -2614,7 +2284,6 @@
             };
 
             try {
-                // التحقق من عدم وجود المستخدم
                 const q = query(collection(db, "users"), where("email", "==", userData.email));
                 const snap = await getDocs(q);
                 
@@ -2623,7 +2292,6 @@
                     return;
                 }
 
-                // إضافة المستخدم الجديد
                 await addDoc(collection(db, "users"), userData);
                 
                 showToast('تم إنشاء الحساب بنجاح', 'success');
@@ -2710,7 +2378,6 @@
         // التهيئة عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', () => {
             showSection('landing-section');
-            renderAllGalleries();
             loadUsers();
         });
 
