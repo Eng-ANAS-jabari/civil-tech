@@ -349,6 +349,17 @@
             transform: scale(1.05);
             border-color: #f59e0b;
         }
+
+        /* زر رفع المجلد */
+        .folder-upload-btn {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            transition: all 0.3s ease;
+        }
+        
+        .folder-upload-btn:hover {
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body class="hero-pattern min-h-screen flex flex-col">
@@ -535,6 +546,12 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-400 mb-1">كلمة المرور</label>
                         <input type="password" id="reg-pass" required 
+                               class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-left">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-1">تأكيد كلمة المرور</label>
+                        <input type="password" id="reg-confirm-pass" required 
                                class="w-full p-4 bg-white/5 rounded-xl border border-white/10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-left">
                     </div>
                     
@@ -821,6 +838,19 @@
                             </div>
                         </div>
 
+                        <!-- أزرار رفع المجلد والصور التجريبية -->
+                        <div class="flex gap-2 mt-4">
+                            <button onclick="uploadImagesFromFolder()" 
+                                    class="flex-1 folder-upload-btn py-3 rounded-xl font-bold text-sm transition-colors text-white">
+                                📁 رفع صور من مجلد
+                            </button>
+                            
+                            <button onclick="addMultipleDemoImages()" 
+                                    class="flex-1 bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-bold text-sm transition-colors">
+                                🖼️ إضافة 12 صورة تجريبية
+                            </button>
+                        </div>
+
                         <!-- شريط التقدم -->
                         <div id="upload-progress-container" class="hidden space-y-2">
                             <div class="flex justify-between text-sm">
@@ -982,6 +1012,189 @@
             state.cloudData.gallery.push(url);
             renderAllGalleries();
             showToast('✅ تم إضافة صورة تجريبية');
+        };
+
+        // دالة لإضافة صور تجريبية متعددة
+        window.addMultipleDemoImages = () => {
+            const demoImages = [];
+            
+            // إضافة 12 صورة تجريبية مختلفة
+            for (let i = 1; i <= 12; i++) {
+                demoImages.push(`https://picsum.photos/400/300?random=${i}`);
+            }
+            
+            if (!state.cloudData.gallery) {
+                state.cloudData.gallery = [];
+            }
+            
+            demoImages.forEach(url => {
+                if (!state.cloudData.gallery.includes(url)) {
+                    state.cloudData.gallery.push(url);
+                }
+            });
+            
+            renderAllGalleries();
+            showToast(`✅ تم إضافة ${demoImages.length} صورة تجريبية`);
+            saveAllToCloud();
+        };
+
+        // دالة لرفع جميع الصور من مجلد
+        window.uploadImagesFromFolder = async () => {
+            try {
+                showToast('جاري تحميل الصور من المجلد...', 'info');
+                
+                // إنشاء عنصر input لاختيار مجلد
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.webkitdirectory = true; // خاصية اختيار مجلد كامل
+                input.multiple = true;
+                input.accept = 'image/*';
+                
+                input.onchange = async (e) => {
+                    const files = Array.from(e.target.files).filter(file => 
+                        file.type.startsWith('image/')
+                    );
+                    
+                    if (files.length === 0) {
+                        showToast('لم يتم العثور على صور في المجلد', 'error');
+                        return;
+                    }
+                    
+                    showToast(`تم العثور على ${files.length} صورة، جاري الرفع...`, 'info');
+                    
+                    // إظهار شريط التقدم
+                    elements.uploadProgressContainer.classList.remove('hidden');
+                    elements.uploadButton.disabled = true;
+                    
+                    let uploadedCount = 0;
+                    const totalFiles = files.length;
+                    
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        
+                        try {
+                            // إنشاء اسم فريد للملف
+                            const timestamp = Date.now();
+                            const randomString = Math.random().toString(36).substring(2, 8);
+                            const extension = file.name.split('.').pop();
+                            const fileName = `gallery/IMG_${timestamp}_${randomString}.${extension}`;
+                            
+                            // رفع الملف إلى Firebase Storage
+                            const storageRef = ref(storage, fileName);
+                            const uploadTask = uploadBytesResumable(storageRef, file);
+
+                            await new Promise((resolve, reject) => {
+                                uploadTask.on(
+                                    'state_changed',
+                                    (snapshot) => {
+                                        // تحديث التقدم
+                                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                        const overallProgress = ((i + (progress / 100)) / totalFiles) * 100;
+                                        elements.uploadProgressBar.style.width = `${overallProgress}%`;
+                                        elements.uploadProgressPercent.textContent = `${Math.round(overallProgress)}%`;
+                                    },
+                                    (error) => {
+                                        console.error('Upload error:', error);
+                                        reject(error);
+                                    },
+                                    async () => {
+                                        try {
+                                            // الحصول على رابط الصورة
+                                            const url = await getDownloadURL(uploadTask.snapshot.ref);
+                                            
+                                            // إضافة الصورة إلى المعرض
+                                            if (!state.cloudData.gallery) {
+                                                state.cloudData.gallery = [];
+                                            }
+                                            
+                                            if (!state.cloudData.gallery.includes(url)) {
+                                                state.cloudData.gallery.push(url);
+                                            }
+                                            
+                                            uploadedCount++;
+                                            resolve();
+                                        } catch (error) {
+                                            reject(error);
+                                        }
+                                    }
+                                );
+                            });
+
+                        } catch (error) {
+                            console.error('Error uploading file:', error);
+                        }
+
+                        // تحديث شريط التقدم
+                        const progress = Math.round((i + 1) / totalFiles * 100);
+                        elements.uploadProgressBar.style.width = `${progress}%`;
+                        elements.uploadProgressPercent.textContent = `${progress}%`;
+                    }
+                    
+                    // إخفاء شريط التقدم بعد ثانيتين
+                    setTimeout(() => {
+                        elements.uploadProgressContainer.classList.add('hidden');
+                        elements.uploadProgressBar.style.width = '0%';
+                        elements.uploadProgressPercent.textContent = '0%';
+                    }, 2000);
+                    
+                    if (uploadedCount > 0) {
+                        showToast(`✅ تم رفع ${uploadedCount} صورة بنجاح من المجلد`);
+                        renderAllGalleries();
+                        await saveAllToCloud();
+                    }
+                    
+                    elements.uploadButton.disabled = false;
+                };
+                
+                input.click();
+                
+            } catch (error) {
+                console.error('Error selecting folder:', error);
+                showToast('حدث خطأ في اختيار المجلد', 'error');
+            }
+        };
+
+        // دالة بديلة لرفع الصور من مسار محدد (للاستخدام مع خادم محلي)
+        window.uploadImagesFromLocalPath = async (path = 'images/') => {
+            showToast('هذه الخاصية تتطلب خادم ويب محلي', 'info');
+            
+            // محاولة جلب الصور من المسار المحلي
+            try {
+                // هذه الطريقة تعمل فقط إذا كان لديك خادم ويب محلي
+                // وهي للتوضيح فقط - قد لا تعمل في المتصفح مباشرة
+                
+                const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                const promises = imageExtensions.map(async (ext) => {
+                    try {
+                        const response = await fetch(`${path}test.${ext}`);
+                        if (response.ok) {
+                            return `${path}test.${ext}`;
+                        }
+                        return null;
+                    } catch {
+                        return null;
+                    }
+                });
+                
+                const results = await Promise.all(promises);
+                const images = results.filter(url => url !== null);
+                
+                if (images.length > 0) {
+                    images.forEach(url => {
+                        if (!state.cloudData.gallery) state.cloudData.gallery = [];
+                        if (!state.cloudData.gallery.includes(url)) {
+                            state.cloudData.gallery.push(url);
+                        }
+                    });
+                    renderAllGalleries();
+                    showToast(`تم إضافة ${images.length} صورة من المسار المحلي`);
+                } else {
+                    showToast('لم يتم العثور على صور في المسار المحدد', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading local images:', error);
+                showToast('حدث خطأ في تحميل الصور المحلية', 'error');
+            }
         };
 
         // عرض الإشعارات
