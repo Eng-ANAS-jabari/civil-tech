@@ -342,7 +342,7 @@
                         <div class="text-sm text-gray-400">فعالية</div>
                     </div>
                     <div class="glass-card px-6 py-4 rounded-xl text-center">
-                        <div class="text-3xl font-black text-blue-500" id="stats-gallery">0</div>
+                        <div class="text-3xl font-black text-blue-500" id="stats-gallery">8</div>
                         <div class="text-sm text-gray-400">صورة</div>
                     </div>
                     <div class="glass-card px-6 py-4 rounded-xl text-center">
@@ -383,7 +383,7 @@
                     <div id="landing-agenda-list" class="space-y-3"></div>
                 </div>
                 
-                <!-- المعرض التقني -->
+                <!-- المعرض التقني - الصور من مجلد images على GitHub -->
                 <div class="lg:col-span-5 space-y-6">
                     <h3 class="text-2xl md:text-3xl font-black flex items-center gap-2">
                         <span class="text-blue-500">#</span> المعرض التقني
@@ -710,27 +710,12 @@
                         </button>
                     </div>
 
-                    <!-- إضافة صور متعددة من روابط -->
+                    <!-- معرض الصور - عرض الصور من GitHub -->
                     <div class="glass p-6 rounded-2xl space-y-4">
-                        <h4 class="text-lg font-black">🔗 إضافة صور متعددة من روابط</h4>
-                        <div class="space-y-2">
-                            <textarea id="bulk-gallery-urls" rows="3" 
-                                      class="w-full bg-slate-900 border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 transition text-sm"
-                                      placeholder="أدخل روابط الصور - كل رابط في سطر منفصل"></textarea>
-                            <button onclick="addBulkImagesFromUrls()" 
-                                    class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-xl text-sm font-bold transition-colors">
-                                إضافة الصور
-                            </button>
-                        </div>
-                        <p class="text-xs text-gray-500">كل رابط في سطر منفصل</p>
-                    </div>
-
-                    <!-- معرض الصور -->
-                    <div class="glass p-6 rounded-2xl space-y-4">
-                        <h4 class="text-lg font-black">📷 إدارة المعرض التقني</h4>
+                        <h4 class="text-lg font-black">📷 معرض الصور (من GitHub)</h4>
                         
                         <div class="flex gap-2">
-                            <input type="url" id="gallery-url-input" placeholder="رابط صورة واحدة" 
+                            <input type="url" id="gallery-url-input" placeholder="رابط صورة جديدة" 
                                    class="flex-1 bg-slate-900 border border-white/10 p-3 rounded-xl outline-none focus:border-blue-500 transition text-sm">
                             <button onclick="addSingleImageFromUrl()" 
                                     class="bg-blue-600 hover:bg-blue-500 px-4 rounded-xl text-sm font-bold transition-colors whitespace-nowrap">
@@ -738,11 +723,26 @@
                             </button>
                         </div>
                         
-                        <input type="file" id="image-upload-input" class="hidden" accept="image/*" multiple>
-                        <button onclick="document.getElementById('image-upload-input').click()" 
-                                class="w-full py-3 bg-white/5 border-2 border-dashed border-white/20 rounded-xl hover:bg-white/10 transition-colors text-sm">
-                            📤 رفع صور من الجهاز
+                        <!-- زر تحديث المعرض من GitHub -->
+                        <button onclick="loadGalleryFromGithub()" 
+                                class="w-full py-3 bg-green-600 hover:bg-green-500 rounded-xl text-sm font-bold transition-colors">
+                            🔄 تحديث المعرض من GitHub
                         </button>
+
+                        <!-- إضافة صورة عبر الرابط المباشر -->
+                        <div class="mt-2 p-3 bg-blue-600/20 rounded-lg">
+                            <p class="text-xs text-blue-400 mb-2">روابط الصور المتوفرة في مجلد images:</p>
+                            <div class="text-xs text-gray-400 space-y-1">
+                                <div>• 8ee3850dc5ac65749712c3a212dc6218.jpg</div>
+                                <div>• IMG_7997.JPG</div>
+                                <div>• IMG_8000.JPG</div>
+                                <div>• IMG_8008.JPG</div>
+                                <div>• b5e6982aa744a4c5c2219c2ca04c7f06.jpg</div>
+                                <div>• e333b0fec9ab128422db16dab3633200.jpg</div>
+                                <div>• images1.JPG</div>
+                                <div>• photo1.JPG</div>
+                            </div>
+                        </div>
                         
                         <!-- معاينة الصور مع إمكانية الحذف -->
                         <div id="admin-gallery-preview" class="grid grid-cols-3 gap-2 mt-4"></div>
@@ -786,12 +786,39 @@
             { email: "admin5@civil.com", password: "admin123", name: "المدير الخامس" }
         ];
 
+        // إعدادات GitHub
+        const GITHUB_CONFIG = {
+            owner: "abdalelah1",
+            repo: "abdalelah1",
+            branch: "main",
+            folder: "images"
+        };
+
+        // قائمة الصور المتوفرة في مجلد images
+        const AVAILABLE_IMAGES = [
+            "8ee3850dc5ac65749712c3a212dc6218.jpg",
+            "IMG_7997.JPG",
+            "IMG_8000.JPG",
+            "IMG_8008.JPG",
+            "b5e6982aa744a4c5c2219c2ca04c7f06.jpg",
+            "e333b0fec9ab128422db16dab3633200.jpg",
+            "images1.JPG",
+            "photo1.JPG"
+        ];
+
+        // إنشاء روابط الصور من GitHub
+        const getImageUrlsFromGithub = () => {
+            return AVAILABLE_IMAGES.map(filename => 
+                `https://raw.githubusercontent.com/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/${GITHUB_CONFIG.branch}/${GITHUB_CONFIG.folder}/${filename}`
+            );
+        };
+
         // حالة التطبيق
         let state = {
             currentUser: null,
             cloudData: { 
                 agenda: [], 
-                gallery: [], 
+                gallery: getImageUrlsFromGithub(), // تحميل الصور مباشرة من GitHub
                 config: { 
                     logo: '', 
                     eventDate: '',
@@ -931,6 +958,13 @@
             if (elements.imageCounter) {
                 elements.imageCounter.textContent = `${state.currentImageIndex + 1} / ${gallery.length}`;
             }
+        };
+
+        // تحميل الصور من GitHub
+        window.loadGalleryFromGithub = () => {
+            state.cloudData.gallery = getImageUrlsFromGithub();
+            renderAllGalleries();
+            showToast(`✅ تم تحميل ${state.cloudData.gallery.length} صورة من GitHub`);
         };
 
         // معالجة أزرار لوحة المفاتيح
@@ -1076,35 +1110,6 @@
             showToast('تم حفظ النص الوصفي');
         };
 
-        // إضافة صور متعددة من روابط
-        window.addBulkImagesFromUrls = () => {
-            const urlsText = document.getElementById('bulk-gallery-urls').value;
-            if (!urlsText) return;
-
-            const urls = urlsText.split('\n')
-                .map(url => url.trim())
-                .filter(url => url.startsWith('http'));
-
-            if (urls.length === 0) {
-                showToast('الرجاء إدخال روابط صحيحة', 'error');
-                return;
-            }
-
-            // إزالة التكرار
-            const existingUrls = new Set(state.cloudData.gallery || []);
-            const newUrls = urls.filter(url => !existingUrls.has(url));
-            
-            state.cloudData.gallery = [...(state.cloudData.gallery || []), ...newUrls];
-            renderAdminGalleryPreview();
-            document.getElementById('bulk-gallery-urls').value = '';
-            
-            if (newUrls.length > 0) {
-                showToast(`تم إضافة ${newUrls.length} صورة جديدة`);
-            } else {
-                showToast('جميع الصور موجودة مسبقاً', 'info');
-            }
-        };
-
         // تطبيق رابط الشعار
         window.setLogoFromUrl = () => {
             const url = document.getElementById('logo-url-input').value;
@@ -1177,39 +1182,6 @@
                     }
                 }
             );
-        });
-
-        // رفع صور متعددة من الجهاز
-        document.getElementById('image-upload-input').addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files);
-            if (!files.length) return;
-
-            showToast(`جاري رفع ${files.length} صورة...`, 'info');
-
-            for (const file of files) {
-                try {
-                    if (!file.type.startsWith('image/')) {
-                        showToast(`الملف ${file.name} ليس صورة`, 'error');
-                        continue;
-                    }
-
-                    const storageRef = ref(storage, `gallery/${Date.now()}_${file.name}`);
-                    const uploadTask = await uploadBytesResumable(storageRef, file);
-                    const url = await getDownloadURL(uploadTask.ref);
-                    
-                    if (!state.cloudData.gallery) state.cloudData.gallery = [];
-                    if (!state.cloudData.gallery.includes(url)) {
-                        state.cloudData.gallery.push(url);
-                    }
-                } catch (error) {
-                    console.error('Error uploading image:', error);
-                    showToast(`فشل رفع ${file.name}`, 'error');
-                }
-            }
-
-            renderAdminGalleryPreview();
-            await saveAllToCloud();
-            showToast('تم رفع الصور بنجاح');
         });
 
         // حذف صورة من المعرض
@@ -1303,6 +1275,13 @@
                         </div>
                     `;
                 }).join('');
+        };
+
+        // عرض جميع المعارض
+        const renderAllGalleries = () => {
+            renderAdminGalleryPreview();
+            renderLandingContent();
+            renderUserUI();
         };
 
         // تحميل قائمة المستخدمين
@@ -1798,10 +1777,20 @@
             doc(db, "conference", "data"),
             (snap) => {
                 if (snap.exists()) {
-                    state.cloudData = snap.data();
+                    const data = snap.data();
+                    // دمج الصور من GitHub مع الصور المحفوظة
+                    const githubImages = getImageUrlsFromGithub();
+                    const savedImages = data.gallery || [];
+                    
+                    // دمج المصفوفتين مع إزالة التكرار
+                    const allImages = [...new Set([...githubImages, ...savedImages])];
+                    
+                    state.cloudData = {
+                        ...data,
+                        gallery: allImages
+                    };
                     
                     if (!state.cloudData.agenda) state.cloudData.agenda = [];
-                    if (!state.cloudData.gallery) state.cloudData.gallery = [];
                     if (!state.cloudData.groups) state.cloudData.groups = [];
                     if (!state.cloudData.evaluations) state.cloudData.evaluations = {};
                     if (!state.cloudData.publicVotes) state.cloudData.publicVotes = {};
@@ -1810,7 +1799,7 @@
                 } else {
                     state.cloudData = { 
                         agenda: [], 
-                        gallery: [], 
+                        gallery: getImageUrlsFromGithub(), // تحميل الصور من GitHub
                         config: { 
                             logo: '', 
                             eventDate: '',
@@ -2007,7 +1996,7 @@
                     description: elements.landingDescriptionInput?.value || state.cloudData.config?.description || ''
                 };
 
-                // حفظ في Firebase
+                // حفظ في Firebase (نحتفظ بالصور الموجودة فقط)
                 await setDoc(doc(db, "conference", "data"), {
                     agenda: newAgenda,
                     gallery: state.cloudData.gallery || [],
@@ -2226,21 +2215,16 @@
         document.addEventListener('DOMContentLoaded', () => {
             showSection('landing-section');
             
-            state.cloudData = { 
-                agenda: [], 
-                gallery: [], 
-                config: { 
-                    logo: '', 
-                    eventDate: '',
-                    description: 'انضم إلى أكبر تجمع تقني للمهندسين في عام 2025. ورش عمل، مسابقات، ومحاضرات يقدمها نخبة من الخبراء العالميين.'
-                },
-                groups: [],
-                evaluations: {},
-                publicVotes: {}
-            };
+            // تحميل الصور من GitHub
+            state.cloudData.gallery = getImageUrlsFromGithub();
             
             updateUI();
             loadUsers();
+            
+            // تحديث إحصائية الصور
+            if (elements.statsGallery) {
+                elements.statsGallery.textContent = state.cloudData.gallery.length;
+            }
         });
 
         // جعل الدوال متاحة عالمياً
