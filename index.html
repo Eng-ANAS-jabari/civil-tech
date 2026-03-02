@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام CIVIL TECH 2025 - النسخة الاحترافية</title>
+    <title> CIVIL TECH </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -344,23 +344,267 @@
             border-color: #f59e0b;
         }
 
-        .imgbb-btn {
-            background: linear-gradient(135deg, #f59e0b, #f97316);
+        .folder-upload-btn {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
             transition: all 0.3s ease;
         }
         
-        .imgbb-btn:hover {
-            background: linear-gradient(135deg, #f97316, #f59e0b);
+        .folder-upload-btn:hover {
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
             transform: translateY(-2px);
         }
 
-        .imgbb-preview-card {
+        .image-item {
             transition: all 0.3s ease;
         }
         
-        .imgbb-preview-card:hover {
+        .image-item:hover {
             transform: scale(1.05);
+            border-color: #3b82f6;
+        }
+
+        .folder-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+        }
+
+        .gallery-link-section {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-link-section:hover {
+            background: rgba(245, 158, 11, 0.15);
             border-color: #f59e0b;
+            transform: translateY(-2px);
+        }
+
+        .gallery-link-section a {
+            color: #f59e0b;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            background: rgba(245, 158, 11, 0.15);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .gallery-link-section a:hover {
+            background: #f59e0b;
+            color: #020617;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+            border-color: #f59e0b;
+        }
+
+        .gallery-link-section a i {
+            font-size: 1.2rem;
+        }
+
+        .gallery-link-input {
+            direction: ltr;
+            text-align: left;
+            font-family: monospace;
+        }
+
+        .gallery-link-preview {
+            background: rgba(245, 158, 11, 0.05);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+            border: 1px dashed rgba(245, 158, 11, 0.3);
+        }
+
+        /* زر التحكم في الشعار */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #334155;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #3b82f6;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .logo-control-panel {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        /* أنماط البحث والفلترة */
+        .search-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+            width: 100%;
+            color: white;
+            font-size: 0.95rem;
+        }
+        
+        .search-box:focus {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        
+        .filter-chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #94a3b8;
+        }
+        
+        .filter-chip:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            color: white;
+        }
+        
+        .filter-chip.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+        
+        .stats-badge {
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+        
+        .user-item {
+            transition: all 0.3s ease;
+            border-right: 3px solid transparent;
+        }
+        
+        .user-item:hover {
+            border-right-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .user-item.judge-highlight {
+            border-right-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        .search-info {
+            background: linear-gradient(135deg, #3b82f620, #8b5cf620);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .clear-search {
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+        
+        .clear-search:hover {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .pagination-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 6px 12px;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .pagination-btn:hover:not(:disabled) {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .pagination-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.85rem;
         }
     </style>
 </head>
@@ -380,13 +624,14 @@
     <nav class="sticky top-0 z-40 glass border-b border-white/5">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer group" onclick="showSection('landing-section')">
-                <div class="relative h-12 w-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center overflow-hidden shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <!-- الشعار في الناف بار -->
+                <div id="navbar-logo-container" class="relative h-12 w-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center overflow-hidden shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <span id="logo-placeholder" class="font-black text-xl text-white">CT</span>
                     <img id="site-logo-img" class="hidden w-full h-full object-cover" src="" alt="Logo">
                 </div>
                 <div class="hidden sm:block">
                     <span class="text-xl font-black tracking-tight leading-none">CIVIL <span class="text-blue-500">TECH</span></span>
-                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Conference 2025</span>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Conference 2026</span>
                 </div>
             </div>
             
@@ -411,6 +656,14 @@
         <section id="landing-section" class="animate-fade-in space-y-12 md:space-y-16">
             <div class="text-center py-8 md:py-16 relative">
                 <div class="absolute inset-0 -z-10 bg-gradient-to-b from-blue-600/10 via-transparent to-transparent"></div>
+                
+                <!-- الشعار في الصفحة الرئيسية (يمكن التحكم به) -->
+                <div id="landing-logo-container" class="flex justify-center mb-6">
+                    <div class="relative h-24 w-24 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center overflow-hidden shadow-xl">
+                        <span class="font-black text-3xl text-white">CT</span>
+                        <img id="landing-logo-img" class="hidden w-full h-full object-cover" src="" alt="Logo">
+                    </div>
+                </div>
                 
                 <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-4 tracking-tight leading-tight">
                     مستقبل <span class="text-blue-500 block sm:inline">الهندسة</span>
@@ -474,6 +727,17 @@
                         <span class="text-blue-500">#</span> المعرض التقني
                     </h3>
                     <div id="landing-gallery-list" class="grid grid-cols-2 gap-3 md:gap-4"></div>
+                    
+                    <!-- رابط المزيد من الصور - يظهر تحت الصور مباشرة -->
+                    <div id="gallery-link-section-landing" class="gallery-link-section hidden">
+                        <div class="text-amber-400 mb-3 text-lg font-bold">📸 المزيد من الصور</div>
+                        <a id="gallery-link-landing" href="#" target="_blank" rel="noopener noreferrer">
+                            <span>🔗</span>
+                            اضغط هنا لزيارة المعرض الكامل
+                            <span>✨</span>
+                        </a>
+                        <p class="text-gray-400 text-sm mt-3">ستجد هناك المزيد من الصور والتغطية الكاملة للفعاليات</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -600,6 +864,17 @@
             <div class="space-y-6">
                 <h3 class="text-xl font-black">🖼️ المعرض التقني</h3>
                 <div id="user-gallery-list" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+                
+                <!-- رابط المزيد من الصور - يظهر تحت الصور مباشرة في لوحة المستخدم -->
+                <div id="gallery-link-section-user" class="gallery-link-section hidden">
+                    <div class="text-amber-400 mb-3 text-lg font-bold">📸 المزيد من الصور</div>
+                    <a id="gallery-link-user" href="#" target="_blank" rel="noopener noreferrer">
+                        <span>🔗</span>
+                        اضغط هنا لزيارة المعرض الكامل
+                        <span>✨</span>
+                    </a>
+                    <p class="text-gray-400 text-sm mt-3">استكشف المزيد من اللحظات والتغطية الكاملة</p>
+                </div>
             </div>
 
             <div class="glass p-6 rounded-2xl space-y-4">
@@ -700,10 +975,57 @@
                 <div id="judges-list" class="space-y-2 max-h-[200px] overflow-y-auto pr-2"></div>
             </div>
 
-            <!-- قائمة المسجلين -->
+            <!-- قائمة المسجلين مع البحث والفلترة -->
             <div class="glass p-6 rounded-2xl space-y-4">
-                <h4 class="text-lg font-black">📋 قائمة المسجلين</h4>
-                <div id="users-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-2"></div>
+                <div class="flex justify-between items-center">
+                    <h4 class="text-lg font-black">📋 قائمة المسجلين</h4>
+                    <span class="stats-badge" id="users-count">0</span>
+                </div>
+                
+                <!-- شريط البحث المتقدم -->
+                <div class="space-y-3">
+                    <div class="relative">
+                        <input type="text" 
+                               id="user-search-input" 
+                               placeholder="🔍 بحث بالاسم، البريد الإلكتروني، المؤسسة..." 
+                               class="search-box pr-10">
+                        <div class="absolute left-3 top-1/2 -translate-y-1/2">
+                            <span class="text-gray-400" id="search-icon">🔍</span>
+                        </div>
+                    </div>
+                    
+                    <!-- فلتر سريع -->
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <span class="text-xs text-gray-400">فلتر:</span>
+                        <button class="filter-chip active" onclick="filterUsers('all')" id="filter-all">الكل</button>
+                        <button class="filter-chip" onclick="filterUsers('judges')" id="filter-judges">الحكام ⚖️</button>
+                        <button class="filter-chip" onclick="filterUsers('attendees')" id="filter-attendees">حضور</button>
+                        <button class="filter-chip" onclick="filterUsers('speakers')" id="filter-speakers">متحدثون</button>
+                        <button class="filter-chip" onclick="filterUsers('participants')" id="filter-participants">مشاركون</button>
+                    </div>
+                    
+                    <!-- معلومات البحث -->
+                    <div id="search-info" class="search-info hidden">
+                        <div class="flex justify-between items-center">
+                            <span>نتائج البحث: <span id="search-results-count">0</span> من <span id="total-users-count">0</span></span>
+                            <span class="clear-search" onclick="clearSearch()">✕ مسح البحث</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- قائمة المستخدمين -->
+                <div id="users-list" class="space-y-2 max-h-[400px] overflow-y-auto pr-2"></div>
+                
+                <!-- Pagination للمستخدمين -->
+                <div class="flex justify-between items-center mt-4 pt-2 border-t border-white/5">
+                    <div class="pagination-info" id="pagination-info">
+                        عرض 1-10 من 0
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="pagination-btn" onclick="changePage('prev')" id="prev-page" disabled>←</button>
+                        <button class="pagination-btn" onclick="changePage('next')" id="next-page" disabled>→</button>
+                    </div>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
@@ -742,11 +1064,22 @@
                     </div>
                 </div>
 
-                <!-- إعدادات الشعار والموعد ومعرض ImgBB -->
+                <!-- إعدادات الشعار (مع خاصية التحكم) والموعد ومعرض الصور المحلية -->
                 <div class="space-y-6">
-                    <!-- الشعار -->
+                    <!-- الشعار مع خاصية التحكم -->
                     <div class="glass p-6 rounded-2xl space-y-4">
-                        <h4 class="text-lg font-black">🖼️ شعار المؤتمر</h4>
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-lg font-black">🖼️ إعدادات الشعار</h4>
+                            
+                            <!-- زر التحكم في إظهار/إخفاء الشعار -->
+                            <div class="flex items-center gap-3">
+                                <label class="text-sm text-gray-400">إظهار الشعار</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="show-logo-toggle" checked onchange="toggleLogoVisibility()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
                         
                         <div class="flex flex-col items-center gap-4">
                             <div class="flex gap-2 w-full">
@@ -764,13 +1097,28 @@
                             </label>
                             
                             <div id="logo-preview" class="w-24 h-24 bg-slate-900 rounded-2xl border border-white/10 flex items-center justify-center overflow-hidden">
-                                <span id="logo-preview-placeholder" class="text-gray-600 text-sm">معاينة</span>
+                                <span id="logo-preview-placeholder" class="text-gray-600 text-sm">Logo Preview</span>
                                 <img id="logo-preview-img" class="hidden w-full h-full object-cover" src="" alt="Logo Preview">
                             </div>
                             
                             <div id="logo-progress-container" class="hidden w-full">
                                 <div class="h-2 bg-white/10 rounded-full overflow-hidden">
                                     <div id="logo-progress-bar" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <!-- خيارات إضافية للشعار -->
+                            <div class="w-full mt-2 p-3 logo-control-panel">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-400">موضع الشعار:</span>
+                                    <select id="logo-position" class="bg-slate-900 border border-white/10 p-2 rounded-lg text-sm" onchange="updateLogoPosition()">
+                                        <option value="both" selected>الناف بار والصفحة الرئيسية</option>
+                                        <option value="navbar">الناف بار فقط</option>
+                                        <option value="landing">الصفحة الرئيسية فقط</option>
+                                    </select>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-2">
+                                    حالة الشعار: <span id="logo-status" class="text-green-400">ظاهر</span>
                                 </div>
                             </div>
                         </div>
@@ -795,60 +1143,91 @@
                         </button>
                     </div>
 
-                    <!-- معرض الصور - ImgBB -->
+                    <!-- إعدادات رابط المزيد من الصور -->
                     <div class="glass p-6 rounded-2xl space-y-4">
-                        <h4 class="text-lg font-black">📷 معرض ImgBB</h4>
+                        <h4 class="text-lg font-black">🔗 رابط المزيد من الصور</h4>
                         
-                        <!-- معلومات الألبوم -->
-                        <div class="bg-blue-600/10 p-3 rounded-lg border border-blue-500/30">
-                            <p class="text-sm text-blue-400 mb-1">📁 رابط الألبوم:</p>
-                            <a href="https://ibb.co/album/KDjMNR" target="_blank" 
-                               class="text-xs text-gray-400 hover:text-blue-400 break-all">
-                                https://ibb.co/album/KDjMNR
-                            </a>
+                        <div class="space-y-3">
+                            <label class="block text-sm font-bold text-gray-400 mb-1">الرابط (للمزيد من الصور)</label>
+                            <div class="flex gap-2">
+                                <input type="url" id="gallery-link-input" 
+                                       placeholder="https://example.com/gallery" 
+                                       class="gallery-link-input flex-1 bg-slate-900 border border-white/10 p-3 rounded-xl outline-none focus:border-amber-500 transition text-sm">
+                                <button onclick="saveGalleryLink()" 
+                                        class="bg-amber-600 hover:bg-amber-500 px-4 rounded-xl text-sm font-bold transition-colors">
+                                    حفظ
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center gap-2 mt-2">
+                                <input type="checkbox" id="show-gallery-link" class="w-4 h-4 accent-amber-500">
+                                <label for="show-gallery-link" class="text-sm text-gray-400">إظهار رابط المزيد من الصور للزوار</label>
+                            </div>
+                            
+                            <!-- معاينة الرابط -->
+                            <div class="gallery-link-preview">
+                                <p class="text-xs text-gray-400 mb-2">معاينة كيف سيظهر الرابط:</p>
+                                <div id="gallery-link-preview" class="text-amber-400 font-bold break-all bg-slate-900 p-3 rounded-lg border border-amber-500/30">
+                                    الرابط: <span class="text-white">-</span>
+                                </div>
+                                <div class="mt-2 text-sm text-gray-400">
+                                    حالة الرابط: <span id="gallery-link-status" class="text-amber-400">غير مفعل</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- معرض الصور المحلية -->
+                    <div class="glass p-6 rounded-2xl space-y-4">
+                        <h4 class="text-lg font-black">📷 معرض الصور المحلية</h4>
+                        
+                        <!-- معلومات المجلد -->
+                        <div class="folder-info">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-400">📁 مجلد images</span>
+                                <span id="folder-images-count" class="text-blue-400 font-bold">0</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">المسار: /images/</p>
                         </div>
 
-                        <!-- أزرار التحكم ImgBB -->
-                        <div class="flex gap-2 mt-2">
-                            <button onclick="loadImagesFromImgBB()" 
-                                    class="flex-1 imgbb-btn py-3 rounded-xl font-bold text-sm transition-colors text-white">
-                                🌐 تحميل من ألبوم ImgBB
+                        <!-- أزرار التحكم -->
+                        <div class="flex gap-2">
+                            <button onclick="loadImagesFromFolder()" 
+                                    class="flex-1 bg-green-600 hover:bg-green-500 py-2 rounded-lg text-sm font-bold transition-colors">
+                                📁 تحميل الصور
                             </button>
                             
-                            <button onclick="showImgBBImages()" 
-                                    class="flex-1 bg-purple-600 hover:bg-purple-500 py-3 rounded-xl font-bold text-sm transition-colors">
-                                🖼️ عرض صور ImgBB
+                            <button onclick="refreshImagesFromFolder()" 
+                                    class="flex-1 refresh-btn py-2 rounded-lg text-sm font-bold transition-colors text-white">
+                                🔄 تحديث
                             </button>
-                        </div>
 
-                        <div class="flex gap-2">
                             <button onclick="addMultipleDemoImages()" 
-                                    class="flex-1 bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-bold text-sm transition-colors">
-                                🖼️ إضافة صور تجريبية
+                                    class="flex-1 bg-purple-600 hover:bg-purple-500 py-2 rounded-lg text-sm font-bold transition-colors">
+                                🖼️ صور تجريبية
                             </button>
                         </div>
 
-                        <!-- شريط التقدم -->
+                        <!-- قائمة الصور المحلية -->
+                        <div class="bg-white/5 p-3 rounded-lg">
+                            <h5 class="text-sm font-bold text-blue-400 mb-2">📋 قائمة الصور المتوقعة:</h5>
+                            <div id="local-images-list" class="space-y-1 text-xs text-gray-400 max-h-32 overflow-y-auto">
+                                جاري التحميل...
+                            </div>
+                        </div>
+
+                        <!-- شريط التقدم (للإضافة المستقبلية) -->
                         <div id="upload-progress-container" class="hidden space-y-2">
                             <div class="flex justify-between text-sm">
-                                <span>جاري التحميل...</span>
+                                <span>جاري التحميل</span>
                                 <span id="upload-progress-percent">0%</span>
                             </div>
                             <div class="upload-progress">
                                 <div id="upload-progress-bar" class="upload-progress-bar" style="width: 0%"></div>
                             </div>
                         </div>
-
-                        <!-- معلومات الصور -->
-                        <div id="folder-info" class="text-sm text-gray-400 bg-white/5 p-3 rounded-lg">
-                            <span>📸 عدد الصور: </span>
-                            <span id="images-count">0</span>
-                        </div>
-
-                        <!-- منطقة عرض صور ImgBB -->
-                        <div id="imgbb-preview" class="hidden grid grid-cols-2 gap-2 mt-4"></div>
                         
-                        <!-- معاينة الصور الحالية -->
+                        <!-- معاينة الصور في لوحة المسؤول -->
                         <div id="admin-gallery-preview" class="grid grid-cols-3 gap-2 mt-4"></div>
                     </div>
                 </div>
@@ -897,9 +1276,17 @@
                 agenda: [], 
                 gallery: [], 
                 config: { 
-                    logo: '', 
+                    logo: {
+                        url: '',
+                        show: true,
+                        position: 'both' // 'both', 'navbar', 'landing'
+                    },
                     eventDate: '',
-                    description: 'انضم إلى أكبر تجمع تقني للمهندسين في عام 2025. ورش عمل، مسابقات، ومحاضرات يقدمها نخبة من الخبراء العالميين.'
+                    description: 'انضم إلى أكبر تجمع تقني للمهندسين في عام 2025. ورش عمل، مسابقات، ومحاضرات يقدمها نخبة من الخبراء العالميين.',
+                    galleryLink: {
+                        url: '',
+                        show: false
+                    }
                 },
                 groups: [],
                 evaluations: {},
@@ -912,7 +1299,16 @@
             currentImageIndex: 0,
             resultsChart: null,
             selectedFiles: [],
-            imgbbImages: []
+            localImages: [],
+            
+            // حالة البحث والفلترة
+            search: {
+                query: '',
+                filter: 'all', // 'all', 'judges', 'attendees', 'speakers', 'participants'
+                currentPage: 1,
+                itemsPerPage: 10
+            },
+            filteredUsers: []
         };
 
         // عناصر DOM
@@ -927,12 +1323,18 @@
             registerSection: document.getElementById('register-section'),
             logoutBtn: document.getElementById('logout-btn'),
             statusBadge: document.getElementById('status-badge'),
+            navbarLogoContainer: document.getElementById('navbar-logo-container'),
             logoPlaceholder: document.getElementById('logo-placeholder'),
             siteLogoImg: document.getElementById('site-logo-img'),
+            landingLogoContainer: document.getElementById('landing-logo-container'),
+            landingLogoImg: document.getElementById('landing-logo-img'),
             logoPreviewPlaceholder: document.getElementById('logo-preview-placeholder'),
             logoPreviewImg: document.getElementById('logo-preview-img'),
             logoProgressContainer: document.getElementById('logo-progress-container'),
             logoProgressBar: document.getElementById('logo-progress-bar'),
+            showLogoToggle: document.getElementById('show-logo-toggle'),
+            logoPosition: document.getElementById('logo-position'),
+            logoStatus: document.getElementById('logo-status'),
             confDate: document.getElementById('conf-date'),
             statTotal: document.getElementById('stat-total'),
             adminAgendaInputs: document.getElementById('admin-agenda-inputs'),
@@ -959,155 +1361,519 @@
             uploadProgressContainer: document.getElementById('upload-progress-container'),
             uploadProgressBar: document.getElementById('upload-progress-bar'),
             uploadProgressPercent: document.getElementById('upload-progress-percent'),
-            imagesCount: document.getElementById('images-count'),
-            folderInfo: document.getElementById('folder-info'),
-            imgbbPreview: document.getElementById('imgbb-preview')
+            folderImagesCount: document.getElementById('folder-images-count'),
+            localImagesList: document.getElementById('local-images-list'),
+            galleryLinkSectionLanding: document.getElementById('gallery-link-section-landing'),
+            galleryLinkSectionUser: document.getElementById('gallery-link-section-user'),
+            galleryLinkLanding: document.getElementById('gallery-link-landing'),
+            galleryLinkUser: document.getElementById('gallery-link-user'),
+            galleryLinkInput: document.getElementById('gallery-link-input'),
+            showGalleryLink: document.getElementById('show-gallery-link'),
+            galleryLinkPreview: document.getElementById('gallery-link-preview'),
+            galleryLinkStatus: document.getElementById('gallery-link-status'),
+            
+            // عناصر البحث
+            userSearchInput: document.getElementById('user-search-input'),
+            searchInfo: document.getElementById('search-info'),
+            searchResultsCount: document.getElementById('search-results-count'),
+            totalUsersCount: document.getElementById('total-users-count'),
+            usersCount: document.getElementById('users-count'),
+            filterAll: document.getElementById('filter-all'),
+            filterJudges: document.getElementById('filter-judges'),
+            filterAttendees: document.getElementById('filter-attendees'),
+            filterSpeakers: document.getElementById('filter-speakers'),
+            filterParticipants: document.getElementById('filter-participants'),
+            paginationInfo: document.getElementById('pagination-info'),
+            prevPage: document.getElementById('prev-page'),
+            nextPage: document.getElementById('next-page')
         };
 
-        // ============ دوال ImgBB ============
+        // ============ دوال البحث والفلترة ============
 
-        // معرفات الصور من الألبوم
-        const IMGBB_IMAGES = [
-            '8ee3850dc5ac65749712c3a212dc6218'
-        ];
-
-        // دالة لتحميل الصور من ألبوم ImgBB
-        window.loadImagesFromImgBB = async () => {
-            showToast('🔄 جاري تحميل الصور من ImgBB...', 'info');
+        // دالة فلترة المستخدمين
+        const filterUsers = (filterType) => {
+            state.search.filter = filterType;
+            state.search.currentPage = 1;
             
-            elements.uploadProgressContainer.classList.remove('hidden');
-            elements.uploadProgressBar.style.width = '0%';
-            elements.uploadProgressPercent.textContent = '0%';
+            // تحديث حالة الأزرار
+            updateFilterButtons();
             
-            try {
-                const imageUrls = [];
-                const totalImages = IMGBB_IMAGES.length;
+            // تطبيق الفلترة والبحث
+            applySearchAndFilter();
+        };
+        window.filterUsers = filterUsers;
 
-                for (let i = 0; i < IMGBB_IMAGES.length; i++) {
-                    const imageId = IMGBB_IMAGES[i];
-                    
-                    // تجربة تنسيقات مختلفة
-                    const formats = [
-                        `https://i.ibb.co/${imageId.substring(0, 2)}/${imageId}.jpg`,
-                        `https://i.ibb.co/${imageId.substring(0, 2)}/${imageId}.png`,
-                        `https://i.ibb.co.com/${imageId.substring(0, 2)}/${imageId}.jpg`,
-                        `https://i.ibb.co/${imageId}.jpg`,
-                        `https://i.ibb.co.com/${imageId}.jpg`
-                    ];
-
-                    for (const format of formats) {
-                        try {
-                            const response = await fetch(format, { method: 'HEAD' });
-                            if (response.ok) {
-                                imageUrls.push(format);
-                                console.log(`✅ تم العثور على الصورة: ${format}`);
-                                break;
-                            }
-                        } catch {
-                            // تجاهل الأخطاء
-                        }
+        // دالة تحديث أزرار الفلترة
+        const updateFilterButtons = () => {
+            const filters = ['all', 'judges', 'attendees', 'speakers', 'participants'];
+            filters.forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (btn) {
+                    if (state.search.filter === f) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
                     }
-
-                    const progress = Math.round((i + 1) / totalImages * 100);
-                    elements.uploadProgressBar.style.width = `${progress}%`;
-                    elements.uploadProgressPercent.textContent = `${progress}%`;
                 }
+            });
+        };
 
-                setTimeout(() => {
-                    elements.uploadProgressContainer.classList.add('hidden');
-                }, 1000);
+        // دالة تطبيق البحث والفلترة
+        const applySearchAndFilter = () => {
+            let filtered = [...state.users];
+            
+            // تطبيق الفلتر
+            switch(state.search.filter) {
+                case 'judges':
+                    filtered = filtered.filter(u => u.isJudge);
+                    break;
+                case 'attendees':
+                    filtered = filtered.filter(u => u.participationType === 'حضور');
+                    break;
+                case 'speakers':
+                    filtered = filtered.filter(u => u.participationType === 'متحدث');
+                    break;
+                case 'participants':
+                    filtered = filtered.filter(u => u.participationType === 'مشارك في المسابقات');
+                    break;
+                // 'all' لا يحتاج فلترة
+            }
+            
+            // تطبيق البحث
+            if (state.search.query.trim()) {
+                const query = state.search.query.toLowerCase().trim();
+                filtered = filtered.filter(user => 
+                    (user.name && user.name.toLowerCase().includes(query)) ||
+                    (user.email && user.email.toLowerCase().includes(query)) ||
+                    (user.org && user.org.toLowerCase().includes(query)) ||
+                    (user.participationType && user.participationType.toLowerCase().includes(query))
+                );
+            }
+            
+            state.filteredUsers = filtered;
+            
+            // تحديث واجهة المستخدم
+            updateSearchUI();
+            renderFilteredUsers();
+        };
 
-                if (imageUrls.length > 0) {
-                    state.imgbbImages = imageUrls;
-                    
-                    if (!state.cloudData.gallery) {
-                        state.cloudData.gallery = [];
-                    }
-
-                    imageUrls.forEach(url => {
-                        if (!state.cloudData.gallery.includes(url)) {
-                            state.cloudData.gallery.push(url);
-                        }
-                    });
-
-                    renderAllGalleries();
-
-                    if (elements.imagesCount) {
-                        elements.imagesCount.textContent = `${state.cloudData.gallery.length} صورة (من ImgBB)`;
-                    }
-
-                    showToast(`✅ تم تحميل ${imageUrls.length} صورة من ImgBB`, 'success');
-                    await saveAllToCloud();
+        // دالة تحديث واجهة البحث
+        const updateSearchUI = () => {
+            const total = state.users.length;
+            const filteredCount = state.filteredUsers.length;
+            
+            if (elements.totalUsersCount) {
+                elements.totalUsersCount.textContent = total;
+            }
+            
+            if (elements.searchResultsCount) {
+                elements.searchResultsCount.textContent = filteredCount;
+            }
+            
+            if (elements.usersCount) {
+                elements.usersCount.textContent = filteredCount;
+            }
+            
+            // إظهار/إخفاء معلومات البحث
+            if (elements.searchInfo) {
+                if (state.search.query || state.search.filter !== 'all') {
+                    elements.searchInfo.classList.remove('hidden');
                 } else {
-                    showToast('❌ لم يتم العثور على صور في الألبوم', 'error');
+                    elements.searchInfo.classList.add('hidden');
                 }
+            }
+            
+            // تحديث أزرار التصفح
+            updatePagination();
+        };
 
-            } catch (error) {
-                console.error('Error loading from ImgBB:', error);
-                showToast('❌ فشل تحميل الصور من ImgBB', 'error');
-                elements.uploadProgressContainer.classList.add('hidden');
+        // دالة مسح البحث
+        const clearSearch = () => {
+            if (elements.userSearchInput) {
+                elements.userSearchInput.value = '';
+            }
+            state.search.query = '';
+            state.search.filter = 'all';
+            state.search.currentPage = 1;
+            updateFilterButtons();
+            applySearchAndFilter();
+        };
+        window.clearSearch = clearSearch;
+
+        // دالة تغيير الصفحة
+        const changePage = (direction) => {
+            const totalPages = Math.ceil(state.filteredUsers.length / state.search.itemsPerPage);
+            
+            if (direction === 'next' && state.search.currentPage < totalPages) {
+                state.search.currentPage++;
+            } else if (direction === 'prev' && state.search.currentPage > 1) {
+                state.search.currentPage--;
+            }
+            
+            renderFilteredUsers();
+            updatePagination();
+        };
+        window.changePage = changePage;
+
+        // دالة تحديث أزرار التصفح
+        const updatePagination = () => {
+            const total = state.filteredUsers.length;
+            const itemsPerPage = state.search.itemsPerPage;
+            const currentPage = state.search.currentPage;
+            const totalPages = Math.ceil(total / itemsPerPage);
+            
+            const start = (currentPage - 1) * itemsPerPage + 1;
+            const end = Math.min(currentPage * itemsPerPage, total);
+            
+            if (elements.paginationInfo) {
+                if (total > 0) {
+                    elements.paginationInfo.textContent = `عرض ${start}-${end} من ${total}`;
+                } else {
+                    elements.paginationInfo.textContent = 'لا توجد نتائج';
+                }
+            }
+            
+            if (elements.prevPage) {
+                elements.prevPage.disabled = currentPage <= 1;
+            }
+            if (elements.nextPage) {
+                elements.nextPage.disabled = currentPage >= totalPages;
             }
         };
 
-        // دالة لعرض صور ImgBB
-        window.showImgBBImages = () => {
-            if (!elements.imgbbPreview) return;
+        // دالة عرض المستخدمين المفلترين
+        const renderFilteredUsers = () => {
+            if (!elements.usersList) return;
 
-            elements.imgbbPreview.classList.remove('hidden');
+            const start = (state.search.currentPage - 1) * state.search.itemsPerPage;
+            const end = start + state.search.itemsPerPage;
+            const paginatedUsers = state.filteredUsers.slice(start, end);
 
-            elements.imgbbPreview.innerHTML = IMGBB_IMAGES.map((imageId, index) => {
-                const imageUrl = `https://i.ibb.co/${imageId.substring(0, 2)}/${imageId}.jpg`;
-                return `
-                    <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10 cursor-pointer imgbb-preview-card"
-                         onclick="addImgBBImageToGallery('${imageId}')">
-                        <img src="${imageUrl}" 
-                             class="w-full h-full object-cover"
-                             alt="ImgBB Image ${index + 1}"
-                             onerror="this.src='https://via.placeholder.com/200?text=Image+Not+Found'; this.classList.add('opacity-50');">
-                        <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 text-center">
-                            <span class="text-white text-xs mb-1">➕ إضافة للمعرض</span>
-                            <span class="text-gray-300 text-[10px]">${imageId.substring(0, 10)}...</span>
-                        </div>
+            if (paginatedUsers.length === 0) {
+                elements.usersList.innerHTML = `
+                    <div class="text-gray-500 text-center py-8">
+                        ${state.search.query ? 'لا توجد نتائج للبحث' : 'لا يوجد مسجلين حتى الآن'}
                     </div>
                 `;
-            }).join('');
-        };
-
-        // دالة لإضافة صورة ImgBB للمعرض
-        window.addImgBBImageToGallery = (imageId) => {
-            const imageUrl = `https://i.ibb.co/${imageId.substring(0, 2)}/${imageId}.jpg`;
-
-            if (!state.cloudData.gallery) {
-                state.cloudData.gallery = [];
+                return;
             }
 
-            if (!state.cloudData.gallery.includes(imageUrl)) {
-                state.cloudData.gallery.push(imageUrl);
-                renderAllGalleries();
+            elements.usersList.innerHTML = paginatedUsers.map(user => `
+                <div class="bg-white/5 p-3 rounded-xl border border-white/10 flex items-center justify-between user-item ${user.isJudge ? 'judge-highlight' : ''}">
+                    <div class="flex-1">
+                        <div class="font-bold flex items-center gap-2">
+                            ${user.name || 'بدون اسم'}
+                            ${user.isJudge ? '<span class="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">حكم</span>' : ''}
+                        </div>
+                        <div class="text-sm text-gray-400">${user.email}</div>
+                        <div class="text-xs text-gray-500">${user.org || 'بدون مؤسسة'} | ${user.participationType || 'غير محدد'}</div>
+                    </div>
+                    <div class="flex gap-2">
+                        ${!user.isJudge ? `
+                            <button onclick="toggleJudge('${user.id}')" class="text-amber-500 hover:text-amber-400 px-2 text-sm">
+                                ⚖️ تعيين حكم
+                            </button>
+                        ` : `
+                            <button onclick="toggleJudge('${user.id}')" class="text-red-500 hover:text-red-400 px-2 text-sm">
+                                ❌ إزالة التحكيم
+                            </button>
+                        `}
+                        <button onclick="deleteUser('${user.id}')" class="text-red-500 hover:text-red-400 px-2">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        };
 
-                if (elements.imagesCount) {
-                    elements.imagesCount.textContent = `${state.cloudData.gallery.length} صورة`;
+        // ============ باقي الدوال (كما هي من قبل) ============
+
+        // دالة حفظ رابط المزيد من الصور
+        window.saveGalleryLink = () => {
+            const url = elements.galleryLinkInput.value.trim();
+            const show = elements.showGalleryLink.checked;
+            
+            if (!state.cloudData.config.galleryLink) {
+                state.cloudData.config.galleryLink = { url: '', show: false };
+            }
+            
+            state.cloudData.config.galleryLink.url = url;
+            state.cloudData.config.galleryLink.show = show;
+            
+            updateGalleryLinkDisplay();
+            showToast('تم حفظ إعدادات رابط المعرض', 'success');
+        };
+
+        // دالة تحديث عرض رابط المعرض
+        const updateGalleryLinkDisplay = () => {
+            const linkData = state.cloudData.config?.galleryLink || { url: '', show: false };
+            
+            // تحديث المعاينة في لوحة المسؤول
+            if (elements.galleryLinkPreview) {
+                elements.galleryLinkPreview.innerHTML = `الرابط: <span class="text-white">${linkData.url || '-'}</span>`;
+            }
+            
+            if (elements.galleryLinkStatus) {
+                elements.galleryLinkStatus.textContent = linkData.show ? 'مفعل' : 'غير مفعل';
+                elements.galleryLinkStatus.className = linkData.show ? 'text-green-400' : 'text-amber-400';
+            }
+            
+            // تحديث حقول الإدخال في لوحة المسؤول
+            if (elements.galleryLinkInput) {
+                elements.galleryLinkInput.value = linkData.url || '';
+            }
+            if (elements.showGalleryLink) {
+                elements.showGalleryLink.checked = linkData.show || false;
+            }
+            
+            // عرض الرابط في الصفحة الرئيسية (تحت الصور)
+            if (linkData.show && linkData.url) {
+                if (elements.galleryLinkLanding) {
+                    elements.galleryLinkLanding.href = linkData.url;
+                }
+                if (elements.galleryLinkSectionLanding) {
+                    elements.galleryLinkSectionLanding.classList.remove('hidden');
+                }
+                
+                // عرض الرابط في لوحة المستخدم (تحت الصور)
+                if (elements.galleryLinkUser) {
+                    elements.galleryLinkUser.href = linkData.url;
+                }
+                if (elements.galleryLinkSectionUser) {
+                    elements.galleryLinkSectionUser.classList.remove('hidden');
+                }
+            } else {
+                if (elements.galleryLinkSectionLanding) {
+                    elements.galleryLinkSectionLanding.classList.add('hidden');
+                }
+                if (elements.galleryLinkSectionUser) {
+                    elements.galleryLinkSectionUser.classList.add('hidden');
+                }
+            }
+        };
+
+        // دالة تحديث ظهور الشعار حسب الإعدادات
+        const updateLogoVisibility = () => {
+            const logoData = state.cloudData.config?.logo || { url: '', show: true, position: 'both' };
+            
+            // تحديث الشعار في الناف بار
+            if (elements.navbarLogoContainer) {
+                if (logoData.url && logoData.show && (logoData.position === 'both' || logoData.position === 'navbar')) {
+                    elements.siteLogoImg.src = logoData.url;
+                    elements.siteLogoImg.classList.remove('hidden');
+                    elements.logoPlaceholder.classList.add('hidden');
+                } else {
+                    elements.siteLogoImg.classList.add('hidden');
+                    elements.logoPlaceholder.classList.remove('hidden');
+                }
+            }
+
+            // تحديث الشعار في الصفحة الرئيسية
+            if (elements.landingLogoContainer && elements.landingLogoImg) {
+                if (logoData.url && logoData.show && (logoData.position === 'both' || logoData.position === 'landing')) {
+                    elements.landingLogoContainer.classList.remove('hidden');
+                    elements.landingLogoImg.src = logoData.url;
+                    elements.landingLogoImg.classList.remove('hidden');
+                } else {
+                    elements.landingLogoContainer.classList.add('hidden');
+                    elements.landingLogoImg.classList.add('hidden');
+                }
+            }
+
+            // تحديث معاينة الشعار في لوحة المسؤول
+            if (logoData.url) {
+                elements.logoPreviewImg.src = logoData.url;
+                elements.logoPreviewImg.classList.remove('hidden');
+                elements.logoPreviewPlaceholder.classList.add('hidden');
+            } else {
+                elements.logoPreviewImg.classList.add('hidden');
+                elements.logoPreviewPlaceholder.classList.remove('hidden');
+            }
+
+            // تحديث حالة الشعار في لوحة المسؤول
+            if (elements.showLogoToggle) {
+                elements.showLogoToggle.checked = logoData.show;
+            }
+            if (elements.logoPosition) {
+                elements.logoPosition.value = logoData.position || 'both';
+            }
+            if (elements.logoStatus) {
+                elements.logoStatus.textContent = logoData.show ? 'ظاهر' : 'مخفي';
+                elements.logoStatus.className = logoData.show ? 'text-green-400' : 'text-red-400';
+            }
+        };
+
+        // دالة تبديل إظهار/إخفاء الشعار
+        window.toggleLogoVisibility = () => {
+            if (!state.cloudData.config.logo) {
+                state.cloudData.config.logo = { url: '', show: true, position: 'both' };
+            }
+            state.cloudData.config.logo.show = elements.showLogoToggle.checked;
+            updateLogoVisibility();
+            showToast(state.cloudData.config.logo.show ? 'تم إظهار الشعار' : 'تم إخفاء الشعار');
+        };
+
+        // دالة تحديث موضع الشعار
+        window.updateLogoPosition = () => {
+            if (!state.cloudData.config.logo) {
+                state.cloudData.config.logo = { url: '', show: true, position: 'both' };
+            }
+            state.cloudData.config.logo.position = elements.logoPosition.value;
+            updateLogoVisibility();
+            showToast('تم تحديث موضع الشعار');
+        };
+
+        // دالة تحديث رابط الشعار
+        window.setLogoFromUrl = () => {
+            const url = document.getElementById('logo-url-input').value;
+            if (url) {
+                if (!state.cloudData.config.logo) {
+                    state.cloudData.config.logo = { url: '', show: true, position: 'both' };
+                }
+                state.cloudData.config.logo.url = url;
+                updateLogoVisibility();
+                showToast('تم تطبيق رابط الشعار');
+            }
+        };
+
+        // رفع الشعار من الجهاز
+        document.getElementById('logo-upload-input').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showToast('الرجاء اختيار صورة صالحة', 'error');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('حجم الصورة يجب أن يكون أقل من 5 ميجابايت', 'error');
+                return;
+            }
+
+            const storageRef = ref(storage, `brand/logo_${Date.now()}_${file.name}`);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            elements.logoProgressContainer.classList.remove('hidden');
+            elements.logoProgressBar.style.width = '0%';
+
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    elements.logoProgressBar.style.width = `${progress}%`;
+                },
+                (error) => {
+                    console.error('Upload error:', error);
+                    showToast('فشل رفع الشعار', 'error');
+                    elements.logoProgressContainer.classList.add('hidden');
+                },
+                async () => {
+                    try {
+                        const url = await getDownloadURL(uploadTask.snapshot.ref);
+                        if (!state.cloudData.config.logo) {
+                            state.cloudData.config.logo = { url: '', show: true, position: 'both' };
+                        }
+                        state.cloudData.config.logo.url = url;
+                        updateLogoVisibility();
+                        await saveAllToCloud();
+                        showToast('تم رفع الشعار بنجاح');
+                    } catch (error) {
+                        console.error('Error getting download URL:', error);
+                        showToast('فشل في الحصول على رابط الشعار', 'error');
+                    } finally {
+                        elements.logoProgressContainer.classList.add('hidden');
+                    }
+                }
+            );
+        });
+
+        // ============ دوال عرض الصور من مجلد images ============
+
+        // دالة لتحميل وعرض الصور من مجلد images
+        window.loadImagesFromFolder = async () => {
+            showToast('🔄 جاري تحميل الصور من المجلد...', 'info');
+            
+            try {
+                // قائمة أسماء الصور المتوقعة (عدلها حسب صورك)
+                const imageNames = [
+                    '8ee3850dc5ac65.jpg',
+                    '749712c3a212dc.jpg',
+                    '6218.jpg',
+                    'images1.jpg',
+                    'IMG_6609.jpg',
+                    'IMG_6729.jpg',
+                    'IMG_6764.jpg',
+                    'IMG_8000.jpg',
+                    'photo1.jpg'
+                ];
+
+                const basePath = 'images/';
+                const validImages = [];
+                const foundImages = [];
+
+                // التحقق من وجود كل صورة
+                for (const name of imageNames) {
+                    const imagePath = basePath + name;
+                    try {
+                        const response = await fetch(imagePath, { method: 'HEAD' });
+                        if (response.ok) {
+                            validImages.push(imagePath);
+                            foundImages.push(name);
+                            console.log(`✅ تم العثور على: ${name}`);
+                        }
+                    } catch {
+                        console.log(`❌ الصورة غير موجودة: ${name}`);
+                    }
                 }
 
-                showToast('✅ تم إضافة الصورة للمعرض');
-                saveAllToCloud();
-            } else {
-                showToast('⚠️ الصورة موجودة مسبقاً', 'info');
+                // تخزين الصور في حالة التطبيق
+                if (!state.cloudData.gallery) {
+                    state.cloudData.gallery = [];
+                }
+                
+                state.cloudData.gallery = [...validImages];
+                state.localImages = foundImages;
+                
+                // تحديث العرض
+                renderAllGalleries();
+                
+                // تحديث معلومات المجلد
+                if (elements.folderImagesCount) {
+                    elements.folderImagesCount.textContent = validImages.length;
+                }
+
+                // عرض قائمة الصور المحلية
+                if (elements.localImagesList) {
+                    if (foundImages.length === 0) {
+                        elements.localImagesList.innerHTML = '<p class="text-gray-500">لا توجد صور في المجلد</p>';
+                    } else {
+                        elements.localImagesList.innerHTML = foundImages.map(name => `
+                            <div class="flex justify-between items-center">
+                                <span>📷 ${name}</span>
+                                <span class="text-green-400">✅</span>
+                            </div>
+                        `).join('');
+                    }
+                }
+                
+                showToast(`✅ تم تحميل ${validImages.length} صورة من المجلد`, 'success');
+                
+            } catch (error) {
+                console.error('خطأ في تحميل الصور:', error);
+                showToast('❌ فشل تحميل الصور من المجلد', 'error');
             }
         };
 
-        // دالة للحصول على رابط صورة ImgBB بمقاس محدد
-        window.getImgBBImageUrl = (imageId, size = 'original') => {
-            const sizes = {
-                'thumbnail': 'thumb',
-                'small': '350x350',
-                'medium': 'medium',
-                'large': 'large',
-                'original': ''
-            };
-            
-            const sizeSuffix = sizes[size] ? `-${sizes[size]}` : '';
-            return `https://i.ibb.co/${imageId.substring(0, 2)}/${imageId}${sizeSuffix}.jpg`;
+        // دالة لتحديث قائمة الصور
+        window.refreshImagesFromFolder = async () => {
+            await loadImagesFromFolder();
+        };
+
+        // دالة لإزالة صورة من العرض (بدون حذف الملف)
+        window.removeImageFromGallery = (imagePath) => {
+            if (state.cloudData.gallery) {
+                state.cloudData.gallery = state.cloudData.gallery.filter(img => img !== imagePath);
+                renderAllGalleries();
+                showToast('تم إزالة الصورة من العرض', 'info');
+            }
         };
 
         // دالة لإضافة صور تجريبية
@@ -1125,19 +1891,19 @@
             state.cloudData.gallery = [...state.cloudData.gallery, ...demoImages];
             renderAllGalleries();
             
-            if (elements.imagesCount) {
-                elements.imagesCount.textContent = `${state.cloudData.gallery.length} صورة`;
+            if (elements.folderImagesCount) {
+                elements.folderImagesCount.textContent = state.cloudData.gallery.length;
             }
             
             showToast(`✅ تم إضافة ${demoImages.length} صورة تجريبية`);
-            saveAllToCloud();
         };
 
         // عرض الإشعارات
         const showToast = (message, type = 'success', duration = 3000) => {
             const toast = document.createElement('div');
             toast.className = `px-4 py-3 rounded-xl text-sm font-bold shadow-lg transform transition-all duration-300 ${
-                type === 'error' ? 'bg-red-500/90 text-white' : 'bg-green-500/90 text-white'
+                type === 'error' ? 'bg-red-500/90 text-white' : 
+                type === 'info' ? 'bg-blue-500/90 text-white' : 'bg-green-500/90 text-white'
             }`;
             toast.textContent = message;
             
@@ -1162,6 +1928,13 @@
                 document.getElementById(sectionId).classList.remove('hidden');
             } else {
                 document.getElementById(sectionId).classList.remove('hidden');
+                
+                // إذا دخلنا لوحة المسؤول، نحمل الصور المحلية ونحدث رابط المعرض
+                if (sectionId === 'admin-dashboard') {
+                    loadImagesFromFolder();
+                    updateGalleryLinkDisplay();
+                    updateLogoVisibility();
+                }
             }
         };
 
@@ -1318,102 +2091,11 @@
             }
         };
 
-        const updateLogoDisplay = (url) => {
-            if (url) {
-                elements.siteLogoImg.src = url;
-                elements.siteLogoImg.classList.remove('hidden');
-                elements.logoPlaceholder.classList.add('hidden');
-                
-                if (elements.logoPreviewImg) {
-                    elements.logoPreviewImg.src = url;
-                    elements.logoPreviewImg.classList.remove('hidden');
-                    elements.logoPreviewPlaceholder.classList.add('hidden');
-                }
-            } else {
-                elements.siteLogoImg.classList.add('hidden');
-                elements.logoPlaceholder.classList.remove('hidden');
-                if (elements.logoPreviewImg) {
-                    elements.logoPreviewImg.classList.add('hidden');
-                    elements.logoPreviewPlaceholder.classList.remove('hidden');
-                }
-            }
-        };
-
         window.saveDescription = () => {
             const newDescription = elements.landingDescriptionInput.value;
             state.cloudData.config.description = newDescription;
             elements.landingDescriptionText.textContent = newDescription;
             showToast('تم حفظ النص الوصفي');
-        };
-
-        window.setLogoFromUrl = () => {
-            const url = document.getElementById('logo-url-input').value;
-            if (url) {
-                updateLogoDisplay(url);
-                state.cloudData.config.logo = url;
-                showToast('تم تطبيق رابط الشعار');
-            }
-        };
-
-        document.getElementById('logo-upload-input').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            if (!file.type.startsWith('image/')) {
-                showToast('الرجاء اختيار صورة صالحة', 'error');
-                return;
-            }
-
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('حجم الصورة يجب أن يكون أقل من 5 ميجابايت', 'error');
-                return;
-            }
-
-            const storageRef = ref(storage, `brand/logo_${Date.now()}_${file.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
-
-            elements.logoProgressContainer.classList.remove('hidden');
-            elements.logoProgressBar.style.width = '0%';
-
-            uploadTask.on('state_changed',
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    elements.logoProgressBar.style.width = `${progress}%`;
-                },
-                (error) => {
-                    console.error('Upload error:', error);
-                    showToast('فشل رفع الشعار', 'error');
-                    elements.logoProgressContainer.classList.add('hidden');
-                },
-                async () => {
-                    try {
-                        const url = await getDownloadURL(uploadTask.snapshot.ref);
-                        state.cloudData.config.logo = url;
-                        updateLogoDisplay(url);
-                        await saveAllToCloud();
-                        showToast('تم رفع الشعار بنجاح');
-                    } catch (error) {
-                        console.error('Error getting download URL:', error);
-                        showToast('فشل في الحصول على رابط الشعار', 'error');
-                    } finally {
-                        elements.logoProgressContainer.classList.add('hidden');
-                    }
-                }
-            );
-        });
-
-        window.deleteGalleryImage = (urlToDelete) => {
-            if (state.cloudData.gallery) {
-                state.cloudData.gallery = state.cloudData.gallery.filter(url => url !== urlToDelete);
-                renderAdminGalleryPreview();
-                
-                if (elements.imagesCount) {
-                    elements.imagesCount.textContent = `${state.cloudData.gallery.length} صورة`;
-                }
-                
-                showToast('تم حذف الصورة');
-                saveAllToCloud();
-            }
         };
 
         window.addNewAgendaRow = () => {
@@ -1469,39 +2151,164 @@
             updateAgendaStats();
         };
 
+        // دالة محدثة لعرض معرض المسؤول
         const renderAdminGalleryPreview = () => {
-            if (!elements.adminGalleryPreview || !state.cloudData.gallery) return;
+            if (!elements.adminGalleryPreview) return;
             
-            if (state.cloudData.gallery.length === 0) {
+            const images = state.cloudData.gallery || [];
+            
+            if (images.length === 0) {
                 elements.adminGalleryPreview.innerHTML = '<div class="col-span-3 text-gray-500 text-center py-8">لا توجد صور في المعرض</div>';
                 return;
             }
             
-            const uniqueGallery = [...new Set(state.cloudData.gallery)];
-            
-            elements.adminGalleryPreview.innerHTML = uniqueGallery
-                .map((url, index) => {
-                    const originalIndex = state.cloudData.gallery.findIndex(img => img === url);
+            elements.adminGalleryPreview.innerHTML = images
+                .map((imagePath, index) => {
+                    const fileName = imagePath.split('/').pop();
                     return `
-                        <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10">
-                            <img src="${url}" class="w-full h-full object-cover thumbnail" alt="Gallery ${index + 1}" 
-                                 onclick="openImagePreview('${url}', ${originalIndex})"
-                                 onerror="this.onerror=null; this.src='https://picsum.photos/200/200?random=${index}'; this.classList.add('opacity-75');">
-                            <button onclick="deleteGalleryImage('${url}')" 
-                                    class="absolute top-1 right-1 bg-red-500/80 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity"
-                                    aria-label="حذف">✕</button>
+                        <div class="relative group aspect-square rounded-lg overflow-hidden border border-white/10 image-item">
+                            <img src="${imagePath}" 
+                                 class="w-full h-full object-cover thumbnail" 
+                                 alt="${fileName}"
+                                 onclick="openImagePreview('${imagePath}', ${index})"
+                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=Error'; this.classList.add('opacity-50');">
+                            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center flex-col">
+                                <span class="text-white text-xs mb-1 truncate max-w-full px-2">${fileName}</span>
+                                <button onclick="removeImageFromGallery('${imagePath}')" 
+                                        class="bg-red-500/80 hover:bg-red-600 text-white px-2 py-1 rounded text-xs">
+                                    إزالة من العرض
+                                </button>
+                            </div>
                         </div>
                     `;
                 }).join('');
         };
 
+        // دالة محدثة لعرض محتوى الصفحة الرئيسية مع الصور
+        const renderLandingContent = () => {
+            // عرض الأجندة
+            const agendaList = document.getElementById('landing-agenda-list');
+            if (agendaList) {
+                const agenda = state.cloudData.agenda || [];
+                
+                if (agenda.length === 0) {
+                    agendaList.innerHTML = '<div class="text-gray-500 text-center p-4">لا توجد فعاليات حالياً</div>';
+                } else {
+                    agendaList.innerHTML = agenda
+                        .sort((a, b) => a.time?.localeCompare(b.time))
+                        .map(item => `
+                            <div class="glass-card p-4 rounded-xl flex items-center justify-between hover:border-blue-500/30 transition-colors">
+                                <div class="flex gap-3 items-center">
+                                    <span class="text-blue-500 font-bold font-mono text-sm bg-blue-500/10 px-2 py-1 rounded">${item.time || '--:--'}</span>
+                                    <span class="font-bold text-white">${item.title || 'بدون عنوان'}</span>
+                                </div>
+                            </div>
+                        `).join('');
+                }
+            }
+
+            // عرض المعرض التقني من مجلد images
+            const galleryList = document.getElementById('landing-gallery-list');
+            if (galleryList) {
+                const images = state.cloudData.gallery || [];
+                
+                if (images.length === 0) {
+                    galleryList.innerHTML = '<div class="text-gray-500 text-center col-span-2 p-8 border border-dashed border-white/10 rounded-xl">لا توجد صور في المعرض</div>';
+                } else {
+                    galleryList.innerHTML = images
+                        .slice(0, 4) // عرض أول 4 صور فقط
+                        .map((imagePath, index) => {
+                            const fileName = imagePath.split('/').pop();
+                            return `
+                                <div class="thumbnail aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors image-item"
+                                     onclick="openImagePreview('${imagePath}', ${index})">
+                                    <img src="${imagePath}" 
+                                         loading="lazy" 
+                                         class="w-full h-full object-cover" 
+                                         alt="${fileName}"
+                                         onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=Error'; this.classList.add('opacity-50');">
+                                    <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 opacity-0 hover:opacity-100 transition-opacity truncate">
+                                        ${fileName}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                }
+            }
+            
+            // تحديث رابط المعرض
+            updateGalleryLinkDisplay();
+        };
+
+        // دالة محدثة لعرض معرض المستخدم
+        const renderUserUI = () => {
+            // عرض الأجندة للمستخدم
+            const agendaList = document.getElementById('user-agenda-list');
+            if (agendaList) {
+                const agenda = state.cloudData.agenda || [];
+                
+                if (agenda.length === 0) {
+                    agendaList.innerHTML = '<div class="text-gray-500 text-center p-4">لا توجد فعاليات حالياً</div>';
+                } else {
+                    agendaList.innerHTML = agenda
+                        .sort((a, b) => a.time?.localeCompare(b.time))
+                        .map(item => `
+                            <div class="glass-card p-4 rounded-xl flex items-center justify-between">
+                                <div class="flex gap-3 items-center">
+                                    <span class="text-blue-500 font-bold font-mono">${item.time}</span>
+                                    <span class="font-bold text-white">${item.title}</span>
+                                </div>
+                            </div>
+                        `).join('');
+                }
+            }
+
+            // عرض المعرض التقني للمستخدم
+            const galleryList = document.getElementById('user-gallery-list');
+            if (galleryList) {
+                const images = state.cloudData.gallery || [];
+                
+                if (images.length === 0) {
+                    galleryList.innerHTML = '<div class="text-gray-500 text-center col-span-4 p-8 border border-dashed border-white/10 rounded-xl">لا توجد صور في المعرض حالياً</div>';
+                } else {
+                    galleryList.innerHTML = images
+                        .map((imagePath, index) => {
+                            const fileName = imagePath.split('/').pop();
+                            return `
+                                <div class="thumbnail aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors image-item"
+                                     onclick="openImagePreview('${imagePath}', ${index})">
+                                    <img src="${imagePath}" 
+                                         loading="lazy" 
+                                         class="w-full h-full object-cover" 
+                                         alt="${fileName}"
+                                         onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=Error'; this.classList.add('opacity-50');">
+                                    <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 opacity-0 hover:opacity-100 transition-opacity truncate">
+                                        ${fileName}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                }
+            }
+            
+            // تحديث رابط المعرض
+            updateGalleryLinkDisplay();
+        };
+
+        // دالة لعرض جميع المعارض
         const renderAllGalleries = () => {
             renderAdminGalleryPreview();
             renderLandingContent();
             renderUserUI();
             
+            // تحديث إحصائية الصور
             if (elements.statsGallery) {
                 elements.statsGallery.textContent = state.cloudData.gallery?.length || 0;
+            }
+            
+            // تحديث عدد الصور في المجلد
+            if (elements.folderImagesCount) {
+                elements.folderImagesCount.textContent = state.cloudData.gallery?.length || 0;
             }
         };
 
@@ -1526,45 +2333,13 @@
                     elements.statTotal.textContent = `${state.users.length} مسجلين`;
                 }
                 
-                renderUsersList();
+                // تطبيق البحث والفلترة بعد تحميل المستخدمين
+                applySearchAndFilter();
+                
                 renderJudgesList();
             } catch (error) {
                 console.error('Error loading users:', error);
             }
-        };
-
-        const renderUsersList = () => {
-            if (!elements.usersList) return;
-
-            if (state.users.length === 0) {
-                elements.usersList.innerHTML = '<div class="text-gray-500 text-center py-4">لا يوجد مسجلين حتى الآن</div>';
-                return;
-            }
-
-            elements.usersList.innerHTML = state.users.map(user => `
-                <div class="bg-white/5 p-3 rounded-xl border border-white/10 flex items-center justify-between">
-                    <div class="flex-1">
-                        <div class="font-bold flex items-center gap-2">
-                            ${user.name || 'بدون اسم'}
-                            ${user.isJudge ? '<span class="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">حكم</span>' : ''}
-                        </div>
-                        <div class="text-sm text-gray-400">${user.email}</div>
-                        <div class="text-xs text-gray-500">${user.org || 'بدون مؤسسة'} | ${user.participationType || 'غير محدد'}</div>
-                    </div>
-                    <div class="flex gap-2">
-                        ${!user.isJudge ? `
-                            <button onclick="toggleJudge('${user.id}')" class="text-amber-500 hover:text-amber-400 px-2 text-sm">
-                                ⚖️ تعيين حكم
-                            </button>
-                        ` : `
-                            <button onclick="toggleJudge('${user.id}')" class="text-red-500 hover:text-red-400 px-2 text-sm">
-                                ❌ إزالة التحكيم
-                            </button>
-                        `}
-                        <button onclick="deleteUser('${user.id}')" class="text-red-500 hover:text-red-400 px-2">✕</button>
-                    </div>
-                </div>
-            `).join('');
         };
 
         const renderJudgesList = () => {
@@ -1991,6 +2766,18 @@
                     if (!state.cloudData.groups) state.cloudData.groups = [];
                     if (!state.cloudData.evaluations) state.cloudData.evaluations = {};
                     if (!state.cloudData.publicVotes) state.cloudData.publicVotes = {};
+                    if (!state.cloudData.config) state.cloudData.config = {
+                        logo: { url: '', show: true, position: 'both' },
+                        eventDate: '',
+                        description: 'انضم إلى أكبر تجمع تقني للمهندسين في عام 2025. ورش عمل، مسابقات، ومحاضرات يقدمها نخبة من الخبراء العالميين.',
+                        galleryLink: { url: '', show: false }
+                    };
+                    if (!state.cloudData.config.logo) {
+                        state.cloudData.config.logo = { url: '', show: true, position: 'both' };
+                    }
+                    if (!state.cloudData.config.galleryLink) {
+                        state.cloudData.config.galleryLink = { url: '', show: false };
+                    }
                     
                     state.lastUpdated = new Date();
                 }
@@ -2006,7 +2793,7 @@
         );
 
         const updateUI = () => {
-            updateLogoDisplay(state.cloudData.config?.logo);
+            updateLogoVisibility();
             
             if (elements.landingDescriptionText && state.cloudData.config?.description) {
                 elements.landingDescriptionText.textContent = state.cloudData.config.description;
@@ -2047,95 +2834,13 @@
                 if (state.currentUser && state.currentUser.type === 'admin') {
                     elements.adminName.placeholder = state.currentUser.name || '';
                 }
+                
+                // تحديث إعدادات رابط المعرض في لوحة المسؤول
+                updateGalleryLinkDisplay();
             }
             
             updateAgendaStats();
             updateResultsChart();
-        };
-
-        const renderLandingContent = () => {
-            const agendaList = document.getElementById('landing-agenda-list');
-            if (agendaList) {
-                const agenda = state.cloudData.agenda || [];
-                
-                if (agenda.length === 0) {
-                    agendaList.innerHTML = '<div class="text-gray-500 text-center p-4">لا توجد فعاليات حالياً</div>';
-                } else {
-                    agendaList.innerHTML = agenda
-                        .sort((a, b) => a.time?.localeCompare(b.time))
-                        .map(item => `
-                            <div class="glass-card p-4 rounded-xl flex items-center justify-between hover:border-blue-500/30 transition-colors">
-                                <div class="flex gap-3 items-center">
-                                    <span class="text-blue-500 font-bold font-mono text-sm bg-blue-500/10 px-2 py-1 rounded">${item.time || '--:--'}</span>
-                                    <span class="font-bold text-white">${item.title || 'بدون عنوان'}</span>
-                                </div>
-                            </div>
-                        `).join('');
-                }
-            }
-
-            const galleryList = document.getElementById('landing-gallery-list');
-            if (galleryList && state.cloudData.gallery) {
-                const uniqueGallery = [...new Set(state.cloudData.gallery)];
-                
-                if (uniqueGallery.length === 0) {
-                    galleryList.innerHTML = '';
-                } else {
-                    galleryList.innerHTML = uniqueGallery
-                        .slice(0, 4)
-                        .map((url, index) => {
-                            const originalIndex = state.cloudData.gallery.findIndex(img => img === url);
-                            return `
-                                <div class="thumbnail aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors"
-                                     onclick="openImagePreview('${url}', ${originalIndex})">
-                                    <img src="${url}" loading="lazy" class="w-full h-full object-cover" alt="Gallery" onerror="this.onerror=null; this.src='https://picsum.photos/200/200?random=${index}';">
-                                </div>
-                            `;
-                        }).join('');
-                }
-            }
-        };
-
-        const renderUserUI = () => {
-            const agendaList = document.getElementById('user-agenda-list');
-            if (agendaList) {
-                const agenda = state.cloudData.agenda || [];
-                
-                if (agenda.length === 0) {
-                    agendaList.innerHTML = '<div class="text-gray-500 text-center p-4">لا توجد فعاليات حالياً</div>';
-                } else {
-                    agendaList.innerHTML = agenda
-                        .sort((a, b) => a.time?.localeCompare(b.time))
-                        .map(item => `
-                            <div class="glass-card p-4 rounded-xl flex items-center justify-between">
-                                <div class="flex gap-3 items-center">
-                                    <span class="text-blue-500 font-bold font-mono">${item.time}</span>
-                                    <span class="font-bold text-white">${item.title}</span>
-                                </div>
-                            </div>
-                        `).join('');
-                }
-            }
-
-            const galleryList = document.getElementById('user-gallery-list');
-            if (galleryList && state.cloudData.gallery) {
-                const uniqueGallery = [...new Set(state.cloudData.gallery)];
-                
-                if (uniqueGallery.length === 0) {
-                    galleryList.innerHTML = '<div class="text-gray-500 text-center col-span-4 p-8 border border-dashed border-white/10 rounded-xl">لا توجد صور في المعرض حالياً</div>';
-                } else {
-                    galleryList.innerHTML = uniqueGallery
-                        .map((url, index) => {
-                            const originalIndex = state.cloudData.gallery.findIndex(img => img === url);
-                            return `
-                                <div class="thumbnail aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-blue-500/50 transition-colors"
-                                     onclick="openImagePreview('${url}', ${originalIndex})">
-                                    <img src="${url}" loading="lazy" class="w-full h-full object-cover" alt="Gallery" onerror="this.onerror=null; this.src='https://picsum.photos/200/200?random=${index}';">
-                                </div>
-                            `;
-                        }).join('');
-                }
-            }
         };
 
         window.saveAllToCloud = async () => {
@@ -2159,10 +2864,24 @@
                     .filter(a => a.time && a.title.trim())
                     .sort((a, b) => a.time.localeCompare(b.time));
 
+                // تحديث إعدادات الشعار
+                const logoData = {
+                    url: state.cloudData.config?.logo?.url || '',
+                    show: elements.showLogoToggle?.checked ?? state.cloudData.config?.logo?.show ?? true,
+                    position: elements.logoPosition?.value ?? state.cloudData.config?.logo?.position ?? 'both'
+                };
+
+                // تحديث إعدادات رابط المعرض
+                const galleryLink = {
+                    url: elements.galleryLinkInput?.value || state.cloudData.config?.galleryLink?.url || '',
+                    show: elements.showGalleryLink?.checked || state.cloudData.config?.galleryLink?.show || false
+                };
+
                 const config = {
-                    logo: state.cloudData.config?.logo || '',
+                    logo: logoData,
                     eventDate: elements.confDate?.value || '',
-                    description: elements.landingDescriptionInput?.value || state.cloudData.config?.description || ''
+                    description: elements.landingDescriptionInput?.value || state.cloudData.config?.description || '',
+                    galleryLink: galleryLink
                 };
 
                 await setDoc(doc(db, "conference", "data"), {
@@ -2375,14 +3094,44 @@
         };
         setInterval(updateCountdown, 1000);
 
+        // إعدادات البحث الفوري
+        if (elements.userSearchInput) {
+            elements.userSearchInput.addEventListener('input', (e) => {
+                state.search.query = e.target.value;
+                state.search.currentPage = 1;
+                applySearchAndFilter();
+            });
+        }
+
         // التهيئة عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', () => {
             showSection('landing-section');
+            loadImagesFromFolder(); // تحميل الصور من المجلد
             loadUsers();
+            
+            // تهيئة إعدادات الشعار
+            if (!state.cloudData.config) {
+                state.cloudData.config = {
+                    logo: { url: '', show: true, position: 'both' },
+                    eventDate: '',
+                    description: 'انضم إلى أكبر تجمع تقني للمهندسين في عام 2025. ورش عمل، مسابقات، ومحاضرات يقدمها نخبة من الخبراء العالميين.',
+                    galleryLink: { url: '', show: false }
+                };
+            }
+            if (!state.cloudData.config.logo) {
+                state.cloudData.config.logo = { url: '', show: true, position: 'both' };
+            }
+            
+            updateLogoVisibility();
+            updateGalleryLinkDisplay();
         });
 
         // جعل الدوال متاحة عالمياً
         window.showToast = showToast;
+        window.saveGalleryLink = saveGalleryLink;
+        window.toggleLogoVisibility = toggleLogoVisibility;
+        window.updateLogoPosition = updateLogoPosition;
+        window.setLogoFromUrl = setLogoFromUrl;
     </script>
 </body>
 </html>
